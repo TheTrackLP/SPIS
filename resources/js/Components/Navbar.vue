@@ -1,38 +1,17 @@
+<script setup>
+const emit = defineEmits(["toggleSidebar"]);
+</script>
+
 <template>
     <header class="sp-topbar">
-        <button class="btn-icon d-lg-none" id="btnSidebarToggle">
-            <i class="bi bi-list"></i>
-        </button>
         <div class="crumb">
             Legislative Information System /
             <strong id="crumbCurrent">Dashboard</strong>
         </div>
 
         <div class="ms-auto d-flex align-items-center gap-2">
-            <div class="d-none d-md-block position-relative">
-                <i
-                    class="bi bi-search position-absolute"
-                    style="
-                        left: 0.65rem;
-                        top: 0.55rem;
-                        color: var(--ink-muted);
-                        font-size: 0.85rem;
-                    "
-                ></i>
-                <input
-                    type="text"
-                    class="form-control form-control-sm ps-4"
-                    style="width: 230px"
-                    placeholder="Search records, authors..."
-                />
-            </div>
-            <button class="btn-icon position-relative">
-                <i class="bi bi-bell"></i>
-                <span
-                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
-                    style="background: var(--amber); font-size: 0.5rem"
-                    >3</span
-                >
+            <button class="nav-link" @click.prevent="emit('toggleSidebar')">
+                <i class="fa-solid fa-bars"></i>
             </button>
             <div class="dropdown">
                 <button

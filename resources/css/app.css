@@ -4,7 +4,6 @@
     --navy-soft: #1b3358;
     --amber: #c8933a;
     --amber-soft: #efdcb6;
-    --paper: #faf6ee;
     --paper-card: #ffffff;
     --ink: #24252a;
     --ink-muted: #6b6f76;
@@ -14,7 +13,6 @@
 }
 
 body {
-    background: var(--paper);
     font-family: var(--font-body);
     color: var(--ink);
     font-size: 0.925rem;
@@ -25,6 +23,10 @@ h3,
 h4,
 .font-display {
     font-family: var(--font-display);
+}
+label {
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 /* ---------- Sidebar ---------- */
@@ -99,8 +101,8 @@ h4,
     text-align: center;
 }
 .sp-nav .nav-link:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
+    background: var(--amber);
+    color: black;
 }
 .sp-nav .nav-link.active {
     background: var(--amber);

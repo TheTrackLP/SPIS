@@ -8,7 +8,10 @@ import { ZiggyVue } from "../../vendor/tightenco/ziggy";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const appName = import.meta.env.VITE_APP_NAME || "Laravel";
+import "@fortawesome/fontawesome-free/css/fontawesome.min.css";
+import "@fortawesome/fontawesome-free/css/solid.min.css";
+
+const appName = import.meta.env.VITE_APP_NAME || "SPIS";
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
