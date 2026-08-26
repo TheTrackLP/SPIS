@@ -28,8 +28,9 @@ Route::middleware('auth')->group(function(){
     });
 
     Route::controller(SectorController::class)->group(function(){
-        Route::get('/admin/settings/secotr', 'SectorDashboard')->name('sector.dash');
-        // Route::post('/admin/settings/classification/add', 'ClassAdd')->name('class.add');
+        Route::get('/admin/settings/sector', 'SectorDashboard')->name('sector.dash');
+        Route::post('/admin/settings/sector/add', 'SectorAdd')->name('sector.add');
+        Route::post('/admin/settings/sector/edit/{id}', 'SectorEdit')->name('sector.edit');
     });
     
     Route::controller(AuthorController::class)->group(function(){
