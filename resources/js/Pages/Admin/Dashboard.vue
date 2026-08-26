@@ -10,7 +10,7 @@ import { Head } from "@inertiajs/vue3";
         <section id="view-dashboard" class="view active">
             <div class="d-flex justify-content-between align-items-end mb-3">
                 <div>
-                    <h1 class="font-display mb-0" style="font-size: 1.5rem">
+                    <h1 class="font-display mb-0" style="font-size: 2rem">
                         Dashboard
                     </h1>
                     <div class="text-muted" style="font-size: 0.82rem">
@@ -37,7 +37,7 @@ import { Head } from "@inertiajs/vue3";
                             class="stat-icon"
                             style="background: #e7eef9; color: #1d4e89"
                         >
-                            <i class="bi bi-journals"></i>
+                            <i class="fa-solid fa-book"></i>
                         </div>
                         <div>
                             <div class="stat-value" id="statTotal">0</div>
@@ -53,7 +53,7 @@ import { Head } from "@inertiajs/vue3";
                             class="stat-icon"
                             style="background: #fcf1dc; color: #96660c"
                         >
-                            <i class="bi bi-hourglass-split"></i>
+                            <i class="fa-solid fa-hourglass-half"></i>
                         </div>
                         <div>
                             <div class="stat-value" id="statPending">0</div>
@@ -69,7 +69,7 @@ import { Head } from "@inertiajs/vue3";
                             class="stat-icon"
                             style="background: #e7f3ea; color: #1e7b34"
                         >
-                            <i class="bi bi-check-circle"></i>
+                            <i class="fa-solid fa-circle-check"></i>
                         </div>
                         <div>
                             <div class="stat-value" id="statApproved">0</div>
@@ -85,7 +85,7 @@ import { Head } from "@inertiajs/vue3";
                             class="stat-icon"
                             style="background: #eef0f2; color: #5a5f66"
                         >
-                            <i class="bi bi-archive"></i>
+                            <i class="fa-solid fa-box-archive"></i>
                         </div>
                         <div>
                             <div class="stat-value" id="statArchived">0</div>
@@ -112,7 +112,7 @@ import { Head } from "@inertiajs/vue3";
                         </div>
                         <div class="table-responsive">
                             <table
-                                class="table table-bordered table-hover mb-0"
+                                class="table table-hover mb-0"
                                 style="font-size: 0.8rem"
                             >
                                 <thead>

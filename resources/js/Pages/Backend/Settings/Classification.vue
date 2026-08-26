@@ -98,7 +98,7 @@ export default {
     <div class="sp-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h1 class="font-display mb-0" style="font-size: 1.5rem">
+                <h1 class="font-display mb-0" style="font-size: 2rem">
                     Classifications
                 </h1>
                 <div class="text-muted" style="font-size: 0.82rem">

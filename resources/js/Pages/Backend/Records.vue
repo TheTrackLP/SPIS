@@ -9,7 +9,7 @@ export default {
 <template>
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h1 class="font-display mb-0" style="font-size: 1.5rem">
+            <h1 class="font-display mb-0" style="font-size: 2rem">
                 Legislative Records
             </h1>
             <div class="text-muted" style="font-size: 0.82rem">
@@ -68,7 +68,7 @@ export default {
     </div>
     <hr />
     <div class="table-response">
-        <table class="table table-bordered">
+        <table class="table table-hover">
             <thead class="table-dark">
                 <tr class="text-center">
                     <th>SP Term</th>

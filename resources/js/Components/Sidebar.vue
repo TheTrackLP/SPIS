@@ -1,5 +1,8 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
+const isActive = (routeName) => {
+    return route().current(routeName);
+};
 </script>
 
 <template>
@@ -14,12 +17,19 @@ import { Link } from "@inertiajs/vue3";
 
         <nav class="sp-nav">
             <div class="nav-section-label">Overview</div>
-            <Link :href="route('admin.dash')" class="nav-link">
+            <Link
+                :href="route('admin.dash')"
+                class="nav-link"
+                :class="{ active: isActive('admin.dash') }"
+            >
                 <i class="fa-solid fa-gauge"></i> Dashboard</Link
             >
 
             <div class="nav-section-label">Legislative</div>
-            <Link :href="route('rec.dash')" class="nav-link"
+            <Link
+                :href="route('rec.dash')"
+                class="nav-link"
+                :class="{ active: isActive('rec.dash') }"
                 ><i class="fa-solid fa-book"></i> Legislative Records</Link
             >
 
@@ -47,7 +57,7 @@ import { Link } from "@inertiajs/vue3";
                 id="collapseSettings"
                 data-bs-parent="#sidenavAccordion"
             >
-                <nav class="nav flex-column">
+                <nav class="sp-nav flex-column">
                     <Link class="nav-link" :href="route('gear.author')"
                         ><i class="fa-solid fa-user-tie"></i> Authors</Link
                     >

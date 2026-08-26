@@ -92,7 +92,7 @@ export default {
     <div class="sp-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h1 class="font-display mb-0" style="font-size: 1.5rem">
+                <h1 class="font-display mb-0" style="font-size: 2rem">
                     Authors
                 </h1>
                 <div class="text-muted" style="font-size: 0.82rem">
@@ -121,7 +121,7 @@ export default {
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="authors.length > 0">
                         <tr
                             class="align-middle"
                             v-for="(auth, index) in authors"
@@ -164,6 +164,13 @@ export default {
                                 <button class="btn btn-sm btn-danger">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-else>
+                        <tr>
+                            <td colspan="7" class="text-center align-middle">
+                                <h6>No Data as of Yet</h6>
                             </td>
                         </tr>
                     </tbody>
@@ -244,47 +251,11 @@ export default {
                                     class="form-select"
                                 >
                                     <option value="">Select Office</option>
-                                    <option value="SP Member Office 1">
-                                        SP Member Office 1
-                                    </option>
-                                    <option value="SP Member Office 2">
-                                        SP Member Office 2
-                                    </option>
-                                    <option value="SP Member Office 3">
-                                        SP Member Office 3
-                                    </option>
-                                    <option value="SP Member Office 4">
-                                        SP Member Office 4
-                                    </option>
-                                    <option value="SP Member Office 5">
-                                        SP Member Office 5
-                                    </option>
-                                    <option value="SP Member Office 6">
-                                        SP Member Office 6
-                                    </option>
-                                    <option value="SP Member Office 7">
-                                        SP Member Office 7
-                                    </option>
-                                    <option value="SP Member Office 8">
-                                        SP Member Office 8
-                                    </option>
-                                    <option value="SP Member Office 9">
-                                        SP Member Office 9
-                                    </option>
-                                    <option value="SP Member Office 10">
-                                        SP Member Office 10
-                                    </option>
-                                    <option value="SP Member Office 11">
-                                        SP Member Office 11
-                                    </option>
-                                    <option value="SP Member Office 12">
-                                        SP Member Office 12
-                                    </option>
-                                    <option value="SP Member Office 13">
-                                        SP Member Office 13
-                                    </option>
-                                    <option value="SP Member Office 14">
-                                        SP Member Office 14
+                                    <option
+                                        :value="`SP Member Office ${num}`"
+                                        v-for="num in 14"
+                                    >
+                                        SP Member Office {{ num }}
                                     </option>
                                 </select>
                             </div>
@@ -314,6 +285,7 @@ export default {
                                     class="form-select"
                                     v-model="authorForm.authorposition"
                                 >
+                                    <option value="">Select Position</option>
                                     <option value="Board Member">
                                         Board Member
                                     </option>
@@ -338,18 +310,13 @@ export default {
                                     class="form-select"
                                     v-model="authorForm.authorterm"
                                 >
-                                    <option value="SP-01">SP-01</option>
-                                    <option value="SP-02">SP-02</option>
-                                    <option value="SP-03">SP-03</option>
-                                    <option value="SP-04">SP-04</option>
-                                    <option value="SP-05">SP-05</option>
-                                    <option value="SP-06">SP-06</option>
-                                    <option value="SP-07">SP-07</option>
-                                    <option value="SP-08">SP-08</option>
-                                    <option value="SP-09">SP-09</option>
-                                    <option value="SP-10">SP-10</option>
-                                    <option value="SP-11">SP-11</option>
-                                    <option value="SP-12">SP-12</option>
+                                    <option value="">Select SP-Term</option>
+                                    <option
+                                        :value="`SP-${num}`"
+                                        v-for="num in 25"
+                                    >
+                                        SP-{{ num }}
+                                    </option>
                                 </select>
                             </div>
                         </div>

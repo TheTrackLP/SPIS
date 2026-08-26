@@ -77,7 +77,7 @@ export default {
     <div class="sp-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                <h1 class="font-display mb-0" style="font-size: 1.5rem">
+                <h1 class="font-display mb-0" style="font-size: 2rem">
                     Sectors
                 </h1>
                 <div class="text-muted" style="font-size: 0.82rem">
@@ -107,7 +107,7 @@ export default {
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="sectors.length > 0">
                         <tr
                             class="align-middle"
                             v-for="(sector, index) in sectors"
@@ -125,6 +125,13 @@ export default {
                                 >
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-else>
+                        <tr>
+                            <td colspan="7" class="text-center align-middle">
+                                <h6>No Data as of Yet</h6>
                             </td>
                         </tr>
                     </tbody>
