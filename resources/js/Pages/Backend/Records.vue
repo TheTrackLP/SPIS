@@ -56,16 +56,10 @@ export default {
                     </select>
                 </div>
                 <div class="col-6 col-md-3 d-flex gap-2">
-                    <button
-                        class="btn btn-sm btn-primary flex-fill"
-                        id="btnApplyFilter"
-                    >
-                        <i class="bi bi-search me-1"></i>Search
+                    <button class="btn btn-sm btn-primary flex-fill">
+                        <i class="fa-solid fa-magnifying-glass"></i> Search
                     </button>
-                    <button
-                        class="btn btn-sm btn-outline-secondary"
-                        id="btnClearFilter"
-                    >
+                    <button class="btn btn-sm btn-outline-secondary">
                         Clear
                     </button>
                 </div>
@@ -76,7 +70,7 @@ export default {
     <div class="table-response">
         <table class="table table-bordered">
             <thead class="table-dark">
-                <tr>
+                <tr class="text-center">
                     <th>SP Term</th>
                     <th>Type</th>
                     <th>No.</th>
@@ -89,6 +83,11 @@ export default {
                     <th>Action</th>
                 </tr>
             </thead>
+            <tbody>
+                <tr>
+                    <th></th>
+                </tr>
+            </tbody>
         </table>
     </div>
 </template>

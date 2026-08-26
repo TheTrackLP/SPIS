@@ -103,6 +103,7 @@ label {
 .sp-nav .nav-link:hover {
     background: var(--amber);
     color: black;
+    font-weight: bold;
 }
 .sp-nav .nav-link.active {
     background: var(--amber);
@@ -114,6 +115,12 @@ label {
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     font-size: 0.72rem;
     color: #8b96ac;
+}
+.sb-sidenav-collapse-arrow i {
+    transition: transform 0.2s ease;
+}
+.nav-link[aria-expanded="true"] .sb-sidenav-collapse-arrow i {
+    transform: rotate(180deg);
 }
 
 /* ---------- Main ---------- */
@@ -260,4 +267,9 @@ label {
 .detail-value {
     font-size: 0.9rem;
     font-weight: 500;
+}
+
+thead th {
+    background: var(--navy-deep) !important;
+    color: white !important;
 }

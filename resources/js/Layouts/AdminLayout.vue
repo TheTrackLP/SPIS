@@ -1,13 +1,49 @@
 <script setup lang="ts">
 import Navbar from "@/Components/Navbar.vue";
 import Sidebar from "@/Components/Sidebar.vue";
-import { ref } from "vue";
+import { usePage } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
+import Swal from "sweetalert2";
 
 const sidebarOpen = ref(false);
 
 function toggleSidebar() {
     sidebarOpen.value = !sidebarOpen.value;
 }
+
+const page = usePage();
+
+watch(
+    () => page.props.flash?.success,
+    (value) => {
+        if (value) {
+            Swal.fire({
+                title: "Success!",
+                text: value,
+                icon: "success",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        }
+    },
+    { deep: true },
+);
+
+watch(
+    () => page.props.flash?.error,
+    (value) => {
+        if (value) {
+            Swal.fire({
+                title: "Error!",
+                text: value,
+                icon: "error",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+        }
+    },
+    { deep: true },
+);
 </script>
 
 <template>

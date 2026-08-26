@@ -115,8 +115,8 @@ import { Head } from "@inertiajs/vue3";
                                 class="table table-bordered table-hover mb-0"
                                 style="font-size: 0.8rem"
                             >
-                                <thead style="color: #10233f">
-                                    <tr>
+                                <thead>
+                                    <tr class="text-center">
                                         <th>No.</th>
                                         <th>Type</th>
                                         <th>Title</th>

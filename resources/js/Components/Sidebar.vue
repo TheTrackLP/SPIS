@@ -1,3 +1,7 @@
+<script setup>
+import { Link } from "@inertiajs/vue3";
+</script>
+
 <template>
     <div>
         <div class="brand d-flex align-items-center gap-2">
@@ -10,26 +14,54 @@
 
         <nav class="sp-nav">
             <div class="nav-section-label">Overview</div>
-            <a
-                :href="route('admin.dash')"
-                class="nav-link"
-                data-view="dashboard"
-            >
-                <i class="fa-solid fa-gauge"></i> Dashboard</a
+            <Link :href="route('admin.dash')" class="nav-link">
+                <i class="fa-solid fa-gauge"></i> Dashboard</Link
             >
 
             <div class="nav-section-label">Legislative</div>
-            <a :href="route('rec.dash')" class="nav-link" data-view="records"
-                ><i class="fa-solid fa-book"></i> Legislative Records</a
+            <Link :href="route('rec.dash')" class="nav-link"
+                ><i class="fa-solid fa-book"></i> Legislative Records</Link
             >
 
             <div class="nav-section-label">Manage</div>
-            <a href="#" class="nav-link" data-view="reports"
+            <a href="#" class="nav-link"
                 ><i class="fa-solid fa-chart-simple"></i> Reports</a
             >
-            <a href="#" class="nav-link" data-view="archive"
+            <a href="#" class="nav-link"
                 ><i class="fa-solid fa-box-archive"></i> Archive</a
             >
+            <div class="nav-section-label">Settings</div>
+            <a
+                class="nav-link collapsed"
+                href="#"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseSettings"
+            >
+                <i class="fa-solid fa-gear"></i> Settings
+                <div class="sb-sidenav-collapse-arrow">
+                    <i class="fas fa-angle-down"></i>
+                </div>
+            </a>
+            <div
+                class="collapse"
+                id="collapseSettings"
+                data-bs-parent="#sidenavAccordion"
+            >
+                <nav class="nav flex-column">
+                    <Link class="nav-link" :href="route('gear.author')"
+                        ><i class="fa-solid fa-user-tie"></i> Authors</Link
+                    >
+                    <a class="nav-link" href="#"
+                        ><i class="fa-solid fa-flag"></i> Status</a
+                    >
+                    <a class="nav-link" href="#"
+                        ><i class="fa-solid fa-layer-group"></i> Sector</a
+                    >
+                    <a class="nav-link" href="#"
+                        ><i class="fa-solid fa-list"></i> Classification 1</a
+                    >
+                </nav>
+            </div>
         </nav>
 
         <div class="sidebar-foot">
