@@ -54,11 +54,11 @@ import { Link } from "@inertiajs/vue3";
                     <a class="nav-link" href="#"
                         ><i class="fa-solid fa-flag"></i> Status</a
                     >
-                    <a class="nav-link" href="#"
-                        ><i class="fa-solid fa-layer-group"></i> Sector</a
+                    <Link class="nav-link" :href="route('sector.dash')"
+                        ><i class="fa-solid fa-layer-group"></i> Sector</Link
                     >
-                    <a class="nav-link" href="#"
-                        ><i class="fa-solid fa-list"></i> Classification 1</a
+                    <Link class="nav-link" :href="route('class.dash')"
+                        ><i class="fa-solid fa-list"></i> Classification</Link
                     >
                 </nav>
             </div>
