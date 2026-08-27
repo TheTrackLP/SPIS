@@ -61,9 +61,6 @@ const isActive = (routeName) => {
                     <Link class="nav-link" :href="route('gear.author')"
                         ><i class="fa-solid fa-user-tie"></i> Authors</Link
                     >
-                    <a class="nav-link" href="#"
-                        ><i class="fa-solid fa-flag"></i> Status</a
-                    >
                     <Link class="nav-link" :href="route('sector.dash')"
                         ><i class="fa-solid fa-layer-group"></i> Sector</Link
                     >
