@@ -252,10 +252,12 @@ export default {
                                 >
                                     <option value="">Select Office</option>
                                     <option
-                                        :value="`SP Member Office ${num}`"
-                                        v-for="num in 14"
+                                        v-for="n in 14"
+                                        :key="n"
+                                        :value="`SP-${String(n).padStart(2, '0')}`"
                                     >
-                                        SP Member Office {{ num }}
+                                        SP Member Office
+                                        {{ String(n).padStart(2, "0") }}
                                     </option>
                                 </select>
                             </div>
@@ -312,10 +314,11 @@ export default {
                                 >
                                     <option value="">Select SP-Term</option>
                                     <option
-                                        :value="`SP-${num}`"
-                                        v-for="num in 25"
+                                        v-for="n in 25"
+                                        :key="n"
+                                        :value="`SP-${String(n).padStart(2, '0')}`"
                                     >
-                                        SP-{{ num }}
+                                        SP-{{ String(n).padStart(2, "0") }}
                                     </option>
                                 </select>
                             </div>

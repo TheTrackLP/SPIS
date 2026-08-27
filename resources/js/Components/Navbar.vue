@@ -1,5 +1,8 @@
 <script setup>
+import { ref } from "vue";
+
 const emit = defineEmits(["toggleSidebar"]);
+const dropdownProfile = ref(false);
 </script>
 
 <template>
@@ -16,7 +19,7 @@ const emit = defineEmits(["toggleSidebar"]);
             <div class="dropdown">
                 <button
                     class="btn d-flex align-items-center gap-2 border-0"
-                    data-bs-toggle="dropdown"
+                    @click="dropdownProfile = !dropdownProfile"
                 >
                     <div
                         style="
@@ -48,7 +51,10 @@ const emit = defineEmits(["toggleSidebar"]);
                         </div>
                     </div>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end">
+                <ul
+                    class="dropdown-menu dropdown-menu-end"
+                    :class="{ show: dropdownProfile }"
+                >
                     <li>
                         <a class="dropdown-item" href="#"
                             ><i class="bi bi-person me-2"></i>Profile</a

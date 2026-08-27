@@ -1,8 +1,12 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
+import { Button } from "bootstrap";
+import { ref } from "vue";
 const isActive = (routeName) => {
     return route().current(routeName);
 };
+
+const collapseSettings = ref(false);
 </script>
 
 <template>
@@ -44,19 +48,14 @@ const isActive = (routeName) => {
             <a
                 class="nav-link collapsed"
                 href="#"
-                data-bs-toggle="collapse"
-                data-bs-target="#collapseSettings"
+                @click="collapseSettings = !collapseSettings"
             >
                 <i class="fa-solid fa-gear"></i> Settings
                 <div class="sb-sidenav-collapse-arrow">
                     <i class="fas fa-angle-down"></i>
                 </div>
             </a>
-            <div
-                class="collapse"
-                id="collapseSettings"
-                data-bs-parent="#sidenavAccordion"
-            >
+            <div class="collapse" :class="{ show: collapseSettings }">
                 <nav class="sp-nav flex-column">
                     <Link class="nav-link" :href="route('gear.author')"
                         ><i class="fa-solid fa-user-tie"></i> Authors</Link

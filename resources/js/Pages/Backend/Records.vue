@@ -236,24 +236,37 @@ export default {
                     <label for="">SP Term</label>
                     <select name="" class="form-select">
                         <option value="">All Terms</option>
-                        <option value=""></option>
-                        <option value=""></option>
+                        <option
+                            v-for="n in 25"
+                            :key="n"
+                            :value="`SP-${String(n).padStart(2, '0')}`"
+                        >
+                            SP-{{ String(n).padStart(2, "0") }}
+                        </option>
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">Type</label>
                     <select name="" class="form-select">
                         <option value="">All Types</option>
-                        <option value=""></option>
-                        <option value=""></option>
+                        <option value="A-ORD">A-ORB</option>
+                        <option value="ORD">ORD</option>
+                        <option value="RES">RES</option>
                     </select>
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">Status</label>
                     <select name="" class="form-select">
                         <option value="">All Statuses</option>
-                        <option value=""></option>
-                        <option value=""></option>
+                        <option value="AMENDATORY">AMENDATORY</option>
+                        <option value="AMENDED">AMENDED</option>
+                        <option value="RECALLATORY">RECALLATORY</option>
+                        <option value="RECALLED">RECALLED</option>
+                        <option value="REITERATED">REITERATED</option>
+                        <option value="REITERATORY">REITERATORY</option>
+                        <option value="REPEALING">REPEALING</option>
+                        <option value="SUSPENDED">SUSPENDED</option>
+                        <option value="SUSPENSIVE">SUSPENSIVE</option>
                     </select>
                 </div>
                 <div class="col-6 col-md-3 d-flex gap-2">
