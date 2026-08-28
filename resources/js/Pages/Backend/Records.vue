@@ -198,6 +198,34 @@ function formatDate(dateStr) {
         day: "2-digit",
     });
 }
+const filterText = ref("");
+const filterTerm = ref("");
+const filterType = ref("");
+const filterStatus = ref("");
+
+const filteredRecords = computed(() => {
+    const textQuery = filterText.value.toLowerCase().trim();
+    const termQuery = filterTerm.value;
+    const typeQuery = filterType.value;
+    const statusQuery = filterStatus.value;
+
+    return props.records.filter((rec) => {
+        const matchesText =
+            !textQuery || rec.title.toLowerCase().includes(textQuery);
+        const matchesTerm = !termQuery || rec.term === termQuery;
+        const matchesType = !typeQuery || rec.type === typeQuery;
+        const matchesStatus = !statusQuery || rec.status === statusQuery;
+
+        return matchesText && matchesTerm && matchesType && matchesStatus;
+    });
+});
+
+const clearFilters = () => {
+    filterText.value = "";
+    filterTerm.value = "";
+    filterType.value = "";
+    filterStatus.value = "";
+};
 </script>
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
@@ -224,17 +252,18 @@ export default {
     <div class="card p-1 mb-3">
         <div class="card-body">
             <div class="row g-2 align-items-end">
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label for="">SEARCH TITLE/NO.</label>
                     <input
                         type="text"
                         class="form-control"
                         placeholder="e.g Ordinance No. 15"
+                        v-model="filterText"
                     />
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">SP Term</label>
-                    <select name="" class="form-select">
+                    <select v-model="filterTerm" class="form-select">
                         <option value="">All Terms</option>
                         <option
                             v-for="n in 25"
@@ -247,7 +276,7 @@ export default {
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">Type</label>
-                    <select name="" class="form-select">
+                    <select v-model="filterType" class="form-select">
                         <option value="">All Types</option>
                         <option value="A-ORD">A-ORB</option>
                         <option value="ORD">ORD</option>
@@ -256,7 +285,7 @@ export default {
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">Status</label>
-                    <select name="" class="form-select">
+                    <select v-model="filterStatus" class="form-select">
                         <option value="">All Statuses</option>
                         <option value="AMENDATORY">AMENDATORY</option>
                         <option value="AMENDED">AMENDED</option>
@@ -269,11 +298,11 @@ export default {
                         <option value="SUSPENSIVE">SUSPENSIVE</option>
                     </select>
                 </div>
-                <div class="col-6 col-md-3 d-flex gap-2">
-                    <button class="btn btn-sm btn-primary flex-fill">
-                        <i class="fa-solid fa-magnifying-glass"></i> Search
-                    </button>
-                    <button class="btn btn-sm btn-outline-secondary">
+                <div class="col-6 col-md-2 d-flex gap-2">
+                    <button
+                        class="btn btn-sm btn-outline-secondary flex-fill"
+                        @click="clearFilters"
+                    >
                         Clear
                     </button>
                 </div>
@@ -302,7 +331,7 @@ export default {
             </thead>
             <tbody>
                 <tr
-                    v-for="(record, index) in records"
+                    v-for="(record, index) in filteredRecords"
                     :key="index"
                     @click="openModaViewRecord(record)"
                 >
