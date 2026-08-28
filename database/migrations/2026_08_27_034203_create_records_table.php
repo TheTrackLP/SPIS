@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('term')->nullable();
             $table->enum('type', ['A-ORD', 'ORD', 'RES']);
-            $table->bigInteger('series_no')->nullable();
+            $table->bigInteger('resono')->nullable();
             $table->date('session_date')->nullable();
             $table->string('title')->nullable();
             $table->string('status')->nullable();
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('class2name')->nullable();
             $table->integer('sectorid')->nullable();
             $table->integer('sectorname')->nullable();
+            $table->text('filepath')->nullable();
             $table->timestamps();
         });
     }

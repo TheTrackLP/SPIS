@@ -15,7 +15,7 @@ const recordFormMode = ref("create");
 const recordForm = useForm({
     term: "",
     type: "",
-    series_no: "",
+    resono: "",
     session_date: "",
     title: "",
     status: "",
@@ -73,7 +73,7 @@ const openViewModal = () => {
 const getRecordTerm = ref("");
 const getRecordTitle = ref("");
 const getRecordType = ref("");
-const getRecordSeries = ref("");
+const getRecordResoNo = ref("");
 const getRecordSessionDate = ref("");
 const getRecordSector = ref("");
 const getRecordAuthors = ref("");
@@ -83,10 +83,11 @@ const getRecordClass2 = ref("");
 
 const openModaViewRecord = (record) => {
     openViewModal();
+
     getRecordTitle.value = record.title;
     getRecordTerm.value = record.term;
     getRecordType.value = record.type;
-    getRecordSeries.value = record.series_no;
+    getRecordResoNo.value = record.resono;
     getRecordSessionDate.value = record.session_date;
     getRecordSector.value = record.sectorname;
     getRecordAuthors.value = record.authorname;
@@ -213,7 +214,7 @@ const filteredRecords = computed(() => {
         const matchesText =
             !textQuery ||
             rec.title.toLowerCase().includes(textQuery) ||
-            String(rec.series_no).includes(textQuery);
+            String(rec.resono).includes(textQuery);
 
         const matchesTerm = !termQuery || rec.term === termQuery;
         const matchesType = !typeQuery || rec.type === typeQuery;
@@ -229,6 +230,12 @@ const clearFilters = () => {
     filterType.value = "";
     filterStatus.value = "";
 };
+
+const openDropdownIndex = ref(null);
+
+function toggleDropdown(index) {
+    openDropdownIndex.value = openDropdownIndex.value === index ? null : index;
+}
 </script>
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
@@ -256,7 +263,7 @@ export default {
         <div class="card-body">
             <div class="row g-2 align-items-end">
                 <div class="col-md-4">
-                    <label for="">SEARCH TITLE/NO.</label>
+                    <label for="">Search Title/Resolution No.</label>
                     <input
                         type="text"
                         class="form-control"
@@ -320,6 +327,7 @@ export default {
         >
             <thead>
                 <tr>
+                    <th>Preview</th>
                     <th>SP Term</th>
                     <th>Type</th>
                     <th>No.</th>
@@ -338,13 +346,21 @@ export default {
                     :key="index"
                     @click="openModaViewRecord(record)"
                 >
+                    <td class="text-center">
+                        <a
+                            class="btn btn-sm btn-light border"
+                            href="https://facebook.com"
+                            target="_blank"
+                            ><i class="fa-solid fa-file-pdf"></i
+                        ></a>
+                    </td>
                     <td>{{ record.term }}</td>
                     <td>
                         <span class="badge text-bg-secondary">{{
                             record.type
                         }}</span>
                     </td>
-                    <td>{{ record.series_no }}</td>
+                    <td>{{ record.resono }}</td>
                     <td>{{ formatDate(record.session_date) }}</td>
                     <td class="title-cell">
                         <div class="t-truncate">{{ record.title }}</div>
@@ -359,17 +375,24 @@ export default {
                         {{ record.coauthorname || "No co-authors" }}
                     </td>
                     <td>
-                        <span class="chip">{{ record.sectorname }}</span>
+                        <span
+                            class="chip"
+                            v-for="sec in record.sectorname.split('/')"
+                            >{{ sec }}</span
+                        >
                     </td>
                     <td class="text-end">
                         <div class="dropdown">
                             <button
                                 class="btn btn-sm btn-light border"
-                                data-bs-toggle="dropdown"
+                                @click="toggleDropdown(index)"
                             >
                                 <i class="fa-solid fa-ellipsis"></i>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul
+                                class="dropdown-menu"
+                                :class="{ show: openDropdownIndex === index }"
+                            >
                                 <li>
                                     <a class="dropdown-item" href="#"
                                         ><i class="fa-solid fa-eye me-2"></i
@@ -397,7 +420,13 @@ export default {
             </tbody>
         </table>
     </div>
-    <div class="modal fade" ref="modalRefView" tabindex="-1">
+    <div
+        class="modal fade"
+        ref="modalRefView"
+        tabindex="-1"
+        data-bs-backdrop="static"
+        data-bs-keydrop="false"
+    >
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content" style="border-radius: 0.65rem">
                 <div
@@ -415,7 +444,7 @@ export default {
                         <span
                             class="ms-2"
                             style="font-size: 0.8rem; color: #c6cedc"
-                            >No. <span>{{ getRecordSeries }}</span> &middot;
+                            >No. <span>{{ getRecordResoNo }}</span> &middot;
                             <span>{{ getRecordTerm }}</span></span
                         >
                     </div>
@@ -461,15 +490,24 @@ export default {
                     <div class="detail-divider"></div>
                     <div class="detail-label mb-1">Author/s</div>
                     <div>
-                        <span class="chip mb-2">{{ getRecordAuthors }}</span>
+                        <span
+                            class="chip mb-2"
+                            v-for="auth in getRecordAuthors.split('/')"
+                            >{{ auth }}</span
+                        >
                     </div>
 
                     <label class="detail-label mb-1">Co-Author/s</label>
-                    <span class="chip" v-if="getRecordCoAuthors">
-                        {{ getRecordCoAuthors }}
-                    </span>
+                    <div v-if="getRecordCoAuthors">
+                        <span
+                            class="chip mb-2"
+                            v-for="coauth in getRecordCoAuthors.split('/')"
+                        >
+                            {{ coauth }}
+                        </span>
+                    </div>
                     <div v-else>
-                        <span class="chip">No Co-Author/s</span>
+                        <span class="chip mb-2">No Co-Author/s</span>
                     </div>
 
                     <div class="detail-divider"></div>
@@ -484,7 +522,11 @@ export default {
                             >
                                 Class 1
                             </div>
-                            <span class="chip">{{ getRecordClass1 }}</span>
+                            <span
+                                class="chip"
+                                v-for="class1 in getRecordClass1.split('/')"
+                                >{{ class1 }}</span
+                            >
                         </div>
                         <div class="col-6">
                             <div
@@ -495,18 +537,22 @@ export default {
                             >
                                 Class 2
                             </div>
-                            <span class="chip">{{ getRecordClass2 }}</span>
+                            <span
+                                class="chip"
+                                v-for="class2 in getRecordClass2.split('/')"
+                                >{{ class2 }}</span
+                            >
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-printer me-1"></i>Print
+                    <button class="btn btn-sm btn-outline-success">
+                        <i class="fa-solid fa-print me-1"></i>Print
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary">
-                        <i class="bi bi-download me-1"></i>Download
+                    <button class="btn btn-sm btn-outline-primary">
+                        <i class="fa-solid fa-download me-1"></i>Download
                     </button>
-                    <button class="btn btn-sm btn-amber">
+                    <button class="btn btn-sm btn-warning">
                         <i class="bi bi-pencil me-1"></i>Edit
                     </button>
                 </div>
@@ -587,7 +633,7 @@ export default {
                                     class="form-control"
                                     placeholder="e.g. 691"
                                     required
-                                    v-model="recordForm.series_no"
+                                    v-model="recordForm.resono"
                                 />
                             </div>
                             <div class="col-md-3">
@@ -676,8 +722,11 @@ export default {
                                 ></v-select>
                             </div>
                         </div>
-                        <div class="section-heading">Status</div>
                         <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label">File Upload</label>
+                                <input type="file" class="form-control" />
+                            </div>
                             <div class="col-md-4">
                                 <label class="form-label"
                                     >Workflow Status</label
@@ -708,26 +757,6 @@ export default {
                                     <option value="SUSPENSIVE">
                                         SUSPENSIVE
                                     </option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label"
-                                    >Legislative Action
-                                    <span class="text-muted fw-normal"
-                                        >(optional)</span
-                                    ></label
-                                >
-                                <select class="form-select">
-                                    <option value="" selected>None</option>
-                                    <option>Amendatory</option>
-                                    <option>Amended</option>
-                                    <option>Recallatory</option>
-                                    <option>Recalled</option>
-                                    <option>Reiterated</option>
-                                    <option>Reiteratory</option>
-                                    <option>Repealing</option>
-                                    <option>Suspended</option>
-                                    <option>Suspensive</option>
                                 </select>
                             </div>
                             <div class="col-md-4">

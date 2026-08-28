@@ -1,6 +1,18 @@
 <script setup>
+const props = defineProps({
+    records: Array,
+});
+
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, Link } from "@inertiajs/vue3";
+
+function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+    });
+}
 </script>
 
 <template>
@@ -103,12 +115,11 @@ import { Head } from "@inertiajs/vue3";
                             <div class="section-title">
                                 Recent Legislative Records
                             </div>
-                            <a
-                                href="#"
+                            <Link
+                                :href="route('rec.dash')"
                                 class="btn btn-sm btn-outline-secondary"
-                                data-view="records"
                                 >View All <i class="bi bi-arrow-right"></i
-                            ></a>
+                            ></Link>
                         </div>
                         <div class="table-responsive">
                             <table
@@ -124,7 +135,37 @@ import { Head } from "@inertiajs/vue3";
                                         <th>Status</th>
                                     </tr>
                                 </thead>
-                                <tbody id="recentRecordsBody"></tbody>
+                                <tbody>
+                                    <tr
+                                        class="align-middle"
+                                        v-for="(rec, index) in records"
+                                        :key="index"
+                                    >
+                                        <td class="text-center">
+                                            {{ rec.resono }}
+                                        </td>
+                                        <td class="text-center">
+                                            <span
+                                                class="badge text-bg-secondary"
+                                                >{{ rec.type }}</span
+                                            >
+                                        </td>
+                                        <td class="text-center">
+                                            {{ formatDate(rec.session_date) }}
+                                        </td>
+                                        <td class="title-cell">
+                                            <div class="t-truncate">
+                                                {{ rec.title }}
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span
+                                                class="badge text-bg-secondary"
+                                                >{{ rec.status }}</span
+                                            >
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>

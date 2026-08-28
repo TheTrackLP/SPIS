@@ -17,7 +17,7 @@ class RecordsController extends Controller
             'authors'=>Authors::all(),
             'class1'=>Classification::select('*')->where('class', 'class1')->orderby('name')->get(),
             'class2'=>Classification::select('*')->where('class', 'class2')->orderby('name')->get(),
-            'records'=>Records::select('*')->orderby('series_no')->get(),
+            'records'=>Records::select('*')->orderby('resono')->get(),
         ]);
     }
 
@@ -25,7 +25,7 @@ class RecordsController extends Controller
         $valid = Validator::make($request->all(), [
             'term' => 'required',
             'type' => 'required',
-            'series_no' => 'required',
+            'resono' => 'required',
             'session_date' => 'required',
             'title' => 'required',
             'authorid' => 'required',
@@ -48,7 +48,7 @@ class RecordsController extends Controller
         Records::create([
             'term' => $request->term,
             'type' => $request->type,
-            'series_no' => $request->series_no,
+            'resono' => $request->resono,
             'session_date' => $request->session_date,
             'title' => $request->title,
             'status' => $request->status,
