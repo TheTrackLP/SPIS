@@ -211,7 +211,10 @@ const filteredRecords = computed(() => {
 
     return props.records.filter((rec) => {
         const matchesText =
-            !textQuery || rec.title.toLowerCase().includes(textQuery);
+            !textQuery ||
+            rec.title.toLowerCase().includes(textQuery) ||
+            String(rec.series_no).includes(textQuery);
+
         const matchesTerm = !termQuery || rec.term === termQuery;
         const matchesType = !typeQuery || rec.type === typeQuery;
         const matchesStatus = !statusQuery || rec.status === statusQuery;
