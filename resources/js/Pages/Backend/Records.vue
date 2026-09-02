@@ -6,8 +6,8 @@ import { Modal } from "bootstrap";
 const props = defineProps({
     authors: Array,
     sectors: Array,
-    class1: Array,
-    class2: Array,
+    mainClass: Array,
+    subClass: Array,
     records: Array,
 });
 
@@ -25,10 +25,10 @@ const recordForm = useForm({
     coauthorid: [],
     coauthorname: [],
     coauthoracronym: [],
-    class1id: [],
-    class1name: [],
-    class2id: [],
-    class2name: [],
+    mainclassid: [],
+    mainclassname: [],
+    subclassid: [],
+    subclassname: [],
     sectorid: [],
     sectorname: [],
 });
@@ -49,8 +49,6 @@ const opemModalRecordForm = () => {
     recordForm.reset();
 
     selectedAuthorID.value = "";
-    selectedClass1ID.value = "";
-    selectedClass2ID.value = "";
     selectedSectorID.value = "";
     selectedCoAuthorID.value = "";
 };
@@ -92,8 +90,8 @@ const openModaViewRecord = (record) => {
     getRecordSector.value = record.sectorname;
     getRecordAuthors.value = record.authorname;
     getRecordCoAuthors.value = record.coauthorname;
-    getRecordClass1.value = record.class1name;
-    getRecordClass2.value = record.class2name;
+    getRecordClass1.value = record.mainclassname;
+    getRecordClass2.value = record.subclassname;
 };
 
 const submitRecord = () => {
@@ -103,8 +101,6 @@ const submitRecord = () => {
                 recordForm.reset();
                 closeModal();
                 selectedAuthorID.value = "";
-                selectedClass1ID.value = "";
-                selectedClass2ID.value = "";
                 selectedSectorID.value = "";
                 selectedCoAuthorID.value = "";
             },
@@ -154,30 +150,30 @@ watch(selectedCoAuthors, (newCoAuthors) => {
     }
 });
 
-const selectedClass1ID = ref([]);
+const selectedMainClassID = ref([]);
 
-const selectedClass1 = computed(() => {
-    return props.class1.filter((class1) =>
-        selectedClass1ID.value.includes(class1.id),
+const selectedMainClass = computed(() => {
+    return props.mainClass.filter((main) =>
+        selectedMainClassID.value.includes(main.id),
     );
 });
 
-watch(selectedClass1, (newClass1) => {
-    recordForm.class1id = newClass1.map((class1) => class1.id).join("/");
-    recordForm.class1name = newClass1.map((class1) => class1.name).join("/");
+watch(selectedMainClass, (mainClas) => {
+    recordForm.mainclassid = mainClas.map((main) => main.id).join("/");
+    recordForm.mainclassname = mainClas.map((main) => main.mainname).join("/");
 });
 
-const selectedClass2ID = ref([]);
+const selectedSubClassID = ref([]);
 
-const selectedClass2 = computed(() => {
-    return props.class2.filter((class2) =>
-        selectedClass2ID.value.includes(class2.id),
+const selectedSubClass = computed(() => {
+    return props.subClass.filter((sub) =>
+        selectedSubClassID.value.includes(sub.id),
     );
 });
 
-watch(selectedClass2, (newClass2) => {
-    recordForm.class2id = newClass2.map((class2) => class2.id).join("/");
-    recordForm.class2name = newClass2.map((class2) => class2.name).join("/");
+watch(selectedSubClass, (subClas) => {
+    recordForm.subclassid = subClas.map((sub) => sub.id).join("/");
+    recordForm.subclassname = subClas.map((sub) => sub.subname).join("/");
 });
 
 const selectedSectorID = ref([]);
@@ -192,6 +188,7 @@ watch(selectedSector, (newSector) => {
     recordForm.sectorid = newSector.map((sec) => sec.id).join("/");
     recordForm.sectorname = newSector.map((sec) => sec.name).join("/");
 });
+
 function formatDate(dateStr) {
     return new Date(dateStr).toLocaleDateString("en-US", {
         year: "numeric",
@@ -520,7 +517,7 @@ export default {
                                     color: var(--ink-muted);
                                 "
                             >
-                                Class 1
+                                Main Classifications
                             </div>
                             <span
                                 class="chip"
@@ -535,7 +532,7 @@ export default {
                                     color: var(--ink-muted);
                                 "
                             >
-                                Class 2
+                                Sub Classifications
                             </div>
                             <span
                                 class="chip"
@@ -661,32 +658,32 @@ export default {
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label"
-                                    >Class 1
+                                    >Main Classifications
                                     <span class="text-muted fw-normal"
                                         >(can select multiple)</span
                                     ></label
                                 >
                                 <v-select
-                                    v-model="selectedClass1ID"
-                                    :options="class1"
-                                    :reduce="(row1) => row1.id"
-                                    label="name"
+                                    v-model="selectedMainClassID"
+                                    :options="mainClass"
+                                    :reduce="(main) => main.id"
+                                    label="mainname"
                                     placeholder="Select Classification 1"
                                     multiple
                                 ></v-select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label"
-                                    >Class 2
+                                    >Sub Classifications
                                     <span class="text-muted fw-normal"
                                         >(can select multiple)</span
                                     ></label
                                 >
                                 <v-select
-                                    v-model="selectedClass2ID"
-                                    :options="class2"
-                                    :reduce="(row2) => row2.id"
-                                    label="name"
+                                    v-model="selectedSubClassID"
+                                    :options="subClass"
+                                    :reduce="(sub) => sub.id"
+                                    label="subname"
                                     placeholder="Select Classification 2"
                                     multiple
                                 ></v-select>

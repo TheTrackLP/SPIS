@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RecordsController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\Settings\AuthorController;
 use App\Http\Controllers\Settings\ClassController;
 use App\Http\Controllers\Settings\SectorController;
@@ -23,9 +24,17 @@ Route::middleware('auth')->group(function(){
         Route::post('/admin/records/add', 'RecordAdd')->name('rec.add');
     });
 
+    Route::controller(ReportsController::class)->group(function(){
+        Route::get('/admin/reports', 'ReportsDashboard')->name('reports.dash');
+    });
+
     Route::controller(ClassController::class)->group(function(){
         Route::get('/admin/settings/classification', 'ClassDashboard')->name('class.dash');
         Route::post('/admin/settings/classification/add', 'ClassAdd')->name('class.add');
+        Route::post('/admin/settings/classification/edit/{id}', 'ClassEdit')->name('class.edit');
+        
+        Route::post('/admin/settings/sub-classification/add', 'SubClassificationAdd')->name('subclass.add');
+        Route::post('/admin/settings/sub-classification/edit/{id}', 'SubClassificationEdit')->name('subclass.edit');
     });
 
     Route::controller(SectorController::class)->group(function(){

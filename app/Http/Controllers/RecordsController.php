@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Authors;
 use App\Models\Classification;
+use App\Models\MainClassifications;
 use App\Models\Records;
 use App\Models\Sector;
+use App\Models\SubClassifications;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -15,8 +17,8 @@ class RecordsController extends Controller
         return inertia('Backend/Records',[
             'sectors'=>Sector::all(),
             'authors'=>Authors::all(),
-            'class1'=>Classification::select('*')->where('class', 'class1')->orderby('name')->get(),
-            'class2'=>Classification::select('*')->where('class', 'class2')->orderby('name')->get(),
+            'mainClass'=>MainClassifications::all(),
+            'subClass'=>SubClassifications::all(),
             'records'=>Records::select('*')->orderby('resono')->get(),
         ]);
     }
@@ -31,10 +33,10 @@ class RecordsController extends Controller
             'authorid' => 'required',
             'authorname' => 'required',
             'authoracronym' => 'required',
-            'class1id' => 'required',
-            'class1name' => 'required',
-            'class2id' => 'required',
-            'class2name' => 'required',
+            'mainclassid' => 'required',
+            'mainclassname' => 'required',
+            'subclassid' => 'required',
+            'subclassname' => 'required',
             'sectorid' => 'required',
             'sectorname' => 'required',
         ]);
@@ -58,10 +60,10 @@ class RecordsController extends Controller
             'coauthorid' => $request->coauthorid,
             'coauthorname' => $request->coauthorname,
             'coauthoracronym' => $request->coauthoracronym,
-            'class1id' => $request->class1id,
-            'class1name' => $request->class1name,
-            'class2id' => $request->class2id,
-            'class2name' => $request->class2name,
+            'mainclassid' => $request->mainclassid,
+            'mainclassname' => $request->mainclassname,
+            'subclassid' => $request->subclassid,
+            'subclassname' => $request->subclassname,
             'sectorid' => $request->sectorid,
             'sectorname' => $request->sectorname,
         ]);

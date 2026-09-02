@@ -38,8 +38,11 @@ const collapseSettings = ref(false);
             >
 
             <div class="nav-section-label">Manage</div>
-            <a href="#" class="nav-link"
-                ><i class="fa-solid fa-chart-simple"></i> Reports</a
+            <Link
+                :href="route('reports.dash')"
+                class="nav-link"
+                :class="{ active: isActive('reports.dash') }"
+                ><i class="fa-solid fa-chart-simple"></i> Reports</Link
             >
             <a href="#" class="nav-link"
                 ><i class="fa-solid fa-box-archive"></i> Archive</a

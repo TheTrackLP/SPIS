@@ -80,10 +80,10 @@ export default {
                 <h1 class="font-display mb-0" style="font-size: 2rem">
                     Sectors
                 </h1>
-                <div class="text-muted" style="font-size: 0.82rem">
+                <small class="text-muted">
                     Manage sector classifications used to categorize legislative
                     records.
-                </div>
+                </small>
             </div>
             <button
                 class="btn btn-primary px-3 btn-sm"
