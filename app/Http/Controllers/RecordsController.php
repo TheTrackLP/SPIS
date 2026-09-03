@@ -35,8 +35,6 @@ class RecordsController extends Controller
             'authoracronym' => 'required',
             'mainclassid' => 'required',
             'mainclassname' => 'required',
-            'subclassid' => 'required',
-            'subclassname' => 'required',
             'sectorid' => 'required',
             'sectorname' => 'required',
         ]);
@@ -70,6 +68,54 @@ class RecordsController extends Controller
 
         return redirect()->route('rec.dash')->with(
             'success', 'Success, Record Added',
+        );
+    } 
+
+    public function RecordEdit(Request $request){
+        $valid = Validator::make($request->all(), [
+            'term' => 'required',
+            'type' => 'required',
+            'resono' => 'required',
+            'session_date' => 'required',
+            'title' => 'required',
+            'authorid' => 'required',
+            'authorname' => 'required',
+            'authoracronym' => 'required',
+            'mainclassid' => 'required',
+            'mainclassname' => 'required',
+            'sectorid' => 'required',
+            'sectorname' => 'required',
+        ]);
+
+        if($valid->fails()){
+            return redirect()->route('rec.dash')->with(
+                'error', 'Error, Try Again!',
+            );
+        }
+
+        Records::findorfail($request->id)->update([
+            'term' => $request->term,
+            'type' => $request->type,
+            'resono' => $request->resono,
+            'session_date' => $request->session_date,
+            'title' => $request->title,
+            'status' => $request->status,
+            'authorid' => $request->authorid,
+            'authorname' => $request->authorname,
+            'authoracronym' => $request->authoracronym,
+            'coauthorid' => $request->coauthorid,
+            'coauthorname' => $request->coauthorname,
+            'coauthoracronym' => $request->coauthoracronym,
+            'mainclassid' => $request->mainclassid,
+            'mainclassname' => $request->mainclassname,
+            'subclassid' => $request->subclassid,
+            'subclassname' => $request->subclassname,
+            'sectorid' => $request->sectorid,
+            'sectorname' => $request->sectorname,
+        ]);
+
+        return redirect()->route('rec.dash')->with(
+            'success', 'Success, Record Updated',
         );
     }
 }

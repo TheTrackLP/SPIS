@@ -51,6 +51,8 @@ const opemModalRecordForm = () => {
     selectedAuthorID.value = "";
     selectedSectorID.value = "";
     selectedCoAuthorID.value = "";
+    selectedMainClassID.value = "";
+    selectedSubClassID.value = "";
 };
 
 const closeModal = () => {
@@ -94,15 +96,56 @@ const openModaViewRecord = (record) => {
     getRecordClass2.value = record.subclassname;
 };
 
-const submitRecord = () => {
+const fetchModalRecord = (record) => {
+    recordFormMode.value = "edit";
+    openModal();
+    recordForm.id = record.id;
+    recordForm.title = record.title;
+    recordForm.term = record.term;
+    recordForm.type = record.type;
+    recordForm.resono = record.resono;
+    recordForm.session_date = record.session_date;
+    recordForm.status = record.status;
+    selectedAuthorID.value = record.authorid
+        ? record.authorid.split("/").map(Number)
+        : [];
+    selectedCoAuthorID.value = record.coauthorid
+        ? record.coauthorid.split("/").map(Number)
+        : [];
+    selectedSectorID.value = record.sectorid
+        ? record.sectorid.split("/").map(Number)
+        : [];
+    selectedMainClassID.value = record.mainclassid
+        ? record.mainclassid.split("/").map(Number)
+        : [];
+    selectedSubClassID.value = record.subclassid
+        ? record.subclassid.split("/").map(Number)
+        : [];
+};
+
+const submitRecord = async () => {
     if (recordFormMode.value === "create") {
         recordForm.post(route("rec.add"), {
             onSuccess: () => {
                 recordForm.reset();
                 closeModal();
-                selectedAuthorID.value = "";
-                selectedSectorID.value = "";
-                selectedCoAuthorID.value = "";
+                selectedAuthorID.value = [];
+                selectedSectorID.value = [];
+                selectedCoAuthorID.value = [];
+                selectedMainClassID.value = [];
+                selectedSubClassID.value = [];
+            },
+        });
+    } else {
+        recordForm.post(route("rec.edit", recordForm.id), {
+            onSuccess: () => {
+                recordForm.reset();
+                closeModal();
+                selectedAuthorID.value = [];
+                selectedSectorID.value = [];
+                selectedCoAuthorID.value = [];
+                selectedMainClassID.value = [];
+                selectedSubClassID.value = [];
             },
         });
     }
@@ -227,12 +270,6 @@ const clearFilters = () => {
     filterType.value = "";
     filterStatus.value = "";
 };
-
-const openDropdownIndex = ref(null);
-
-function toggleDropdown(index) {
-    openDropdownIndex.value = openDropdownIndex.value === index ? null : index;
-}
 </script>
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
@@ -241,6 +278,13 @@ export default {
     layout: AdminLayout,
 };
 </script>
+<style>
+.filter {
+    position: sticky;
+    top: 70px;
+    z-index: 2;
+}
+</style>
 <template>
     <Head title="Records" />
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -256,7 +300,7 @@ export default {
             <i class="fa-solid fa-plus"></i> New Record
         </button>
     </div>
-    <div class="card p-1 mb-3">
+    <div class="card p-1 mb-3 filter">
         <div class="card-body">
             <div class="row g-2 align-items-end">
                 <div class="col-md-4">
@@ -334,22 +378,29 @@ export default {
                     <th>Author/s</th>
                     <th>Co-Author/s</th>
                     <th>Sector</th>
-                    <th class="text-end">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr
-                    v-for="(record, index) in filteredRecords"
-                    :key="index"
-                    @click="openModaViewRecord(record)"
-                >
-                    <td class="text-center">
+                <tr v-for="(record, index) in filteredRecords" :key="index">
+                    <td class="text-center" style="white-space: nowrap">
                         <a
                             class="btn btn-sm btn-light border"
                             href="https://facebook.com"
                             target="_blank"
                             ><i class="fa-solid fa-file-pdf"></i
                         ></a>
+                        <button
+                            class="btn btn-sm btn-light border"
+                            @click="openModaViewRecord(record)"
+                        >
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button
+                            class="btn btn-sm btn-light border"
+                            @click="fetchModalRecord(record)"
+                        >
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
                     </td>
                     <td>{{ record.term }}</td>
                     <td>
@@ -377,41 +428,6 @@ export default {
                             v-for="sec in record.sectorname.split('/')"
                             >{{ sec }}</span
                         >
-                    </td>
-                    <td class="text-end">
-                        <div class="dropdown">
-                            <button
-                                class="btn btn-sm btn-light border"
-                                @click="toggleDropdown(index)"
-                            >
-                                <i class="fa-solid fa-ellipsis"></i>
-                            </button>
-                            <ul
-                                class="dropdown-menu"
-                                :class="{ show: openDropdownIndex === index }"
-                            >
-                                <li>
-                                    <a class="dropdown-item" href="#"
-                                        ><i class="fa-solid fa-eye me-2"></i
-                                        >View</a
-                                    >
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="#"
-                                        ><i class="fa-solid fa-pen me-2"></i
-                                        >Edit</a
-                                    >
-                                </li>
-                                <li>
-                                    <a
-                                        class="dropdown-item text-danger"
-                                        href="#"
-                                        ><i class="fa-solid fa-trash me-2"></i
-                                        >Delete</a
-                                    >
-                                </li>
-                            </ul>
-                        </div>
                     </td>
                 </tr>
             </tbody>
@@ -534,11 +550,15 @@ export default {
                             >
                                 Sub Classifications
                             </div>
-                            <span
-                                class="chip"
-                                v-for="class2 in getRecordClass2.split('/')"
-                                >{{ class2 }}</span
-                            >
+                            <div v-if="getRecordClass2 !== null">
+                                <span
+                                    class="chip"
+                                    v-for="class2 in getRecordClass2.split('/')"
+                                    :key="class2"
+                                >
+                                    {{ class2 }}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -548,9 +568,6 @@ export default {
                     </button>
                     <button class="btn btn-sm btn-outline-primary">
                         <i class="fa-solid fa-download me-1"></i>Download
-                    </button>
-                    <button class="btn btn-sm btn-warning">
-                        <i class="bi bi-pencil me-1"></i>Edit
                     </button>
                 </div>
             </div>
@@ -580,6 +597,7 @@ export default {
                         >
                             New Legislative Record
                         </h5>
+                        <input type="hidden" v-model="recordForm.id" />
                         <button
                             type="button"
                             class="btn-close btn-close-white"

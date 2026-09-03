@@ -254,7 +254,7 @@ export default {
                                     <option
                                         v-for="n in 14"
                                         :key="n"
-                                        :value="`SP-${String(n).padStart(2, '0')}`"
+                                        :value="`SP Member Office ${String(n).padStart(2, '0')}`"
                                     >
                                         SP Member Office
                                         {{ String(n).padStart(2, "0") }}
@@ -290,6 +290,9 @@ export default {
                                     <option value="">Select Position</option>
                                     <option value="Board Member">
                                         Board Member
+                                    </option>
+                                    <option value="Vice Governor">
+                                        Vice Governor
                                     </option>
                                     <option value="IP LIGA Fed. Pres.">
                                         IP Federation President

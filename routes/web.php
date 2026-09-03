@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function(){
     Route::controller(RecordsController::class)->group(function(){
         Route::get('/admin/records', 'RecordDashboard')->name('rec.dash');
         Route::post('/admin/records/add', 'RecordAdd')->name('rec.add');
+        Route::post('/admin/records/edit/{id}', 'RecordEdit')->name('rec.edit');
     });
 
     Route::controller(ReportsController::class)->group(function(){
