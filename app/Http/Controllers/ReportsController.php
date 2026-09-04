@@ -67,14 +67,80 @@ class ReportsController extends Controller
         return inertia('Backend/Reports', [
             'mainAuthRecCount'=>$authorCounts,
             'CoAuthRecCount'=>$coAuthorCounts,
-            'auhtors'=>Authors::all(),
+            'authors'=>Authors::all(),
             'mainClass'=>MainClassifications::all(),
             'subClass'=>SubClassifications::all(),
             'sectors'=>Sector::all(),
         ]);
     }
 
-    public function FilterReport() {
-        return inertia('Backend/Filters');
+    public function FilterReport(Request $request) {
+        
+        $query = Records::query();
+
+        if($request->filled('term')){
+            $query->where('term', $request->term);
+        }
+
+        if($request->filled('type')){
+            $query->where('type', $request->type);
+        }
+
+        if($request->filled('status')){
+            $query->where('status', $request->status);
+        }
+
+        if($request->filled('sessionfrom')){
+            $query->whereDate('session_date', '>=' ,$request->sessionfrom);
+        }
+
+        if($request->filled('sessionto')){
+            $query->whereDate('session_date', '<=' ,$request->sessionto);
+        }
+
+        if($request->filled('authorid')){
+            $query->whereRaw(
+                "CONCAT('/', authorid, '/') LIKE ?",
+                ["%/{$request->authorid}/%"]
+            );        
+        }
+
+        if($request->filled('coauthorid')){
+            $query->whereRaw(
+                "CONCAT('/', coauthorid, '/') LIKE ?",
+                ["%/{$request->coauthorid}/%"]
+            );        
+        }
+
+        if($request->filled('sectorid')){
+            $query->whereRaw(
+                "CONCAT('/', sectorid, '/') LIKE ?",
+                ["%/{$request->sectorid}/%"]
+            );        
+        }
+
+        if($request->filled('mainclassid')){
+            $query->whereRaw(
+                "CONCAT('/', mainclassid, '/') LIKE ?",
+                ["%/{$request->mainclassid}/%"]
+            );        
+        }
+
+        if($request->filled('subclassid')){
+            $query->whereRaw(
+                "CONCAT('/', subclassid, '/') LIKE ?",
+                ["%/{$request->subclassid}/%"]
+            );        
+        }
+
+        $filteredRecords = $query->get();
+
+        return inertia('Backend/Filters', [
+            'records' => $filteredRecords,
+            'filters' => $request->only([
+                'authorid', 'coauthorid', 'term', 'status', 'sector',
+                'mainclassid', 'subclassid', 'sessionfrom', 'sessionto'
+            ]),
+        ]);
     }
 }

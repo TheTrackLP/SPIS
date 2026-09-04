@@ -1,3 +1,18 @@
+<script setup>
+import { Head } from "@inertiajs/vue3";
+
+const props = defineProps({
+    records: Array,
+});
+function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+    });
+}
+</script>
+
 <style>
 body {
     background: #f1f1f1;
@@ -105,6 +120,7 @@ table.report-table td.text-center {
 }
 </style>
 <template>
+    <Head title="Report" />
     <div
         class="print-toolbar no-print d-flex justify-content-between align-items-center"
     >
@@ -136,7 +152,6 @@ table.report-table td.text-center {
                         <th>SP TERM</th>
                         <th>TYPE</th>
                         <th>NO.</th>
-                        <th>LINK</th>
                         <th>SESSION<br />DATE</th>
                         <th style="min-width: 320px">TITLE</th>
                         <th class="status-header">STATUS</th>
@@ -148,29 +163,27 @@ table.report-table td.text-center {
                 </thead>
                 <tbody id="reportBody">
                     <!-- Row example (repeat per record) -->
-                    <tr>
-                        <td class="text-center">SP-11</td>
+                    <tr v-for="(value, index) in records" :key="index">
+                        <td class="text-center">{{ value.term }}</td>
                         <td class="text-center">
-                            <span class="badge-type badge">A-ORD</span>
+                            <span class="badge-type badge">{{
+                                value.type
+                            }}</span>
                         </td>
-                        <td class="text-center fw-semibold">089</td>
-                        <td class="text-center link-col">
-                            <a href="#">1-2024</a>
+                        <td class="text-center fw-semibold">
+                            {{ value.resono }}
                         </td>
-                        <td class="text-center">15-Jan-24</td>
+                        <td class="text-center">
+                            {{ formatDate(value.session_date) }}
+                        </td>
                         <td>
-                            APPROVING THE SUPPLEMENTAL APPROPRIATION of funds in
-                            the PROVINCIAL BUDGET OFFICE and the PROVINCIAL
-                            GOVERNOR'S OFFICE in the total amount of TWO HUNDRED
-                            TWENTY-SEVEN MILLION NINE HUNDRED SEVENTY-EIGHT
-                            THOUSAND (P227,978,234.00) TWO HUNDRED THIRTY-FOUR
-                            PESOS
+                            {{ value.title }}
                         </td>
                         <td class="text-center"></td>
-                        <td>BESA, JB</td>
-                        <td></td>
-                        <td>INSTITUTIONAL, INFRASTRUCTURE</td>
-                        <td>Budgeting, Dept-Cap, Civil Service</td>
+                        <td>{{ value.authorname }}</td>
+                        <td>{{ value.coauthorname }}</td>
+                        <td>{{ value.sectorname }}</td>
+                        <td>{{ value.mainclassname }}</td>
                     </tr>
                 </tbody>
             </table>

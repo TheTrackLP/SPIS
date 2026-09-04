@@ -1,6 +1,6 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { Head, Link, useForm } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
 
 const props = defineProps({
     authors: Array,
@@ -11,11 +11,100 @@ const props = defineProps({
     CoAuthRecCount: Array,
 });
 
+const filterRecordsForm = useForm({
+    term: "",
+    type: "",
+    sessionfrom: "",
+    sessionto: "",
+    status: "",
+    authorid: [],
+    authorname: [],
+    coauthorid: [],
+    coauthorname: [],
+    mainclassid: [],
+    mainclassname: [],
+    subclassid: [],
+    subclassname: [],
+    sectorid: [],
+    sectorname: [],
+});
+
+const selectedAuthorID = ref([]);
+
+const selectedAuthors = computed(() => {
+    return props.authors.filter((author) =>
+        selectedAuthorID.value.includes(author.id),
+    );
+});
+watch(selectedAuthors, (newAuthors) => {
+    filterRecordsForm.authorid = newAuthors
+        .map((author) => author.id)
+        .join("/");
+});
+
+const selectedCoAuthorID = ref([]);
+
+const selectedCoAuthors = computed(() => {
+    return props.authors.filter((coauthor) =>
+        selectedCoAuthorID.value.includes(coauthor.id),
+    );
+});
+watch(selectedCoAuthors, (newCoAuthors) => {
+    if (newCoAuthors.length > 0) {
+        filterRecordsForm.coauthorid = newCoAuthors
+            .map((coauthor) => coauthor.id)
+            .join("/");
+    } else {
+        filterRecordsForm.coauthorid = null;
+    }
+});
+
+const selectedMainClassID = ref([]);
+
+const selectedMainClass = computed(() => {
+    return props.mainClass.filter((main) =>
+        selectedMainClassID.value.includes(main.id),
+    );
+});
+
+watch(selectedMainClass, (mainClas) => {
+    filterRecordsForm.mainclassid = mainClas.map((main) => main.id).join("/");
+});
+
+const selectedSubClassID = ref([]);
+
+const selectedSubClass = computed(() => {
+    return props.subClass.filter((sub) =>
+        selectedSubClassID.value.includes(sub.id),
+    );
+});
+
+watch(selectedSubClass, (subClas) => {
+    filterRecordsForm.subclassid = subClas.map((sub) => sub.id).join("/");
+});
+
+const selectedSectorID = ref([]);
+
+const selectedSector = computed(() => {
+    return props.sectors.filter((sec) =>
+        selectedSectorID.value.includes(sec.id),
+    );
+});
+
+watch(selectedSector, (newSector) => {
+    filterRecordsForm.sectorid = newSector.map((sec) => sec.id).join("/");
+});
+
+const submitFilterRecords = async () => {
+    filterRecordsForm.get(route("filter.dash"));
+};
+
 const collapseFilters = ref(false);
 </script>
 
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import { computed } from "vue";
 
 export default {
     layout: AdminLayout,
@@ -62,11 +151,14 @@ export default {
 
         <div class="collapse" :class="{ show: collapseFilters }">
             <div class="card-body">
-                <form id="filterForm">
+                <form @submit.prevent="submitFilterRecords" target="_blank">
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label">SP Term</label>
-                            <select class="form-select">
+                            <select
+                                class="form-select"
+                                v-model="filterRecordsForm.term"
+                            >
                                 <option value="">All Terms</option>
                                 <option
                                     v-for="n in 25"
@@ -82,6 +174,7 @@ export default {
                                 >Main Classification</label
                             >
                             <v-select
+                                v-model="selectedMainClassID"
                                 :options="mainClass"
                                 :reduce="(main) => main.id"
                                 label="mainname"
@@ -92,6 +185,7 @@ export default {
                         <div class="col-md-4">
                             <label class="form-label">Sub Classification</label>
                             <v-select
+                                v-model="selectedSubClassID"
                                 :options="subClass"
                                 :reduce="(sub) => sub.id"
                                 label="subname"
@@ -102,6 +196,7 @@ export default {
                         <div class="col-md-3">
                             <label class="form-label">Author</label>
                             <v-select
+                                v-model="selectedAuthorID"
                                 :options="authors"
                                 :reduce="(auth) => auth.id"
                                 label="authorhead"
@@ -112,6 +207,7 @@ export default {
                         <div class="col-md-3">
                             <label class="form-label">Co-Author</label>
                             <v-select
+                                v-model="selectedCoAuthorID"
                                 :options="authors"
                                 :reduce="(auth) => auth.id"
                                 label="authorhead"
@@ -121,7 +217,10 @@ export default {
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Type</label>
-                            <select class="form-select">
+                            <select
+                                class="form-select"
+                                v-model="filterRecordsForm.type"
+                            >
                                 <option value="">All Types</option>
                                 <option value="A-ORD">A-ORB</option>
                                 <option value="ORD">ORD</option>
@@ -131,6 +230,7 @@ export default {
                         <div class="col-md-3">
                             <label class="form-label">Sector</label>
                             <v-select
+                                v-model="selectedSectorID"
                                 :options="sectors"
                                 :reduce="(sector) => sector.id"
                                 label="name"
@@ -140,7 +240,10 @@ export default {
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Status</label>
-                            <select class="form-select">
+                            <select
+                                class="form-select"
+                                v-model="filterRecordsForm.status"
+                            >
                                 <option value="">All Statuses</option>
                                 <option value="AMENDATORY">AMENDATORY</option>
                                 <option value="AMENDED">AMENDED</option>
@@ -155,25 +258,33 @@ export default {
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Date From</label>
-                            <input type="date" class="form-control" />
+                            <input
+                                type="date"
+                                class="form-control"
+                                v-model="filterRecordsForm.sessionfrom"
+                            />
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Date To</label>
-                            <input type="date" class="form-control" />
+                            <input
+                                type="date"
+                                class="form-control"
+                                v-model="filterRecordsForm.sessionto"
+                            />
                         </div>
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="button" class="btn btn-outline-secondary">
                             <i class="fa-solid fa-rotate-left me-1"></i>Reset
                         </button>
-                        <Link
-                            type="button"
+                        <button
+                            type="submit"
                             class="btn btn-primary"
-                            :href="route('filter.dash')"
+                            target="_blank"
                         >
                             <i class="fa-solid fa-magnifying-glass me-1"></i
                             >Apply Filters
-                        </Link>
+                        </button>
                     </div>
                 </form>
             </div>
