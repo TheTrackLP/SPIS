@@ -23,7 +23,14 @@ const submit = () => {
             <div class="card-body p-4 p-md-5">
                 <!-- Brand -->
                 <div class="text-center mb-4">
-                    <div class="spis-badge mx-auto mb-3">SP</div>
+                    <div class="spis-badge mx-auto mb-3">
+                        <img
+                            src="/img/capiz-logo.png"
+                            alt="Capiz"
+                            style="width: 100px; height: 100px"
+                            class="mb-4"
+                        />
+                    </div>
                     <h1 class="spis-title mb-1">SPIS</h1>
                     <p class="text-muted small mb-0">
                         Sangguniang Panlalawigan Information System

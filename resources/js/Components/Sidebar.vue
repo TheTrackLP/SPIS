@@ -1,18 +1,21 @@
 <script setup>
 import { Link } from "@inertiajs/vue3";
-import { Button } from "bootstrap";
-import { ref } from "vue";
+
 const isActive = (routeName) => {
     return route().current(routeName);
 };
-
-const collapseSettings = ref(false);
 </script>
 
 <template>
     <div>
         <div class="brand d-flex align-items-center gap-2">
-            <div class="seal">SP</div>
+            <div class="seal">
+                <img
+                    src="/img/capiz-logo.png"
+                    alt="PBO Logo"
+                    style="width: 50px; height: 50px"
+                />
+            </div>
             <div class="name">
                 <strong>Sangguniang Panlalawigan</strong>
                 Information System
@@ -48,29 +51,24 @@ const collapseSettings = ref(false);
                 ><i class="fa-solid fa-box-archive"></i> Archive</a
             >
             <div class="nav-section-label">Settings</div>
-            <a
-                class="nav-link collapsed"
-                href="#"
-                @click="collapseSettings = !collapseSettings"
+            <Link
+                :href="route('gear.author')"
+                class="nav-link"
+                :class="{ active: isActive('gear.author') }"
+                ><i class="fa-solid fa-user-tie"></i> Authors</Link
             >
-                <i class="fa-solid fa-gear"></i> Settings
-                <div class="sb-sidenav-collapse-arrow">
-                    <i class="fas fa-angle-down"></i>
-                </div>
-            </a>
-            <div class="collapse" :class="{ show: collapseSettings }">
-                <nav class="sp-nav flex-column">
-                    <Link class="nav-link" :href="route('gear.author')"
-                        ><i class="fa-solid fa-user-tie"></i> Authors</Link
-                    >
-                    <Link class="nav-link" :href="route('sector.dash')"
-                        ><i class="fa-solid fa-layer-group"></i> Sector</Link
-                    >
-                    <Link class="nav-link" :href="route('class.dash')"
-                        ><i class="fa-solid fa-list"></i> Classification</Link
-                    >
-                </nav>
-            </div>
+            <Link
+                :href="route('sector.dash')"
+                class="nav-link"
+                :class="{ active: isActive('sector.dash') }"
+                ><i class="fa-solid fa-layer-group"></i> Sector</Link
+            >
+            <Link
+                :href="route('class.dash')"
+                class="nav-link"
+                :class="{ active: isActive('class.dash') }"
+                ><i class="fa-solid fa-list"></i> Classification</Link
+            >
         </nav>
 
         <div class="sidebar-foot">
