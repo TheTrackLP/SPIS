@@ -1,3 +1,19 @@
+<script setup>
+import { Head, Link } from "@inertiajs/vue3";
+import { ref } from "vue";
+
+const props = defineProps({
+    authors: Array,
+    mainClass: Array,
+    subClass: Array,
+    sectors: Array,
+    mainAuthRecCount: Array,
+    CoAuthRecCount: Array,
+});
+
+const collapseFilters = ref(false);
+</script>
+
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 
@@ -18,54 +34,148 @@ export default {
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-sm btn-outline-secondary">
-                <i class="bi bi-printer me-1"></i>Print
+                <i class="fa-solid fa-print me-1"></i>Print
             </button>
-            <button class="btn btn-sm btn-outline-secondary">
+            <!-- <button class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
             </button>
             <button class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-file-earmark-excel me-1"></i>Export Excel
-            </button>
+            </button> -->
         </div>
     </div>
-    <div class="sp-card p-3 mb-3 filter-toolbar">
-        <div class="row g-2 align-items-end">
-            <div class="col-md-3">
-                <label class="form-label">SP Term</label>
-                <select class="form-select form-select-sm">
-                    <option>All Terms</option>
-                    <option>SP-12</option>
-                    <option>SP-11</option>
-                    <option>SP-10</option>
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Type</label>
-                <select class="form-select form-select-sm">
-                    <option>All Types</option>
-                    <option>Resolution</option>
-                    <option>Ordinance</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label class="form-label">Date Range</label>
-                <input
-                    type="text"
-                    class="form-control form-control-sm"
-                    placeholder="mm/dd/yyyy – mm/dd/yyyy"
-                />
-            </div>
-            <div class="col-md-2">
-                <input
-                    type="text"
-                    class="form-control form-control-sm"
-                    placeholder="mm/dd/yyyy – mm/dd/yyyy"
-                />
-            </div>
-            <div class="col-md-2">
-                <button class="btn btn-success btn-sm w-100">
-                    <i class="bi bi-search me-1"></i>Generate Report
-                </button>
+    <div class="card shadow-sm mb-4">
+        <div
+            class="card-header bg-white d-flex justify-content-between align-items-center"
+        >
+            <h6 class="mb-0 fw-semibold">
+                <i class="fa-solid fa-filter me-2"></i>Filter Records
+            </h6>
+            <button
+                class="btn btn-sm btn-outline-secondary"
+                type="button"
+                @click="collapseFilters = !collapseFilters"
+            >
+                <i class="fa-solid fa-chevron-down"></i>
+            </button>
+        </div>
+
+        <div class="collapse" :class="{ show: collapseFilters }">
+            <div class="card-body">
+                <form id="filterForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">SP Term</label>
+                            <select class="form-select">
+                                <option value="">All Terms</option>
+                                <option
+                                    v-for="n in 25"
+                                    :key="n"
+                                    :value="`SP-${String(n).padStart(2, '0')}`"
+                                >
+                                    SP-{{ String(n).padStart(2, "0") }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label"
+                                >Main Classification</label
+                            >
+                            <v-select
+                                :options="mainClass"
+                                :reduce="(main) => main.id"
+                                label="mainname"
+                                placeholder="Select Main Classification"
+                                multiple
+                            ></v-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Sub Classification</label>
+                            <v-select
+                                :options="subClass"
+                                :reduce="(sub) => sub.id"
+                                label="subname"
+                                placeholder="Select Sub Classification"
+                                multiple
+                            ></v-select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Author</label>
+                            <v-select
+                                :options="authors"
+                                :reduce="(auth) => auth.id"
+                                label="authorhead"
+                                placeholder="Select Author/s"
+                                multiple
+                            ></v-select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Co-Author</label>
+                            <v-select
+                                :options="authors"
+                                :reduce="(auth) => auth.id"
+                                label="authorhead"
+                                placeholder="Select Co Author/s"
+                                multiple
+                            ></v-select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Type</label>
+                            <select class="form-select">
+                                <option value="">All Types</option>
+                                <option value="A-ORD">A-ORB</option>
+                                <option value="ORD">ORD</option>
+                                <option value="RES">RES</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Sector</label>
+                            <v-select
+                                :options="sectors"
+                                :reduce="(sector) => sector.id"
+                                label="name"
+                                placeholder="Select Sectors"
+                                multiple
+                            ></v-select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Status</label>
+                            <select class="form-select">
+                                <option value="">All Statuses</option>
+                                <option value="AMENDATORY">AMENDATORY</option>
+                                <option value="AMENDED">AMENDED</option>
+                                <option value="RECALLATORY">RECALLATORY</option>
+                                <option value="RECALLED">RECALLED</option>
+                                <option value="REITERATED">REITERATED</option>
+                                <option value="REITERATORY">REITERATORY</option>
+                                <option value="REPEALING">REPEALING</option>
+                                <option value="SUSPENDED">SUSPENDED</option>
+                                <option value="SUSPENSIVE">SUSPENSIVE</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Date From</label>
+                            <input type="date" class="form-control" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Date To</label>
+                            <input type="date" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-rotate-left me-1"></i>Reset
+                        </button>
+                        <Link
+                            type="button"
+                            class="btn btn-primary"
+                            :href="route('filter.dash')"
+                        >
+                            <i class="fa-solid fa-magnifying-glass me-1"></i
+                            >Apply Filters
+                        </Link>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -73,231 +183,80 @@ export default {
         <div class="col-lg-6">
             <div class="sp-card p-3 h-100">
                 <div class="section-title mb-3">Records by Author</div>
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Author</th>
-                            <th class="text-center">Records</th>
-                            <th style="width: 35%">Share</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Hon. Juan Dela Cruz</td>
-                            <td class="text-center">42</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 85%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Hon. Maria Santos</td>
-                            <td class="text-center">37</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 74%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Hon. Jose Garcia</td>
-                            <td class="text-center">28</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 56%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Hon. Ana Reyes</td>
-                            <td class="text-center">19</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 38%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Hon. Pedro Cruz</td>
-                            <td class="text-center">14</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 28%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Author</th>
+                                <th>Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(count, index) in mainAuthRecCount"
+                                :key="index"
+                            >
+                                <td>{{ count.authorhead }}</td>
+                                <td>{{ count.count }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
             <div class="sp-card p-3 h-100">
                 <div class="section-title mb-3">Records by Co-Author</div>
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Co-Author</th>
-                            <th class="text-center">Records</th>
-                            <th style="width: 35%">Share</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Hon. Mark Santos</td>
-                            <td class="text-center">21</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 80%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Hon. Ana Reyes</td>
-                            <td class="text-center">18</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 69%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Hon. Jose Garcia</td>
-                            <td class="text-center">15</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 58%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Hon. Pedro Cruz</td>
-                            <td class="text-center">11</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 42%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Hon. Juan Dela Cruz</td>
-                            <td class="text-center">7</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 27%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Author</th>
+                                <th>Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(count, index) in CoAuthRecCount"
+                                :key="index"
+                            >
+                                <td>{{ count.coauthorhead }}</td>
+                                <td>{{ count.count }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-        <div class="col-lg-6">
+        <!-- <div class="col-lg-6">
             <div class="sp-card p-3 h-100">
                 <div class="section-title mb-3">
                     Records by Classification 1
                 </div>
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Classification</th>
-                            <th class="text-center">Records</th>
-                            <th style="width: 35%">Share</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Finance</td>
-                            <td class="text-center">18</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 75%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Education</td>
-                            <td class="text-center">14</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 58%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Agriculture</td>
-                            <td class="text-center">11</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 46%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Health</td>
-                            <td class="text-center">7</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 29%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Strategic</td>
-                            <td class="text-center">9</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 37%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Classification</th>
+                                <th>Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Finance</td>
+                                <td>18</td>
+                            </tr>
+                            <tr>
+                                <td>Education</td>
+                                <td>14</td>
+                            </tr>
+                            <tr>
+                                <td>Agriculture</td>
+                                <td>11</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="col-lg-6">
@@ -305,78 +264,31 @@ export default {
                 <div class="section-title mb-3">
                     Records by Classification 2
                 </div>
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th>Classification</th>
-                            <th class="text-center">Records</th>
-                            <th style="width: 35%">Share</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>LGU-Capiz</td>
-                            <td class="text-center">22</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 88%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Budget</td>
-                            <td class="text-center">15</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 60%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Tourism</td>
-                            <td class="text-center">9</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 36%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Roads</td>
-                            <td class="text-center">6</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 24%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Social Services</td>
-                            <td class="text-center">4</td>
-                            <td>
-                                <div class="bar-track">
-                                    <div
-                                        class="bar-fill"
-                                        style="width: 16%"
-                                    ></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Sub Classification</th>
+                                <th>Records</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Budget Allocation</td>
+                                <td>10</td>
+                            </tr>
+                            <tr>
+                                <td>Scholarship</td>
+                                <td>8</td>
+                            </tr>
+                            <tr>
+                                <td>Land Use</td>
+                                <td>6</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </template>

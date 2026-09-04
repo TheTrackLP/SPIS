@@ -2,11 +2,79 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Authors;
+use App\Models\MainClassifications;
+use App\Models\Records;
+use App\Models\Sector;
+use App\Models\SubClassifications;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportsController extends Controller
 {
     public function ReportsDashboard(){
-        return inertia('Backend/Reports');
+        $recordsCount = Records::select('authorid', 'coauthorid', 'term')->get(); //Get every authorid string from the table
+
+        $authorIds = $recordsCount
+            ->flatMap(fn ($recordsCount) => explode('/', $recordsCount->authorid)) //Break every string into individual IDs, and merge them all into one big list
+            ->map(fn ($id) => (int) trim($id)) // Convert every ID from string to integer
+            ->filter(fn ($id) => $id > 0) // drop 0s and negatives — invalid IDs
+            ->unique() // This Remove duplicates
+            ->values(); // Reset Index
+
+        $coAuthorIds = $recordsCount
+            ->flatMap(fn ($recordsCount) => explode('/', $recordsCount->coauthorid))
+            ->map(fn ($id) => (int) trim($id)) // trim whitespace just in case
+            ->filter(fn ($id) => $id > 0) // drop 0s and negatives — invalid IDs
+            ->unique() 
+            ->values(); 
+
+        //Make an empty array to push and display later on
+        $authorCounts = [];
+
+        //Loop through each unique author, and count their records
+        foreach ($authorIds as $id) {
+            $count = Records::whereRaw(
+                "CONCAT('/', authorid, '/') LIKE ?",
+                ["%/{$id}/%"]
+            )->count();
+
+        $author = Authors::find($id);
+        
+        //Push Data into an empty Array
+        $authorCounts[] = [
+            'id' => $id,
+            'authorhead' => $author->authorhead ?? 'Unknown',
+            'count' => $count,
+            ];
+        }
+        $coAuthorCounts = [];
+
+        foreach ($coAuthorIds as $id) {
+            $count = Records::whereRaw(
+                "CONCAT('/', coauthorid, '/') LIKE ?",
+                ["%/{$id}/%"]
+            )->count();
+
+        $coauthor = Authors::find($id);
+        
+        $coAuthorCounts[] = [
+            'id' => $id,
+            'coauthorhead' => $coauthor->authorhead ?? 'Unknown',
+            'count' => $count,
+            ];
+        }
+        return inertia('Backend/Reports', [
+            'mainAuthRecCount'=>$authorCounts,
+            'CoAuthRecCount'=>$coAuthorCounts,
+            'auhtors'=>Authors::all(),
+            'mainClass'=>MainClassifications::all(),
+            'subClass'=>SubClassifications::all(),
+            'sectors'=>Sector::all(),
+        ]);
+    }
+
+    public function FilterReport() {
+        return inertia('Backend/Filters');
     }
 }

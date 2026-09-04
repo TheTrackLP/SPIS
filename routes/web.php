@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function(){
 
     Route::controller(ReportsController::class)->group(function(){
         Route::get('/admin/reports', 'ReportsDashboard')->name('reports.dash');
+        Route::get('/admin/reports/filter', 'FilterReport')->name('filter.dash');
     });
 
     Route::controller(ClassController::class)->group(function(){
