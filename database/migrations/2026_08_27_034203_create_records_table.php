@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('records', function (Blueprint $table) {
             $table->id();
-            $table->string('term')->nullable();
+            $table->integer('sptermid')->nullable();
             $table->enum('type', ['A-ORD', 'ORD', 'RES']);
             $table->bigInteger('resono')->nullable();
             $table->date('session_date')->nullable();

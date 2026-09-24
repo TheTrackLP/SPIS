@@ -6,6 +6,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\Settings\AuthorController;
 use App\Http\Controllers\Settings\ClassController;
 use App\Http\Controllers\Settings\SectorController;
+use App\Http\Controllers\TermsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -49,6 +50,11 @@ Route::middleware('auth')->group(function(){
         Route::get('/admin/settings/authors', 'SettingAuthor')->name('gear.author');
         Route::post('/admin/settings/authors/add', 'AddAuthor')->name('author.add');
         Route::post('/admin/settings/authors/edit/{id}', 'EditAuthor')->name('author.edit');
+    });
+
+    Route::controller(TermsController::class)->group(function(){
+        Route::get('/admin/settings/terms', 'TermsDashboard')->name('term.dash');
+        Route::post('/admin/settings/terms/Store', 'StoreTermPeriod')->name('term.store');
     });
 });
 

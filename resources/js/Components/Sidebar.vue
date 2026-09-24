@@ -1,8 +1,10 @@
 <script setup>
-import { Link } from "@inertiajs/vue3";
+import { Link, usePage } from "@inertiajs/vue3";
+
+const page = usePage();
 
 const isActive = (routeName) => {
-    return route().current(routeName);
+    return page.url && route().current(routeName);
 };
 </script>
 
@@ -27,7 +29,7 @@ const isActive = (routeName) => {
             <Link
                 :href="route('admin.dash')"
                 class="nav-link"
-                :class="{ active: isActive('admin.dash') }"
+                :class="{ active: isActive('admin.*') }"
             >
                 <i class="fa-solid fa-gauge"></i> Dashboard</Link
             >
@@ -36,7 +38,7 @@ const isActive = (routeName) => {
             <Link
                 :href="route('rec.dash')"
                 class="nav-link"
-                :class="{ active: isActive('rec.dash') }"
+                :class="{ active: isActive('rec.*') }"
                 ><i class="fa-solid fa-book"></i> Legislative Records</Link
             >
 
@@ -44,7 +46,7 @@ const isActive = (routeName) => {
             <Link
                 :href="route('reports.dash')"
                 class="nav-link"
-                :class="{ active: isActive('reports.dash') }"
+                :class="{ active: isActive('reports.*') }"
                 ><i class="fa-solid fa-chart-simple"></i> Reports</Link
             >
             <a href="#" class="nav-link"
@@ -54,20 +56,26 @@ const isActive = (routeName) => {
             <Link
                 :href="route('gear.author')"
                 class="nav-link"
-                :class="{ active: isActive('gear.author') }"
+                :class="{ active: isActive('gear.*') }"
                 ><i class="fa-solid fa-user-tie"></i> Authors</Link
             >
             <Link
                 :href="route('sector.dash')"
                 class="nav-link"
-                :class="{ active: isActive('sector.dash') }"
+                :class="{ active: isActive('sector.*') }"
                 ><i class="fa-solid fa-layer-group"></i> Sector</Link
             >
             <Link
                 :href="route('class.dash')"
                 class="nav-link"
-                :class="{ active: isActive('class.dash') }"
+                :class="{ active: isActive('class.*') }"
                 ><i class="fa-solid fa-list"></i> Classification</Link
+            >
+            <Link
+                :href="route('term.dash')"
+                class="nav-link"
+                :class="{ active: isActive('term.*') }"
+                ><i class="fa-solid fa-timeline"></i> SP Terms</Link
             >
         </nav>
 

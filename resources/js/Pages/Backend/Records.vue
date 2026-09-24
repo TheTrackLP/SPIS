@@ -9,6 +9,7 @@ const props = defineProps({
     mainClass: Array,
     subClass: Array,
     records: Array,
+    terms: Array,
 });
 
 const recordFormMode = ref("create");
@@ -25,6 +26,12 @@ const recordForm = useForm({
     coauthorid: [],
     coauthorname: [],
     coauthoracronym: [],
+    sponsorid: [],
+    sponsorname: [],
+    sponsorcronym: [],
+    cosponsorid: [],
+    cosponsorname: [],
+    cosponsoracronym: [],
     mainclassid: [],
     mainclassname: [],
     subclassid: [],
@@ -193,6 +200,42 @@ watch(selectedCoAuthors, (newCoAuthors) => {
     }
 });
 
+const selectedSponsorID = ref([]);
+
+const selectedSponsor = computed(() => {
+    return props.authors.filter((sponsor) =>
+        selectedSponsorID.value.includes(sponsor.id),
+    );
+});
+watch(selectedSponsor, (newSponsor) => {
+    recordForm.sponsorid = newSponsor.map((sponsor) => sponsor.id).join("/");
+    recordForm.sponsorname = newSponsor
+        .map((sponsor) => sponsor.authorhead)
+        .join("/");
+    recordForm.sponsorcronym = newSponsor
+        .map((sponsor) => sponsor.authoracronym)
+        .join("/");
+});
+
+const selectedCoSponsorID = ref([]);
+
+const selectedCoSponsor = computed(() => {
+    return props.authors.filter((sponsor) =>
+        selectedCoSponsorID.value.includes(sponsor.id),
+    );
+});
+watch(selectedCoSponsor, (newCoSponsor) => {
+    recordForm.cosponsorid = newCoSponsor
+        .map((cosponsor) => cosponsor.id)
+        .join("/");
+    recordForm.coauthorname = newCoSponsor
+        .map((cosponsor) => cosponsor.authorhead)
+        .join("/");
+    recordForm.coauthoracronym = newCoSponsor
+        .map((cosponsor) => cosponsor.authoracronym)
+        .join("/");
+});
+
 const selectedMainClassID = ref([]);
 
 const selectedMainClass = computed(() => {
@@ -314,16 +357,13 @@ export default {
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">SP Term</label>
-                    <select v-model="filterTerm" class="form-select">
-                        <option value="">All Terms</option>
-                        <option
-                            v-for="n in 25"
-                            :key="n"
-                            :value="`SP-${String(n).padStart(2, '0')}`"
-                        >
-                            SP-{{ String(n).padStart(2, "0") }}
-                        </option>
-                    </select>
+                    <v-select
+                        v-model="filterTerm"
+                        :options="terms"
+                        :reduce="(term) => term.sptermno"
+                        label="sptermno"
+                        placeholder="Select SP Term No."
+                    ></v-select>
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">Type</label>
@@ -402,7 +442,7 @@ export default {
                             <i class="fa-solid fa-pen"></i>
                         </button>
                     </td>
-                    <td>{{ record.term }}</td>
+                    <td>{{ record.sptermno }}</td>
                     <td>
                         <span class="badge text-bg-secondary">{{
                             record.type
@@ -710,13 +750,13 @@ export default {
                         <div class="section-heading">Author/s</div>
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
-                                <label class="form-label">Author 1</label>
+                                <label class="form-label">Main Author</label>
                                 <v-select
                                     v-model="selectedAuthorID"
                                     :options="authors"
                                     :reduce="(author) => author.id"
                                     label="authorhead"
-                                    placeholder="Select Author"
+                                    placeholder="Select Author/s"
                                     multiple
                                 ></v-select>
                             </div>
@@ -732,7 +772,37 @@ export default {
                                     :options="authors"
                                     :reduce="(author) => author.id"
                                     label="authorhead"
-                                    placeholder="Select Author"
+                                    placeholder="Select Co-Author/s"
+                                    multiple
+                                ></v-select>
+                            </div>
+                        </div>
+                        <div class="section-heading">Sponsor/s</div>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Main Sponsor/s</label>
+                                <v-select
+                                    v-model="selectedSponsorID"
+                                    :options="authors"
+                                    :reduce="(author) => author.id"
+                                    label="authorhead"
+                                    placeholder="Select Sponsor/s"
+                                    multiple
+                                ></v-select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label"
+                                    >Co-Sponsor/s
+                                    <span class="text-muted fw-normal"
+                                        >(optional)</span
+                                    ></label
+                                >
+                                <v-select
+                                    v-model="selectedCoSponsorID"
+                                    :options="authors"
+                                    :reduce="(author) => author.id"
+                                    label="authorhead"
+                                    placeholder="Select Co-Sponsor/s"
                                     multiple
                                 ></v-select>
                             </div>

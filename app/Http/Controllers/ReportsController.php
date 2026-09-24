@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class ReportsController extends Controller
 {
     public function ReportsDashboard(){
-        $recordsCount = Records::select('authorid', 'coauthorid', 'term')->get(); //Get every authorid string from the table
+        $recordsCount = Records::select('authorid', 'coauthorid', 'sptermid')->get(); //Get every authorid string from the table
 
         $authorIds = $recordsCount
             ->flatMap(fn ($recordsCount) => explode('/', $recordsCount->authorid)) //Break every string into individual IDs, and merge them all into one big list

@@ -8,6 +8,7 @@ use App\Models\MainClassifications;
 use App\Models\Records;
 use App\Models\Sector;
 use App\Models\SubClassifications;
+use App\Models\Terms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -19,7 +20,13 @@ class RecordsController extends Controller
             'authors'=>Authors::all(),
             'mainClass'=>MainClassifications::all(),
             'subClass'=>SubClassifications::all(),
-            'records'=>Records::select('*')->orderby('resono')->get(),
+            'terms'=>Terms::all(),
+            'records'=>Records::select(
+                '*',
+                'terms.sptermno'
+                )
+                ->join('terms', 'terms.id', '=', 'records.sptermid')
+                ->orderby('resono')->get(),
         ]);
     }
 
