@@ -50,6 +50,9 @@ Route::middleware('auth')->group(function(){
         Route::get('/admin/settings/authors', 'SettingAuthor')->name('gear.author');
         Route::post('/admin/settings/authors/add', 'AddAuthor')->name('author.add');
         Route::post('/admin/settings/authors/edit/{id}', 'EditAuthor')->name('author.edit');
+        Route::get('/admin/settings/authors/terms/{id}', 'AuthorTerms');
+        Route::post('/admin/settings/authors/terms/addterm/{id}', 'AddAuthorTerms')->name('add.term');
+        Route::get('/admin/settings/authors/current-term/{id}', 'AuthorCurrentTerm');
     });
 
     Route::controller(TermsController::class)->group(function(){

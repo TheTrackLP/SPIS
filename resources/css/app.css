@@ -288,3 +288,7 @@ label {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+td,
+p {
+    margin: 0 !important;
+}

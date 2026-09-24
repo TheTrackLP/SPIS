@@ -1,11 +1,13 @@
 <script setup>
-import { nextTick, ref } from "vue";
+import { nextTick, onMounted, ref, watch } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import { Modal } from "bootstrap";
+import { formatDate } from "@/resuables";
+import axios from "axios";
 
+//Modal Form when Adding New Author/s
 const modalRef = ref(null);
 let modalInstance = null;
-
 const openModal = () => {
     nextTick(() => {
         modalInstance = new Modal(modalRef.value);
@@ -13,6 +15,48 @@ const openModal = () => {
     });
 };
 
+//Modal for when viewing History
+const modalView = ref(null);
+let modalInstanceView = null;
+const openModalView = () => {
+    nextTick(() => {
+        modalInstanceView = new Modal(modalView.value);
+        modalInstanceView.show();
+    });
+};
+const authorTermsList = ref([]);
+const getFullname = ref("");
+const openAuhtorTermModal = (auth) => {
+    openModalView();
+    authorTermForm.id = auth.id;
+    getFullname.value = `${auth.authorlastname}, ${auth.authorfirstname} ${auth.authormiddlename}`;
+    authorTermForm.reset();
+    if (!auth?.id) return;
+    fetchAuthorTerms(auth.id);
+};
+
+//Modal when Add SP term for Author
+const modalTerm = ref(null);
+let modalInstanceTerm = null;
+const openTermModalForm = () => {
+    nextTick(() => {
+        modalInstanceTerm = new Modal(modalTerm.value);
+        modalInstanceTerm.show();
+    });
+};
+const addAuthorTermForm = (auth) => {
+    openTermModalForm();
+    authorTermForm.id = auth.id;
+    authorTermForm.reset();
+    if (!auth?.id) return;
+    fetchAuthorTerms(auth.id);
+};
+
+const fetchAuthorTerms = (authorId) => {
+    axios.get(`/admin/settings/authors/terms/${authorId}`).then((res) => {
+        authorTermsList.value = res.data;
+    });
+};
 const openAuthorModal = () => {
     authorFormMode.value = "create";
     authorForm.reset();
@@ -20,17 +64,47 @@ const openAuthorModal = () => {
 };
 const closeModal = () => {
     modalInstance?.hide();
+    modalInstanceTerm?.hide();
+    modalInstanceView?.hide();
     authorForm.reset();
+    authorTermForm.reset();
 };
+
+const authorTermForm = useForm({
+    authortermid: "",
+    authortermno: "",
+    authorposition: "",
+    remarks: "",
+});
+
+const addAuthorTerm = () => {
+    authorTermForm.post(route("add.term", authorTermForm.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+            authorTermForm.reset();
+            closeModal();
+        },
+    });
+};
+
+const currentTerm = ref({});
+
+// onMounted(async () => {
+//     for (const author of props.authors) {
+//         const res = await axios.get(
+//             `admin/settings/authors/current-term/${author.id}`,
+//         );
+//         currentTerm.value[author.id] = res.data;
+//     }
+// });
 
 const authorFormMode = ref("create");
 const authorForm = useForm({
-    authorhead: "",
-    authordesc: "",
-    authoroffice: "",
-    authoracronym: "",
-    authorposition: "",
-    authorterm: "",
+    authorfirstname: "",
+    authormiddlename: "",
+    authorlastname: "",
+    authorbirtdate: "",
+    authorstatus: "",
 });
 
 const fetchAuthorData = (auth) => {
@@ -65,6 +139,7 @@ const submitAuhtorForm = () => {
 
 const props = defineProps({
     authors: Array,
+    terms: Array,
 });
 </script>
 
@@ -103,7 +178,6 @@ export default {
                 <i class="fa-solid fa-plus me-1"></i>Add Author
             </button>
         </div>
-
         <div class="sp-card p-0">
             <div class="table-responsive">
                 <table
@@ -112,11 +186,12 @@ export default {
                 >
                     <thead>
                         <tr class="text-center">
+                            <th>#</th>
                             <th>Name</th>
-                            <th>Office</th>
-                            <th>Position</th>
-                            <th>SP Term</th>
+                            <th>Birthdate</th>
                             <th>Records</th>
+                            <th>Current Term</th>
+                            <th>History</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -127,21 +202,32 @@ export default {
                             v-for="(auth, index) in authors"
                             :key="index"
                         >
+                            <td class="text-center">{{ index + 1 }}</td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
                                     <div style="font-weight: 500">
-                                        {{ auth.authorhead }}
+                                        {{ auth.fullname }}
                                     </div>
                                 </div>
                             </td>
                             <td class="text-center">
-                                {{ auth.authoroffice }}
+                                {{ formatDate(auth.authorbirtdate) }}
                             </td>
+                            <td>
+                                <p>Authored</p>
+                                <p>Co-Authored</p>
+                                <p>Sponsor</p>
+                                <p>Co-Sponsor</p>
+                            </td>
+                            <td class="text-center">{{ auth.sptermno }}</td>
                             <td class="text-center">
-                                {{ auth.authorposition }}
+                                <button
+                                    class="btn btn-sm btn-success"
+                                    @click="openAuhtorTermModal(auth)"
+                                >
+                                    <i class="fa-solid fa-eye"></i> History
+                                </button>
                             </td>
-                            <td class="text-center">{{ auth.authorterm }}</td>
-                            <td class="text-center">Records Later</td>
                             <td class="text-center">
                                 <span
                                     class="badge rounded-pill text-bg-success"
@@ -154,16 +240,24 @@ export default {
                                     >Inactive</span
                                 >
                             </td>
-                            <td class="text-center p-1 g-2">
-                                <button
-                                    class="btn btn-sm btn-warning"
-                                    @click="fetchAuthorData(auth)"
+                            <td class="text-center">
+                                <div
+                                    class="d-flex gap-2 justify-content-center"
                                 >
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
+                                    <button
+                                        class="btn btn-sm btn-warning"
+                                        @click="addAuthorTermForm(auth)"
+                                    >
+                                        <i class="fa-solid fa-pen"></i> Add Term
+                                    </button>
+                                    <button
+                                        class="btn btn-sm btn-warning"
+                                        @click="fetchAuthorData(auth)"
+                                    >
+                                        <i class="fa-solid fa-pen"></i> Edit
+                                        Author
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -178,7 +272,7 @@ export default {
             </div>
         </div>
     </div>
-
+    <!-- Add/Edit a Author/s Info -->
     <div
         class="modal fade"
         ref="modalRef"
@@ -186,16 +280,12 @@ export default {
         data-bs-keyboard="false"
         data-bs-backdrop="static"
     >
-        <div class="modal-dialog modal-dialog-centered">
-            <form @submit.prevent="submitAuhtorForm">
+        <form @submit.prevent="submitAuhtorForm">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content" style="border-radius: 0.65rem">
                     <div
                         class="modal-header"
-                        style="
-                            background: var(--navy);
-                            color: #fff;
-                            border-radius: 0.65rem 0.65rem 0 0;
-                        "
+                        style="background: var(--navy); color: #fff"
                     >
                         <h5
                             class="modal-title font-display"
@@ -207,132 +297,77 @@ export default {
                         <button
                             type="button"
                             class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
+                            @click="closeModal"
                         ></button>
                     </div>
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label
-                                class="form-label"
-                                style="font-size: 0.78rem; font-weight: 500"
-                                >Full Name</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                placeholder="e.g. Hon. Juan Dela Cruz"
-                                v-model="authorForm.authorhead"
-                                required
-                            />
-                        </div>
-                        <div class="mb-3">
-                            <label
-                                class="form-label"
-                                style="font-size: 0.78rem; font-weight: 500"
-                                >Office Description</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                placeholder="e.g. BM Juan Dela Cruz"
-                                v-model="authorForm.authordesc"
-                                required
-                            />
-                        </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-6">
-                                <label
-                                    class="form-label"
-                                    style="font-size: 0.78rem; font-weight: 500"
-                                    >Office Name
-                                </label>
-                                <select
-                                    v-model="authorForm.authoroffice"
-                                    class="form-select"
+                        <div class="section-label mb-2">Author Info</div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="lastName" class="form-label"
+                                    >Last Name</label
                                 >
-                                    <option value="">Select Office</option>
-                                    <option
-                                        v-for="n in 14"
-                                        :key="n"
-                                        :value="`SP Member Office ${String(n).padStart(2, '0')}`"
-                                    >
-                                        SP Member Office
-                                        {{ String(n).padStart(2, "0") }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-6">
-                                <label
-                                    class="form-label"
-                                    style="font-size: 0.78rem; font-weight: 500"
-                                    >Office Acronym
-                                </label>
                                 <input
                                     type="text"
                                     class="form-control"
-                                    placeholder="e.g. SP01- BM Dela Cruz"
-                                    v-model="authorForm.authoracronym"
-                                    required
+                                    placeholder="e.g. Cruz-Am"
+                                    v-model="authorForm.authorlastname"
+                                />
+                            </div>
+                            <div class="col-md-4">
+                                <label for="firstName" class="form-label"
+                                    >First Name</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="e.g. Aldwin"
+                                    v-model="authorForm.authorfirstname"
+                                />
+                            </div>
+                            <div class="col-md-4">
+                                <label for="middleName" class="form-label"
+                                    >Middle Name</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="e.g. Amane"
+                                    v-model="authorForm.authormiddlename"
                                 />
                             </div>
                         </div>
-                        <div class="row g-3 mb-3">
-                            <div class="col-6">
-                                <label
-                                    class="form-label"
-                                    style="font-size: 0.78rem; font-weight: 500"
-                                    >Position</label
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="birthDate" class="form-label"
+                                    >Birth Date</label
                                 >
-                                <select
-                                    class="form-select"
-                                    v-model="authorForm.authorposition"
-                                >
-                                    <option value="">Select Position</option>
-                                    <option value="Board Member">
-                                        Board Member
-                                    </option>
-                                    <option value="Vice Governor">
-                                        Vice Governor
-                                    </option>
-                                    <option value="IP LIGA Fed. Pres.">
-                                        IP Federation President
-                                    </option>
-                                    <option value="LIGA Fed. Pres.">
-                                        LIGA Federation President
-                                    </option>
-                                    <option value="SK LIGA Fed. Pres.">
-                                        SK Federation President
-                                    </option>
-                                </select>
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    v-model="authorForm.authorbirtdate"
+                                />
                             </div>
-                            <div class="col-6">
-                                <label
-                                    class="form-label"
-                                    style="font-size: 0.78rem; font-weight: 500"
-                                    >SP Term</label
+                            <div class="col-md-6">
+                                <label for="authorStatus" class="form-label"
+                                    >Status</label
                                 >
                                 <select
                                     class="form-select"
-                                    v-model="authorForm.authorterm"
+                                    v-model="authorForm.authorstatus"
                                 >
-                                    <option value="">Select SP-Term</option>
-                                    <option
-                                        v-for="n in 25"
-                                        :key="n"
-                                        :value="`SP-${String(n).padStart(2, '0')}`"
-                                    >
-                                        SP-{{ String(n).padStart(2, "0") }}
-                                    </option>
+                                    <option value="1" selected>Active</option>
+                                    <option value="0">Inactive</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-
                     <div class="modal-footer">
                         <button
                             type="button"
                             class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal"
+                            @click="closeModal"
                         >
                             Cancel
                         </button>
@@ -345,6 +380,200 @@ export default {
                                       ? "Add Auhtor"
                                       : "Save Author"
                             }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- Viewing Modal for SP Service History -->
+    <div
+        class="modal fade"
+        tabindex="-1"
+        ref="modalView"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+    >
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div
+                    class="modal-header"
+                    style="background: var(--navy); color: #fff"
+                >
+                    <h4 class="modal-title">
+                        {{ getFullname }}
+                    </h4>
+                    <button
+                        type="button"
+                        class="btn-close btn-close-white"
+                        @click="closeModal"
+                    ></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <h4 class="font-display mb-0">SP History Term</h4>
+                        <div class="text-muted" style="font-size: 0.82rem">
+                            History of Board Members' Terms.
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table
+                            class="table table-hover mb-0"
+                            style="font-size: 0.85rem"
+                        >
+                            <thead>
+                                <tr class="text-center align-middle">
+                                    <th rowspan="2">POSITION</th>
+                                    <th colspan="2">INCLUSIVE DATES</th>
+                                    <th rowspan="2">TERM NO.</th>
+                                    <th rowspan="2">SP TERM NO.</th>
+                                    <th rowspan="2">REMARKS</th>
+                                </tr>
+                                <tr>
+                                    <th class="text-center">FROM</th>
+                                    <th class="text-center">TO</th>
+                                </tr>
+                            </thead>
+                            <tbody v-if="authorTermsList.length > 0">
+                                <tr
+                                    class="text-center align-middle"
+                                    v-for="(authterm, index) in authorTermsList"
+                                    :key="index"
+                                >
+                                    <td>{{ authterm.authorposition }}</td>
+                                    <td>{{ formatDate(authterm.termfrom) }}</td>
+                                    <td>{{ formatDate(authterm.termto) }}</td>
+                                    <td>{{ authterm.authortermno }}</td>
+                                    <td>{{ authterm.sptermno }}</td>
+                                    <td>{{ authterm.remarks }}</td>
+                                </tr>
+                            </tbody>
+                            <tbody v-else>
+                                <tr>
+                                    <td
+                                        colspan="7"
+                                        class="text-center align-middle"
+                                    >
+                                        <div
+                                            class="text-center text-muted py-5"
+                                        >
+                                            <i
+                                                class="bi bi-clock-history fs-2 d-block mb-2"
+                                            ></i>
+                                            No term history recorded yet.
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        @click="closeModal"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal FOrm when adding new Term -->
+    <div
+        class="modal fade"
+        tabindex="-1"
+        ref="modalTerm"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+    >
+        <div class="modal-dialog modal-dialog-centered">
+            <form @submit.prevent="addAuthorTerm">
+                <div class="modal-content">
+                    <div
+                        class="modal-header"
+                        style="background: var(--navy); color: #fff"
+                    >
+                        <h5>Add Author Term</h5>
+                        <button
+                            type="button"
+                            class="btn-close btn-close-white"
+                            @click="closeModal"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" v-model="authorTermForm.id" />
+                        <div class="col-md-12 mb-3">
+                            <label for="termId" class="form-label">Term</label>
+                            <v-select
+                                :options="terms"
+                                :reduce="(term) => term.id"
+                                label="sptermno"
+                                placeholder="Select SP Term"
+                                v-model="authorTermForm.authortermid"
+                            >
+                                <template #option="term">
+                                    {{ term.sptermno }} |
+                                    {{ formatDate(term.termfrom) }}-{{
+                                        formatDate(term.termto)
+                                    }}
+                                </template>
+                                <template #selected-option="term">
+                                    {{ term.sptermno }} |
+                                    {{ formatDate(term.termfrom) }}-{{
+                                        formatDate(term.termto)
+                                    }}
+                                </template></v-select
+                            >
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="position" class="form-label"
+                                    >Position</label
+                                >
+                                <select
+                                    class="form-select"
+                                    v-model="authorTermForm.authorposition"
+                                >
+                                    <option selected disabled>
+                                        Select Position
+                                    </option>
+                                    <option value="SP Member">SP Member</option>
+                                    <option value="Vice Governor">
+                                        Vice Governor
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="spTermNo" class="form-label"
+                                    >SP Term No.</label
+                                >
+                                <input
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="e.g. 4th"
+                                    v-model="authorTermForm.authortermno"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="remarks" class="form-label"
+                                >Remarks</label
+                            >
+                            <textarea
+                                class="form-control"
+                                rows="2"
+                                placeholder="e.g. Completed 3 consecutive terms"
+                                v-model="authorTermForm.remarks"
+                            ></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success px-4">
+                            Save Term
                         </button>
                     </div>
                 </div>

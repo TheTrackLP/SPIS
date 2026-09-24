@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('authors', function (Blueprint $table) {
+        Schema::create('author_terms', function (Blueprint $table) {
             $table->id();
-            $table->string('authorfirstname')->nullable();
-            $table->string('authormiddlename')->nullable();
-            $table->string('authorlastname')->nullable();
-            $table->string('authorbirtdate')->nullable();
-            $table->integer('authorstatus')->default(1);
+            $table->integer('authorid');
+            $table->integer('termid');
+            $table->integer('termno');
+            $table->string('authorposition');
+            $table->string('remarks');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('authors');
+        Schema::dropIfExists('author_terms');
     }
 };
