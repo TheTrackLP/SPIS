@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('authormiddlename')->nullable();
             $table->string('authorlastname')->nullable();
             $table->string('authorbirtdate')->nullable();
-            $table->integer('authorstatus')->default(1);
+            $table->integer('authorcurrentterm')->nullable();
+            $table->integer('authorstatus')->default(0);
             $table->timestamps();
         });
     }

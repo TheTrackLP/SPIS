@@ -29,7 +29,7 @@ const getFullname = ref("");
 const openAuhtorTermModal = (auth) => {
     openModalView();
     authorTermForm.id = auth.id;
-    getFullname.value = `${auth.authorlastname}, ${auth.authorfirstname} ${auth.authormiddlename}`;
+    getFullname.value = auth.fullname;
     authorTermForm.reset();
     if (!auth?.id) return;
     fetchAuthorTerms(auth.id);
@@ -412,16 +412,13 @@ export default {
                 <div class="modal-body">
                     <div class="mb-3">
                         <h4 class="font-display mb-0">SP History Term</h4>
-                        <div class="text-muted" style="font-size: 0.82rem">
+                        <div class="text-muted">
                             History of Board Members' Terms.
                         </div>
                     </div>
 
                     <div class="table-responsive">
-                        <table
-                            class="table table-hover mb-0"
-                            style="font-size: 0.85rem"
-                        >
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr class="text-center align-middle">
                                     <th rowspan="2">POSITION</th>
@@ -540,9 +537,15 @@ export default {
                                     <option selected disabled>
                                         Select Position
                                     </option>
-                                    <option value="SP Member">SP Member</option>
                                     <option value="Vice Governor">
                                         Vice Governor
+                                    </option>
+                                    <option value="SP Member">SP Member</option>
+                                    <option value="SP Member (LIGA President)">
+                                        SP Member (LIGA President)
+                                    </option>
+                                    <option value="SP Member SK President">
+                                        SP Member (SK President)
                                     </option>
                                 </select>
                             </div>

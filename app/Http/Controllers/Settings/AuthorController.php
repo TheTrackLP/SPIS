@@ -18,10 +18,11 @@ class AuthorController extends Controller
                 'authors.id',
                 'authors.authorbirtdate',
                 'authors.authorstatus',
+                'authors.authorcurrentterm',
                 'terms.sptermno',
                 DB::raw("CONCAT(authorlastname, ', ', authorfirstname, ' ', authormiddlename) as fullname"),
             )
-            ->join('terms', 'terms.id', '=', 'authors.authorcurrentterm')
+            ->leftJoin('terms', 'terms.id', '=', 'authors.authorcurrentterm')
             ->get(),
             'terms'=>Terms::all(),
         ]);
@@ -32,10 +33,6 @@ class AuthorController extends Controller
             'authorfirstname' => "required",
             'authormiddlename' => "required",
             'authorlastname' => "required",
-            'authorbirtdate' => "required",
-            'authortermid' => "required",
-            'authortermno' => "required",
-            'authorposition' => "required",
         ]);
 
         if($valid->fails()){
@@ -91,11 +88,14 @@ class AuthorController extends Controller
             'author_terms.authorid',
             'author_terms.authorposition',
             'author_terms.authortermno',
+            'author_terms.remarks',
             'terms.termfrom',
             'terms.termto',
             'terms.sptermno',
+                DB::raw("CONCAT(authors.authorlastname, ', ', authors.authorfirstname, ' ', authors.authormiddlename) as fullname"),
             )
             ->join('terms', 'terms.id', '=', 'author_terms.authortermid')
+            ->join('authors', 'authors.id', '=', 'author_terms.authorid')
             ->where('author_terms.authorid', $id)
             
             ->get();

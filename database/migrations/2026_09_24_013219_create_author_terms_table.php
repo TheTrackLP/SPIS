@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('author_terms', function (Blueprint $table) {
             $table->id();
             $table->integer('authorid');
-            $table->integer('termid');
-            $table->integer('termno');
+            $table->integer('authortermid');
+            $table->integer('authortermno');
             $table->string('authorposition');
-            $table->string('remarks');
+            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }

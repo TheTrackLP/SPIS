@@ -10,6 +10,7 @@ use App\Models\Sector;
 use App\Models\SubClassifications;
 use App\Models\Terms;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class RecordsController extends Controller
@@ -17,7 +18,10 @@ class RecordsController extends Controller
     public function RecordDashboard(){
         return inertia('Backend/Records',[
             'sectors'=>Sector::all(),
-            'authors'=>Authors::all(),
+            'authors'=>Authors::select(
+                '*',
+                DB::raw("CONCAT(authorlastname, ', ', authorfirstname, ' ', authormiddlename) as fullname"),
+            )->get(),
             'mainClass'=>MainClassifications::all(),
             'subClass'=>SubClassifications::all(),
             'terms'=>Terms::all(),

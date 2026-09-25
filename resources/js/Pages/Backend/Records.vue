@@ -22,16 +22,13 @@ const recordForm = useForm({
     status: "",
     authorid: [],
     authorname: [],
-    authoracronym: [],
     coauthorid: [],
     coauthorname: [],
-    coauthoracronym: [],
     sponsorid: [],
     sponsorname: [],
     sponsorcronym: [],
     cosponsorid: [],
     cosponsorname: [],
-    cosponsoracronym: [],
     mainclassid: [],
     mainclassname: [],
     subclassid: [],
@@ -170,9 +167,6 @@ watch(selectedAuthors, (newAuthors) => {
     recordForm.authorname = newAuthors
         .map((author) => author.authorhead)
         .join("/");
-    recordForm.authoracronym = newAuthors
-        .map((author) => author.authoracronym)
-        .join("/");
 });
 
 const selectedCoAuthorID = ref([]);
@@ -190,13 +184,9 @@ watch(selectedCoAuthors, (newCoAuthors) => {
         recordForm.coauthorname = newCoAuthors
             .map((coauthor) => coauthor.authorhead)
             .join("/");
-        recordForm.coauthoracronym = newCoAuthors
-            .map((coauthor) => coauthor.authoracronym)
-            .join("/");
     } else {
         recordForm.coauthorid = null;
         recordForm.coauthorname = null;
-        recordForm.coauthoracronym = null;
     }
 });
 
@@ -211,9 +201,6 @@ watch(selectedSponsor, (newSponsor) => {
     recordForm.sponsorid = newSponsor.map((sponsor) => sponsor.id).join("/");
     recordForm.sponsorname = newSponsor
         .map((sponsor) => sponsor.authorhead)
-        .join("/");
-    recordForm.sponsorcronym = newSponsor
-        .map((sponsor) => sponsor.authoracronym)
         .join("/");
 });
 
@@ -230,9 +217,6 @@ watch(selectedCoSponsor, (newCoSponsor) => {
         .join("/");
     recordForm.coauthorname = newCoSponsor
         .map((cosponsor) => cosponsor.authorhead)
-        .join("/");
-    recordForm.coauthoracronym = newCoSponsor
-        .map((cosponsor) => cosponsor.authoracronym)
         .join("/");
 });
 
@@ -649,22 +633,21 @@ export default {
                         <div class="row g-3 mb-4">
                             <div class="col-md-3">
                                 <label class="form-label">SP Term</label>
-                                <select
-                                    class="form-select"
-                                    required
-                                    v-model="recordForm.term"
+                                <v-select
+                                    :options="terms"
+                                    :reduce="(term) => term.id"
+                                    placeholder="Select SP Term"
                                 >
-                                    <option value="" disabled selected>
-                                        Select term
-                                    </option>
-                                    <option
-                                        v-for="n in 25"
-                                        :key="n"
-                                        :value="`SP-${String(n).padStart(2, '0')}`"
-                                    >
-                                        SP-{{ String(n).padStart(2, "0") }}
-                                    </option>
-                                </select>
+                                    <template #option="term">
+                                        {{ term.sptermno }} |
+                                        {{ formatDate(term.termfrom) }}-{{
+                                            formatDate(term.termto)
+                                        }}
+                                    </template>
+                                    <template #selected-option="term">
+                                        {{ term.sptermno }}
+                                    </template>
+                                </v-select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Type</label>
@@ -755,7 +738,7 @@ export default {
                                     v-model="selectedAuthorID"
                                     :options="authors"
                                     :reduce="(author) => author.id"
-                                    label="authorhead"
+                                    label="fullname"
                                     placeholder="Select Author/s"
                                     multiple
                                 ></v-select>
@@ -771,7 +754,7 @@ export default {
                                     v-model="selectedCoAuthorID"
                                     :options="authors"
                                     :reduce="(author) => author.id"
-                                    label="authorhead"
+                                    label="fullname"
                                     placeholder="Select Co-Author/s"
                                     multiple
                                 ></v-select>
@@ -785,7 +768,7 @@ export default {
                                     v-model="selectedSponsorID"
                                     :options="authors"
                                     :reduce="(author) => author.id"
-                                    label="authorhead"
+                                    label="fullname"
                                     placeholder="Select Sponsor/s"
                                     multiple
                                 ></v-select>
@@ -801,7 +784,7 @@ export default {
                                     v-model="selectedCoSponsorID"
                                     :options="authors"
                                     :reduce="(author) => author.id"
-                                    label="authorhead"
+                                    label="fullname"
                                     placeholder="Select Co-Sponsor/s"
                                     multiple
                                 ></v-select>

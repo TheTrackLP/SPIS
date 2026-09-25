@@ -21,10 +21,8 @@ return new class extends Migration
             $table->string('status')->nullable();
             $table->string('authorid')->nullable();
             $table->string('authorname')->nullable();
-            $table->string('authoracronym')->nullable();
             $table->string('coauthorid')->nullable();
             $table->string('coauthorname')->nullable();
-            $table->string('coauthoracronym')->nullable();
             $table->string('mainclassid')->nullable();
             $table->string('mainclassname')->nullable();
             $table->string('class2id')->nullable();
