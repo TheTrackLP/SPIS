@@ -78,9 +78,5 @@ const isActive = (routeName) => {
                 ><i class="fa-solid fa-timeline"></i> SP Terms</Link
             >
         </nav>
-
-        <div class="sidebar-foot">
-            Province of Capiz &middot; v0.1 (UI Preview)
-        </div>
     </div>
 </template>

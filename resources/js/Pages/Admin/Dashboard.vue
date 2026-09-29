@@ -1,29 +1,25 @@
 <script setup>
+import { formatDate } from "@/resuables";
 const props = defineProps({
-    records: Array,
+    latestRecords: Array,
+    terms: Array,
+    mainAuthorCount: Array,
+    sectorCount: Array,
+    coAuthorCount: Array,
+    totalRecords: Object,
+    activeAuthors: Object,
 });
 
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Head, Link } from "@inertiajs/vue3";
-
-function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit",
-    });
-}
 </script>
 
 <template>
     <Head title="Dashboard" />
-
     <AdminLayout>
-        <section id="view-dashboard" class="view active">
+        <section class="view active">
             <div class="container-fluid py-4 px-4">
-                <div
-                    class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2"
-                >
+                <div class="">
                     <div>
                         <h1 class="h3 fw-bold mb-0">Dashboard</h1>
                         <div class="text-muted small">
@@ -31,15 +27,25 @@ function formatDate(dateStr) {
                             today.
                         </div>
                     </div>
-                    <select
-                        class="form-select form-select-sm w-auto"
-                        id="termFilterDash"
+                    <v-select
+                        :options="terms"
+                        :reduce="(term) => term.id"
+                        label="sptermno"
+                        placeholder="Select SP Term"
                     >
-                        <option>SP-12 (Current Term)</option>
-                        <option>All Terms</option>
-                        <option>SP-11</option>
-                        <option>SP-10</option>
-                    </select>
+                        <template #option="term">
+                            {{ term.sptermno }} |
+                            {{ formatDate(term.termfrom) }}-{{
+                                formatDate(term.termto)
+                            }}
+                        </template>
+                        <template #selected-option="term">
+                            {{ term.sptermno }} |
+                            {{ formatDate(term.termfrom) }}-{{
+                                formatDate(term.termto)
+                            }}
+                        </template></v-select
+                    >
                 </div>
                 <div class="row g-3 mb-4">
                     <div class="col-6 col-lg-2">
@@ -51,11 +57,11 @@ function formatDate(dateStr) {
                                     class="rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary"
                                     style="width: 44px; height: 44px"
                                 >
-                                    <i class="bi bi-journal-bookmark-fill"></i>
+                                    <i class="fa-solid fa-book"></i>
                                 </div>
                                 <div>
                                     <div class="fs-5 fw-bold" id="statTotal">
-                                        0
+                                        {{ totalRecords }}
                                     </div>
                                     <div class="text-muted small">
                                         Total Records
@@ -78,62 +84,14 @@ function formatDate(dateStr) {
                                         color: #6f42c1;
                                     "
                                 >
-                                    <i class="bi bi-people-fill"></i>
+                                    <i class="fa-solid fa-users-line"></i>
                                 </div>
                                 <div>
-                                    <div class="fs-5 fw-bold" id="statAuthors">
-                                        0
-                                    </div>
-                                    <div class="text-muted small">Authors</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-2">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div
-                                class="card-body d-flex align-items-center gap-3"
-                            >
-                                <div
-                                    class="rounded-circle d-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info"
-                                    style="width: 44px; height: 44px"
-                                >
-                                    <i class="bi bi-person-lines-fill"></i>
-                                </div>
-                                <div>
-                                    <div
-                                        class="fs-5 fw-bold"
-                                        id="statCoAuthors"
-                                    >
-                                        0
+                                    <div class="fs-5 fw-bold">
+                                        {{ activeAuthors }}
                                     </div>
                                     <div class="text-muted small">
-                                        Co-Authors
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-2">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div
-                                class="card-body d-flex align-items-center gap-3"
-                            >
-                                <div
-                                    class="rounded-circle d-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger"
-                                    style="width: 44px; height: 44px"
-                                >
-                                    <i class="bi bi-tags-fill"></i>
-                                </div>
-                                <div>
-                                    <div
-                                        class="fs-5 fw-bold"
-                                        id="statClassifications"
-                                    >
-                                        0
-                                    </div>
-                                    <div class="text-muted small">
-                                        Classifications
+                                        Active Authors
                                     </div>
                                 </div>
                             </div>
@@ -148,33 +106,11 @@ function formatDate(dateStr) {
                                     class="rounded-circle d-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success"
                                     style="width: 44px; height: 44px"
                                 >
-                                    <i class="bi bi-diagram-3-fill"></i>
+                                    <i class="fa-solid fa-diagram-project"></i>
                                 </div>
                                 <div>
-                                    <div class="fs-5 fw-bold" id="statSectors">
-                                        0
-                                    </div>
+                                    <div class="fs-5 fw-bold">0</div>
                                     <div class="text-muted small">Sectors</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-lg-2">
-                        <div class="card shadow-sm border-0 h-100">
-                            <div
-                                class="card-body d-flex align-items-center gap-3"
-                            >
-                                <div
-                                    class="rounded-circle d-flex align-items-center justify-content-center bg-dark bg-opacity-10 text-dark"
-                                    style="width: 44px; height: 44px"
-                                >
-                                    <i class="bi bi-calendar-range-fill"></i>
-                                </div>
-                                <div>
-                                    <div class="fs-5 fw-bold" id="statTerms">
-                                        0
-                                    </div>
-                                    <div class="text-muted small">SP Terms</div>
                                 </div>
                             </div>
                         </div>
@@ -190,13 +126,13 @@ function formatDate(dateStr) {
                                     <div class="fw-semibold">
                                         Recent Legislative Records
                                     </div>
-                                    <a
-                                        href="#"
+                                    <Link
+                                        :href="route('rec.dash')"
                                         class="btn btn-sm btn-outline-secondary"
                                     >
                                         View All
-                                        <i class="bi bi-arrow-right"></i>
-                                    </a>
+                                        <i class="fa-solid fa-arrow-right"></i>
+                                    </Link>
                                 </div>
                                 <div class="table-responsive">
                                     <table
@@ -204,23 +140,27 @@ function formatDate(dateStr) {
                                     >
                                         <thead>
                                             <tr class="text-center">
-                                                <th>No.</th>
+                                                <th>Res. No.</th>
                                                 <th>Type</th>
                                                 <th>Title</th>
                                                 <th>Session Date</th>
-                                                <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr
-                                                v-for="(value, index) in 50"
+                                                class="align-middle"
+                                                v-for="(
+                                                    rec, index
+                                                ) in latestRecords"
                                                 :key="index"
                                             >
-                                                <td class="text-center">001</td>
+                                                <td class="text-center">
+                                                    {{ rec.resono }}
+                                                </td>
                                                 <td class="text-center">
                                                     <span
                                                         class="badge text-bg-secondary"
-                                                        >Resolution</span
+                                                        >{{ rec.type }}</span
                                                     >
                                                 </td>
                                                 <td>
@@ -228,19 +168,15 @@ function formatDate(dateStr) {
                                                         class="text-truncate"
                                                         style="max-width: 260px"
                                                     >
-                                                        Resolution appropriating
-                                                        funds for the province's
-                                                        infrastructure program
+                                                        {{ rec.title }}
                                                     </div>
                                                 </td>
                                                 <td class="text-center">
-                                                    Sep 01, 2026
-                                                </td>
-                                                <td class="text-center">
-                                                    <span
-                                                        class="badge text-bg-warning"
-                                                        >Pending</span
-                                                    >
+                                                    {{
+                                                        formatDate(
+                                                            rec.session_date,
+                                                        )
+                                                    }}
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -255,44 +191,18 @@ function formatDate(dateStr) {
                                 <div class="fw-semibold mb-3">
                                     Records by Author
                                 </div>
-                                <ul
-                                    class="list-group list-group-flush"
-                                    id="authorBreakdownList"
-                                >
+                                <ul class="list-group list-group-flush">
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-0"
+                                        v-for="(
+                                            count, index
+                                        ) in mainAuthorCount"
+                                        :key="index"
                                     >
-                                        <span>Hon. Juan Dela Cruz</span>
+                                        <span>{{ count.fullname }}</span>
                                         <span
                                             class="badge text-bg-primary rounded-pill"
-                                            >18</span
-                                        >
-                                    </li>
-                                    <li
-                                        class="list-group-item d-flex justify-content-between align-items-center px-0"
-                                    >
-                                        <span>Hon. Maria Santos</span>
-                                        <span
-                                            class="badge text-bg-primary rounded-pill"
-                                            >14</span
-                                        >
-                                    </li>
-                                    <li
-                                        class="list-group-item d-flex justify-content-between align-items-center px-0"
-                                    >
-                                        <span>Hon. Pedro Reyes</span>
-                                        <span
-                                            class="badge text-bg-primary rounded-pill"
-                                            >11</span
-                                        >
-                                    </li>
-                                    <li
-                                        class="list-group-item d-flex justify-content-between align-items-center px-0"
-                                    >
-                                        <span>Hon. Ana Villanueva</span>
-                                        <span
-                                            class="badge text-bg-primary rounded-pill"
-                                            >9</span
+                                            >{{ count.count }}</span
                                         >
                                     </li>
                                 </ul>
@@ -309,29 +219,15 @@ function formatDate(dateStr) {
                                 >
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-0"
+                                        v-for="(
+                                            coAuthor, index
+                                        ) in coAuthorCount"
+                                        :key="index"
                                     >
-                                        <span>Hon. Jose Ramirez</span>
+                                        <span>{{ coAuthor.fullname }}</span>
                                         <span
                                             class="badge text-bg-info rounded-pill"
-                                            >12</span
-                                        >
-                                    </li>
-                                    <li
-                                        class="list-group-item d-flex justify-content-between align-items-center px-0"
-                                    >
-                                        <span>Hon. Carla Mendoza</span>
-                                        <span
-                                            class="badge text-bg-info rounded-pill"
-                                            >10</span
-                                        >
-                                    </li>
-                                    <li
-                                        class="list-group-item d-flex justify-content-between align-items-center px-0"
-                                    >
-                                        <span>Hon. Ramon Torres</span>
-                                        <span
-                                            class="badge text-bg-info rounded-pill"
-                                            >7</span
+                                            >{{ coAuthor.count }}</span
                                         >
                                     </li>
                                 </ul>
@@ -343,35 +239,18 @@ function formatDate(dateStr) {
                                     Records by Sector
                                 </div>
                                 <div id="sectorBreakdownList">
-                                    <ul
-                                        class="list-group list-group-flush"
-                                        id="coAuthorBreakdownList"
-                                    >
+                                    <ul class="list-group list-group-flush">
                                         <li
                                             class="list-group-item d-flex justify-content-between align-items-center px-0"
+                                            v-for="(
+                                                sector, index
+                                            ) in sectorCount"
+                                            :key="index"
                                         >
-                                            <span>Hon. Jose Ramirez</span>
+                                            <span>{{ sector.name }}</span>
                                             <span
                                                 class="badge text-bg-info rounded-pill"
-                                                >12</span
-                                            >
-                                        </li>
-                                        <li
-                                            class="list-group-item d-flex justify-content-between align-items-center px-0"
-                                        >
-                                            <span>Hon. Carla Mendoza</span>
-                                            <span
-                                                class="badge text-bg-info rounded-pill"
-                                                >10</span
-                                            >
-                                        </li>
-                                        <li
-                                            class="list-group-item d-flex justify-content-between align-items-center px-0"
-                                        >
-                                            <span>Hon. Ramon Torres</span>
-                                            <span
-                                                class="badge text-bg-info rounded-pill"
-                                                >7</span
+                                                >{{ sector.count }}</span
                                             >
                                         </li>
                                     </ul>

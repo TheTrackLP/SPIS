@@ -164,7 +164,7 @@ table.report-table td.text-center {
                 <tbody id="reportBody">
                     <!-- Row example (repeat per record) -->
                     <tr v-for="(value, index) in records" :key="index">
-                        <td class="text-center">{{ value.term }}</td>
+                        <td class="text-center">{{ value.sptermno }}</td>
                         <td class="text-center">
                             <span class="badge-type badge">{{
                                 value.type

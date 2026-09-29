@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('coauthorname')->nullable();
             $table->string('mainclassid')->nullable();
             $table->string('mainclassname')->nullable();
-            $table->string('class2id')->nullable();
-            $table->string('class2name')->nullable();
+            $table->string('subclassid')->nullable();
+            $table->string('subclassname')->nullable();
             $table->integer('sectorid')->nullable();
             $table->integer('sectorname')->nullable();
             $table->text('filepath')->nullable();

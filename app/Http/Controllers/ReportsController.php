@@ -7,6 +7,7 @@ use App\Models\MainClassifications;
 use App\Models\Records;
 use App\Models\Sector;
 use App\Models\SubClassifications;
+use App\Models\Terms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -39,12 +40,15 @@ class ReportsController extends Controller
                 ["%/{$id}/%"]
             )->count();
 
-        $author = Authors::find($id);
+        $author = Authors::select(
+            DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+        )->
+        find($id);
         
         //Push Data into an empty Array
         $authorCounts[] = [
             'id' => $id,
-            'authorhead' => $author->authorhead ?? 'Unknown',
+            'fullname' => $author->fullname ?? 'Unknown',
             'count' => $count,
             ];
         }
@@ -56,30 +60,38 @@ class ReportsController extends Controller
                 ["%/{$id}/%"]
             )->count();
 
-        $coauthor = Authors::find($id);
+        $coauthor = Authors::select(
+            DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+        )
+        ->find($id);
         
         $coAuthorCounts[] = [
             'id' => $id,
-            'coauthorhead' => $coauthor->authorhead ?? 'Unknown',
+            'fullname' => $coauthor->fullname ?? 'Unknown',
             'count' => $count,
             ];
         }
         return inertia('Backend/Reports', [
             'mainAuthRecCount'=>$authorCounts,
             'CoAuthRecCount'=>$coAuthorCounts,
-            'authors'=>Authors::all(),
+            'authors'=>Authors::select(
+                '*',
+                DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+            )->get(),
             'mainClass'=>MainClassifications::all(),
             'subClass'=>SubClassifications::all(),
             'sectors'=>Sector::all(),
+            'terms'=>Terms::all(),
         ]);
     }
 
     public function FilterReport(Request $request) {
         
-        $query = Records::query();
+        $query = Records::query()
+        ->leftJoin('terms', 'terms.id', '=', 'records.sptermid');
 
-        if($request->filled('term')){
-            $query->where('term', $request->term);
+        if($request->filled('sptermid')){
+            $query->where('sptermid', $request->sptermid);
         }
 
         if($request->filled('type')){

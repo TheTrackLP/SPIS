@@ -14,7 +14,7 @@ const props = defineProps({
 
 const recordFormMode = ref("create");
 const recordForm = useForm({
-    term: "",
+    sptermid: "",
     type: "",
     resono: "",
     session_date: "",
@@ -26,7 +26,6 @@ const recordForm = useForm({
     coauthorname: [],
     sponsorid: [],
     sponsorname: [],
-    sponsorcronym: [],
     cosponsorid: [],
     cosponsorname: [],
     mainclassid: [],
@@ -57,6 +56,8 @@ const opemModalRecordForm = () => {
     selectedCoAuthorID.value = "";
     selectedMainClassID.value = "";
     selectedSubClassID.value = "";
+    selectedSponsorAuthorID.value = "";
+    selectedCoSponsorAuthorID.value = "";
 };
 
 const closeModal = () => {
@@ -89,7 +90,7 @@ const openModaViewRecord = (record) => {
     openViewModal();
 
     getRecordTitle.value = record.title;
-    getRecordTerm.value = record.term;
+    getRecordTerm.value = record.sptermno;
     getRecordType.value = record.type;
     getRecordResoNo.value = record.resono;
     getRecordSessionDate.value = record.session_date;
@@ -105,7 +106,7 @@ const fetchModalRecord = (record) => {
     openModal();
     recordForm.id = record.id;
     recordForm.title = record.title;
-    recordForm.term = record.term;
+    recordForm.sptermid = record.sptermid;
     recordForm.type = record.type;
     recordForm.resono = record.resono;
     recordForm.session_date = record.session_date;
@@ -138,6 +139,9 @@ const submitRecord = async () => {
                 selectedCoAuthorID.value = [];
                 selectedMainClassID.value = [];
                 selectedSubClassID.value = [];
+                selectedMainClassID.value = [];
+                selectedSponsorAuthorID.value = [];
+                selectedCoSponsorAuthorID.value = [];
             },
         });
     } else {
@@ -149,7 +153,8 @@ const submitRecord = async () => {
                 selectedSectorID.value = [];
                 selectedCoAuthorID.value = [];
                 selectedMainClassID.value = [];
-                selectedSubClassID.value = [];
+                selectedSponsorAuthorID.value = [];
+                selectedCoSponsorAuthorID.value = [];
             },
         });
     }
@@ -165,7 +170,7 @@ const selectedAuthors = computed(() => {
 watch(selectedAuthors, (newAuthors) => {
     recordForm.authorid = newAuthors.map((author) => author.id).join("/");
     recordForm.authorname = newAuthors
-        .map((author) => author.authorhead)
+        .map((author) => author.fullname)
         .join("/");
 });
 
@@ -182,7 +187,7 @@ watch(selectedCoAuthors, (newCoAuthors) => {
             .map((coauthor) => coauthor.id)
             .join("/");
         recordForm.coauthorname = newCoAuthors
-            .map((coauthor) => coauthor.authorhead)
+            .map((coauthor) => coauthor.fullname)
             .join("/");
     } else {
         recordForm.coauthorid = null;
@@ -190,34 +195,41 @@ watch(selectedCoAuthors, (newCoAuthors) => {
     }
 });
 
-const selectedSponsorID = ref([]);
+const selectedSponsorAuthorID = ref([]);
 
-const selectedSponsor = computed(() => {
+const selectedSponsorAuthors = computed(() => {
     return props.authors.filter((sponsor) =>
-        selectedSponsorID.value.includes(sponsor.id),
+        selectedSponsorAuthorID.value.includes(sponsor.id),
     );
 });
-watch(selectedSponsor, (newSponsor) => {
-    recordForm.sponsorid = newSponsor.map((sponsor) => sponsor.id).join("/");
-    recordForm.sponsorname = newSponsor
-        .map((sponsor) => sponsor.authorhead)
+watch(selectedSponsorAuthors, (newSponsorAuthors) => {
+    recordForm.sponsorid = newSponsorAuthors
+        .map((sponsor) => sponsor.id)
+        .join("/");
+    recordForm.sponsorname = newSponsorAuthors
+        .map((sponsor) => sponsor.fullname)
         .join("/");
 });
 
-const selectedCoSponsorID = ref([]);
+const selectedCoSponsorAuthorID = ref([]);
 
-const selectedCoSponsor = computed(() => {
-    return props.authors.filter((sponsor) =>
-        selectedCoSponsorID.value.includes(sponsor.id),
+const selectedCoSponsorAuthors = computed(() => {
+    return props.authors.filter((cosponsorauthor) =>
+        selectedCoSponsorAuthorID.value.includes(cosponsorauthor.id),
     );
 });
-watch(selectedCoSponsor, (newCoSponsor) => {
-    recordForm.cosponsorid = newCoSponsor
-        .map((cosponsor) => cosponsor.id)
-        .join("/");
-    recordForm.coauthorname = newCoSponsor
-        .map((cosponsor) => cosponsor.authorhead)
-        .join("/");
+watch(selectedCoSponsorAuthors, (newCoSponsorAuthors) => {
+    if (newCoSponsorAuthors.length > 0) {
+        recordForm.cosponsorid = newCoSponsorAuthors
+            .map((cosponsorauthor) => cosponsorauthor.id)
+            .join("/");
+        recordForm.cosponsorname = newCoSponsorAuthors
+            .map((cosponsorauthor) => cosponsorauthor.fullname)
+            .join("/");
+    } else {
+        recordForm.cosponsorid = null;
+        recordForm.cosponsorname = null;
+    }
 });
 
 const selectedMainClassID = ref([]);
@@ -283,7 +295,7 @@ const filteredRecords = computed(() => {
             rec.title.toLowerCase().includes(textQuery) ||
             String(rec.resono).includes(textQuery);
 
-        const matchesTerm = !termQuery || rec.term === termQuery;
+        const matchesTerm = !termQuery || rec.sptermid === termQuery;
         const matchesType = !typeQuery || rec.type === typeQuery;
         const matchesStatus = !statusQuery || rec.status === statusQuery;
 
@@ -457,6 +469,7 @@ export default {
             </tbody>
         </table>
     </div>
+    <!-- Displaying the Record Data -->
     <div
         class="modal fade"
         ref="modalRefView"
@@ -597,6 +610,7 @@ export default {
             </div>
         </div>
     </div>
+    <!-- Adding New Records Modal Form -->
     <div
         class="modal fade"
         ref="modalRef"
@@ -636,7 +650,9 @@ export default {
                                 <v-select
                                     :options="terms"
                                     :reduce="(term) => term.id"
+                                    label="sptermno"
                                     placeholder="Select SP Term"
+                                    v-model="recordForm.sptermid"
                                 >
                                     <template #option="term">
                                         {{ term.sptermno }} |
@@ -765,9 +781,9 @@ export default {
                             <div class="col-md-6">
                                 <label class="form-label">Main Sponsor/s</label>
                                 <v-select
-                                    v-model="selectedSponsorID"
+                                    v-model="selectedSponsorAuthorID"
                                     :options="authors"
-                                    :reduce="(author) => author.id"
+                                    :reduce="(sponsor) => sponsor.id"
                                     label="fullname"
                                     placeholder="Select Sponsor/s"
                                     multiple
@@ -781,9 +797,9 @@ export default {
                                     ></label
                                 >
                                 <v-select
-                                    v-model="selectedCoSponsorID"
+                                    v-model="selectedCoSponsorAuthorID"
                                     :options="authors"
-                                    :reduce="(author) => author.id"
+                                    :reduce="(coauthor) => coauthor.id"
                                     label="fullname"
                                     placeholder="Select Co-Sponsor/s"
                                     multiple

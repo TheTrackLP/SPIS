@@ -16,6 +16,9 @@ class AuthorController extends Controller
         return inertia('Backend/Settings/Authors', [
             'authors' => Authors::select(
                 'authors.id',
+                'authors.authorfirstname',
+                'authors.authormiddlename',
+                'authors.authorlastname',
                 'authors.authorbirtdate',
                 'authors.authorstatus',
                 'authors.authorcurrentterm',
@@ -54,12 +57,9 @@ class AuthorController extends Controller
     }
     public function EditAuthor(Request $request){
         $valid = Validator::make($request->all(), [
-            'authorhead' => "required",
-            'authordesc' => "required",
-            'authoroffice' => "required",
-            'authoracronym' => "required",
-            'authorposition' => "required",
-            'authorterm' => "required",
+            'authorfirstname' => "required",
+            'authormiddlename' => "required",
+            'authorlastname' => "required",
         ]);
 
         if($valid->fails()){
@@ -69,12 +69,11 @@ class AuthorController extends Controller
         }
 
         Authors::findorfail($request->id)->update([
-            'authorhead' => strtoupper($request->authorhead),
-            'authordesc' => $request->authordesc,
-            'authoroffice' => $request->authoroffice,
-            'authoracronym' => $request->authoracronym,
-            'authorposition' => $request->authorposition,
-            'authorterm' => $request->authorterm,
+            'authorfirstname' => strtoupper($request->authorfirstname),
+            'authormiddlename' => strtoupper($request->authormiddlename),
+            'authorlastname' => strtoupper($request->authorlastname),
+            'authorbirtdate' => $request->authorbirtdate,
+            'authorstatus' => $request->authorstatus,
         ]);
 
         return redirect()->route('gear.author')->with(
@@ -89,6 +88,8 @@ class AuthorController extends Controller
             'author_terms.authorposition',
             'author_terms.authortermno',
             'author_terms.remarks',
+            'author_terms.date_start',
+            'author_terms.date_end',
             'terms.termfrom',
             'terms.termto',
             'terms.sptermno',
@@ -127,6 +128,8 @@ class AuthorController extends Controller
             'authortermno' => $request->authortermno,
             'authorposition' => $request->authorposition,
             'remarks' => $request->remarks,
+            'date_start' => $request->date_start,
+            'date_end' => $request->date_end,
         ]);
         return redirect()->route('gear.author')->with(
             'success', 'Success, SP Term Added!',

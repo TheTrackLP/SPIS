@@ -110,12 +110,6 @@ label {
     color: var(--navy-deep);
     font-weight: bold;
 }
-.sp-sidebar .sidebar-foot {
-    padding: 0.85rem 1.1rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 0.72rem;
-    color: #8b96ac;
-}
 .sb-sidenav-collapse-arrow i {
     transition: transform 0.2s ease;
 }

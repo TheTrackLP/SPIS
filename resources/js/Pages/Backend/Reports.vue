@@ -1,18 +1,20 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
+import { formatDate } from "@/resuables";
 
 const props = defineProps({
     authors: Array,
     mainClass: Array,
     subClass: Array,
     sectors: Array,
+    terms: Array,
     mainAuthRecCount: Array,
     CoAuthRecCount: Array,
 });
 
 const filterRecordsForm = useForm({
-    term: "",
+    sptermid: "",
     type: "",
     sessionfrom: "",
     sessionto: "",
@@ -155,19 +157,26 @@ export default {
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label">SP Term</label>
-                            <select
-                                class="form-select"
-                                v-model="filterRecordsForm.term"
+                            <v-select
+                                :options="terms"
+                                :reduce="(term) => term.id"
+                                label="sptermno"
+                                placeholder="Select SP Term"
+                                v-model="filterRecordsForm.sptermid"
                             >
-                                <option value="">All Terms</option>
-                                <option
-                                    v-for="n in 25"
-                                    :key="n"
-                                    :value="`SP-${String(n).padStart(2, '0')}`"
-                                >
-                                    SP-{{ String(n).padStart(2, "0") }}
-                                </option>
-                            </select>
+                                <template #option="term">
+                                    {{ term.sptermno }} |
+                                    {{ formatDate(term.termfrom) }}-{{
+                                        formatDate(term.termto)
+                                    }}
+                                </template>
+                                <template #selected-option="term">
+                                    {{ term.sptermno }} |
+                                    {{ formatDate(term.termfrom) }}-{{
+                                        formatDate(term.termto)
+                                    }}
+                                </template></v-select
+                            >
                         </div>
                         <div class="col-md-4">
                             <label class="form-label"
@@ -199,7 +208,7 @@ export default {
                                 v-model="selectedAuthorID"
                                 :options="authors"
                                 :reduce="(auth) => auth.id"
-                                label="authorhead"
+                                label="fullname"
                                 placeholder="Select Author/s"
                                 multiple
                             ></v-select>
@@ -210,7 +219,7 @@ export default {
                                 v-model="selectedCoAuthorID"
                                 :options="authors"
                                 :reduce="(auth) => auth.id"
-                                label="authorhead"
+                                label="fullname"
                                 placeholder="Select Co Author/s"
                                 multiple
                             ></v-select>
@@ -307,7 +316,7 @@ export default {
                                 v-for="(count, index) in mainAuthRecCount"
                                 :key="index"
                             >
-                                <td>{{ count.authorhead }}</td>
+                                <td>{{ count.fullname }}</td>
                                 <td>{{ count.count }}</td>
                             </tr>
                         </tbody>
@@ -331,7 +340,7 @@ export default {
                                 v-for="(count, index) in CoAuthRecCount"
                                 :key="index"
                             >
-                                <td>{{ count.coauthorhead }}</td>
+                                <td>{{ count.fullname }}</td>
                                 <td>{{ count.count }}</td>
                             </tr>
                         </tbody>

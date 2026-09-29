@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, onMounted, ref, watch } from "vue";
+import { nextTick, computed, ref } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import { Modal } from "bootstrap";
 import { formatDate } from "@/resuables";
@@ -75,6 +75,8 @@ const authorTermForm = useForm({
     authortermno: "",
     authorposition: "",
     remarks: "",
+    date_start: "",
+    date_end: "",
 });
 
 const addAuthorTerm = () => {
@@ -87,19 +89,9 @@ const addAuthorTerm = () => {
     });
 };
 
-const currentTerm = ref({});
-
-// onMounted(async () => {
-//     for (const author of props.authors) {
-//         const res = await axios.get(
-//             `admin/settings/authors/current-term/${author.id}`,
-//         );
-//         currentTerm.value[author.id] = res.data;
-//     }
-// });
-
 const authorFormMode = ref("create");
 const authorForm = useForm({
+    id: "",
     authorfirstname: "",
     authormiddlename: "",
     authorlastname: "",
@@ -110,13 +102,17 @@ const authorForm = useForm({
 const fetchAuthorData = (auth) => {
     authorFormMode.value = "edit";
     authorForm.id = auth.id;
-    authorForm.authorhead = auth.authorhead;
-    authorForm.authordesc = auth.authordesc;
-    authorForm.authoroffice = auth.authoroffice;
-    authorForm.authoracronym = auth.authoracronym;
-    authorForm.authorposition = auth.authorposition;
-    authorForm.authorterm = auth.authorterm;
+    authorForm.authorfirstname = auth.authorfirstname;
+    authorForm.authormiddlename = auth.authormiddlename;
+    authorForm.authorlastname = auth.authorlastname;
+    authorForm.authorbirtdate = auth.authorbirtdate;
+    authorForm.authorstatus = auth.authorstatus;
     openModal();
+};
+
+const fetchAuthorTermData = (authterm) => {
+    closeModal();
+    openTermModalForm();
 };
 
 const submitAuhtorForm = () => {
@@ -136,6 +132,27 @@ const submitAuhtorForm = () => {
         });
     }
 };
+
+const searchAuthorName = ref("");
+const searchAuthorStatus = ref("");
+
+const filteredAuthors = computed(() => {
+    const queryAuhtorname = searchAuthorName.value.toLowerCase().trim();
+    const queryAuthorStatus = searchAuthorStatus.value;
+
+    return props.authors.filter((author) => {
+        const matchesAuhtorname =
+            !queryAuhtorname ||
+            author.fullname.toLowerCase().includes(queryAuhtorname);
+        const matchesAuhtorStatus =
+            !queryAuthorStatus ||
+            Number(author.authorstatus) == Number(queryAuthorStatus);
+
+        return matchesAuhtorname && matchesAuhtorStatus;
+    });
+});
+
+const checkboxChecked = ref(false);
 
 const props = defineProps({
     authors: Array,
@@ -179,6 +196,36 @@ export default {
             </button>
         </div>
         <div class="sp-card p-0">
+            <div class="card">
+                <div class="card-body">
+                    <div
+                        class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2"
+                    >
+                        <div class="input-group" style="max-width: 300px">
+                            <span class="input-group-text bg-white"
+                                ><i class="fa-solid fa-magnifying-glass"></i
+                            ></span>
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="Search loan type..."
+                                v-model="searchAuthorName"
+                            />
+                        </div>
+
+                        <select
+                            class="form-select"
+                            v-model="searchAuthorStatus"
+                            style="max-width: 160px"
+                        >
+                            <option value="" selected>All Status</option>
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table
                     class="table table-hover mb-0"
@@ -199,7 +246,7 @@ export default {
                     <tbody v-if="authors.length > 0">
                         <tr
                             class="align-middle"
-                            v-for="(auth, index) in authors"
+                            v-for="(auth, index) in filteredAuthors"
                             :key="index"
                         >
                             <td class="text-center">{{ index + 1 }}</td>
@@ -291,7 +338,8 @@ export default {
                             class="modal-title font-display"
                             style="font-size: 1.1rem"
                         >
-                            Add Author
+                            {{ authorFormMode === "create" ? "Add" : "Info" }}
+                            Author
                         </h5>
                         <input type="hidden" v-model="authorForm.id" />
                         <button
@@ -301,7 +349,6 @@ export default {
                         ></button>
                     </div>
                     <div class="modal-body">
-                        <div class="section-label mb-2">Author Info</div>
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="lastName" class="form-label"
@@ -426,6 +473,7 @@ export default {
                                     <th rowspan="2">TERM NO.</th>
                                     <th rowspan="2">SP TERM NO.</th>
                                     <th rowspan="2">REMARKS</th>
+                                    <th rowspan="2">Action</th>
                                 </tr>
                                 <tr>
                                     <th class="text-center">FROM</th>
@@ -439,11 +487,39 @@ export default {
                                     :key="index"
                                 >
                                     <td>{{ authterm.authorposition }}</td>
-                                    <td>{{ formatDate(authterm.termfrom) }}</td>
-                                    <td>{{ formatDate(authterm.termto) }}</td>
+                                    <td>
+                                        <span v-if="authterm.date_start">{{
+                                            formatDate(authterm.date_start)
+                                        }}</span>
+                                        <span v-else>{{
+                                            formatDate(authterm.termfrom)
+                                        }}</span>
+                                    </td>
+                                    <td>
+                                        <span v-if="authterm.date_end">{{
+                                            formatDate(authterm.date_end)
+                                        }}</span>
+                                        <span v-else>
+                                            {{ formatDate(authterm.termto) }}
+                                        </span>
+                                    </td>
                                     <td>{{ authterm.authortermno }}</td>
                                     <td>{{ authterm.sptermno }}</td>
                                     <td>{{ authterm.remarks }}</td>
+                                    <td>
+                                        <button
+                                            type="button"
+                                            class="btn btn-warning"
+                                            @click="
+                                                fetchAuthorTermData(authterm)
+                                            "
+                                        >
+                                            <i
+                                                class="fa-solid fa-pen-to-square"
+                                            ></i>
+                                            Edit Term
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                             <tbody v-else>
@@ -547,6 +623,9 @@ export default {
                                     <option value="SP Member SK President">
                                         SP Member (SK President)
                                     </option>
+                                    <option value="SP Member (PCL)">
+                                        SP Member (PCL)
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -562,7 +641,7 @@ export default {
                             </div>
                         </div>
 
-                        <div class="mb-2">
+                        <div class="mb-3">
                             <label for="remarks" class="form-label"
                                 >Remarks</label
                             >
@@ -572,6 +651,35 @@ export default {
                                 placeholder="e.g. Completed 3 consecutive terms"
                                 v-model="authorTermForm.remarks"
                             ></textarea>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                v-model="checkboxChecked"
+                                id="checkDefault"
+                            />
+                            <label class="form-check-label" for="checkDefault">
+                                Check if Different Date Took Office
+                            </label>
+                        </div>
+                        <div class="row" v-if="checkboxChecked">
+                            <div class="col-md-6 mb-3">
+                                <label for="">From</label>
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    v-model="authorTermForm.date_start"
+                                />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="">To</label>
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    v-model="authorTermForm.date_end"
+                                />
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
