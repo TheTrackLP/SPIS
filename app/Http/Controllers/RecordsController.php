@@ -28,10 +28,10 @@ class RecordsController extends Controller
             'subClass'=>SubClassifications::all(),
             'terms'=>Terms::all(),
             'records'=>Records::select(
-                '*',
+                'records.*',
                 'terms.sptermno'
                 )
-                ->join('terms', 'terms.id', '=', 'records.sptermid')
+                ->leftjoin('terms', 'terms.id', '=', 'records.sptermid')
                 ->orderby('resono')->get(),
         ]);
     }
@@ -87,14 +87,13 @@ class RecordsController extends Controller
 
     public function RecordEdit(Request $request){
         $valid = Validator::make($request->all(), [
-            'term' => 'required',
+            'sptermid' => 'required',
             'type' => 'required',
             'resono' => 'required',
             'session_date' => 'required',
             'title' => 'required',
             'authorid' => 'required',
             'authorname' => 'required',
-            'authoracronym' => 'required',
             'mainclassid' => 'required',
             'mainclassname' => 'required',
             'sectorid' => 'required',
@@ -108,7 +107,7 @@ class RecordsController extends Controller
         }
 
         Records::findorfail($request->id)->update([
-            'term' => $request->term,
+            'sptermid' => $request->sptermid,
             'type' => $request->type,
             'resono' => $request->resono,
             'session_date' => $request->session_date,
@@ -116,10 +115,12 @@ class RecordsController extends Controller
             'status' => $request->status,
             'authorid' => $request->authorid,
             'authorname' => $request->authorname,
-            'authoracronym' => $request->authoracronym,
             'coauthorid' => $request->coauthorid,
             'coauthorname' => $request->coauthorname,
-            'coauthoracronym' => $request->coauthoracronym,
+            'sponsorid' => $request->sponsorid,
+            'sponsorname' => $request->sponsorname,
+            'cosponsorid' => $request->cosponsorid,
+            'cosponsorname' => $request->cosponsorname,
             'mainclassid' => $request->mainclassid,
             'mainclassname' => $request->mainclassname,
             'subclassid' => $request->subclassid,

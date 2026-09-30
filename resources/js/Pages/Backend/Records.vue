@@ -83,6 +83,8 @@ const getRecordSessionDate = ref("");
 const getRecordSector = ref("");
 const getRecordAuthors = ref("");
 const getRecordCoAuthors = ref("");
+const getRecordSponsors = ref("");
+const getRecordCoSponsors = ref("");
 const getRecordClass1 = ref("");
 const getRecordClass2 = ref("");
 
@@ -97,6 +99,8 @@ const openModaViewRecord = (record) => {
     getRecordSector.value = record.sectorname;
     getRecordAuthors.value = record.authorname;
     getRecordCoAuthors.value = record.coauthorname;
+    getRecordSponsors.value = record.sponsorname;
+    getRecordCoSponsors.value = record.cosponsorname;
     getRecordClass1.value = record.mainclassname;
     getRecordClass2.value = record.subclassname;
 };
@@ -116,6 +120,12 @@ const fetchModalRecord = (record) => {
         : [];
     selectedCoAuthorID.value = record.coauthorid
         ? record.coauthorid.split("/").map(Number)
+        : [];
+    selectedSponsorAuthorID.value = record.sponsorid
+        ? record.sponsorid.split("/").map(Number)
+        : [];
+    selectedCoSponsorAuthorID.value = record.cosponsorid
+        ? record.cosponsorid.split("/").map(Number)
         : [];
     selectedSectorID.value = record.sectorid
         ? record.sectorid.split("/").map(Number)
@@ -145,6 +155,7 @@ const submitRecord = async () => {
             },
         });
     } else {
+        recordFormMode.value = "edit";
         recordForm.post(route("rec.edit", recordForm.id), {
             onSuccess: () => {
                 recordForm.reset();
@@ -152,6 +163,8 @@ const submitRecord = async () => {
                 selectedAuthorID.value = [];
                 selectedSectorID.value = [];
                 selectedCoAuthorID.value = [];
+                selectedMainClassID.value = [];
+                selectedSubClassID.value = [];
                 selectedMainClassID.value = [];
                 selectedSponsorAuthorID.value = [];
                 selectedCoSponsorAuthorID.value = [];
@@ -477,7 +490,7 @@ export default {
         data-bs-backdrop="static"
         data-bs-keydrop="false"
     >
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-xl modal-dialog-scrollable">
             <div class="modal-content" style="border-radius: 0.65rem">
                 <div
                     class="modal-header"
@@ -509,7 +522,7 @@ export default {
                         {{ getRecordTitle }}
                     </h5>
 
-                    <div class="detail-divider"></div>
+                    <hr />
                     <div class="row g-3">
                         <div class="col-4">
                             <div class="detail-label">SP Term</div>
@@ -537,7 +550,7 @@ export default {
                         </div>
                     </div>
 
-                    <div class="detail-divider"></div>
+                    <hr />
                     <div class="detail-label mb-1">Author/s</div>
                     <div>
                         <span
@@ -560,15 +573,38 @@ export default {
                         <span class="chip mb-2">No Co-Author/s</span>
                     </div>
 
-                    <div class="detail-divider"></div>
+                    <hr />
+                    <div class="detail-label mb-1">Sponsor/s</div>
+                    <div v-if="getRecordSponsors">
+                        <span
+                            class="chip mb-2"
+                            v-for="auth in getRecordSponsors.split('/')"
+                            >{{ auth }}</span
+                        >
+                    </div>
+                    <div v-else>
+                        <span class="chip mb-2">No Sponsor/s</span>
+                    </div>
+
+                    <label class="detail-label mb-1">Co-Sponsor/s</label>
+                    <div v-if="getRecordCoSponsors">
+                        <span
+                            class="chip mb-2"
+                            v-for="coauth in getRecordCoSponsors.split('/')"
+                        >
+                            {{ coauth }}
+                        </span>
+                    </div>
+                    <div v-else>
+                        <span class="chip mb-2">No Co-Sponsor/s</span>
+                    </div>
+
+                    <hr />
                     <div class="detail-label mb-1">Classification</div>
                     <div class="row">
                         <div class="col-6">
                             <div
-                                style="
-                                    font-size: 0.72rem;
-                                    color: var(--ink-muted);
-                                "
+                                style="font-size: 1rem; color: var(--ink-muted)"
                             >
                                 Main Classifications
                             </div>
@@ -580,10 +616,7 @@ export default {
                         </div>
                         <div class="col-6">
                             <div
-                                style="
-                                    font-size: 0.72rem;
-                                    color: var(--ink-muted);
-                                "
+                                style="font-size: 1rem; color: var(--ink-muted)"
                             >
                                 Sub Classifications
                             </div>

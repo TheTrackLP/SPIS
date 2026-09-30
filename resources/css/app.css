@@ -217,7 +217,7 @@ label {
 /* ---------- Table ---------- */
 
 .chip {
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     background: #f1ecdd;
     color: #6b5a2e;
     border-radius: 1rem;
@@ -253,13 +253,12 @@ label {
 }
 
 .detail-label {
-    font-size: 0.68rem;
+    font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--ink-muted);
 }
 .detail-value {
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     font-weight: 500;
 }
 
