@@ -77,6 +77,12 @@ const isActive = (routeName) => {
                 :class="{ active: isActive('term.*') }"
                 ><i class="fa-solid fa-timeline"></i> SP Terms</Link
             >
+            <Link
+                :href="route('users.dash')"
+                class="nav-link"
+                :class="{ active: isActive('users.*') }"
+                ><i class="fa-solid fa-users"></i> Authentication</Link
+            >
         </nav>
     </div>
 </template>

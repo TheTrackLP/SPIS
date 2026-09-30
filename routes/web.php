@@ -6,6 +6,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\Settings\AuthorController;
 use App\Http\Controllers\Settings\ClassController;
 use App\Http\Controllers\Settings\SectorController;
+use App\Http\Controllers\Settings\UsersController;
 use App\Http\Controllers\TermsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,11 @@ Route::middleware('auth')->group(function(){
     Route::controller(TermsController::class)->group(function(){
         Route::get('/admin/settings/terms', 'TermsDashboard')->name('term.dash');
         Route::post('/admin/settings/terms/Store', 'StoreTermPeriod')->name('term.store');
+    });
+
+    Route::controller(UsersController::class)->group(function(){
+        Route::get('/admin/settings/users', 'UsersDashboard')->name('users.dash');
+        Route::post('/admin/settings/users/store', 'UsersStore')->name('users.store');
     });
 });
 
