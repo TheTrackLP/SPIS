@@ -49,8 +49,12 @@ const isActive = (routeName) => {
                 :class="{ active: isActive('reports.*') }"
                 ><i class="fa-solid fa-chart-simple"></i> Reports</Link
             >
-            <a href="#" class="nav-link"
-                ><i class="fa-solid fa-box-archive"></i> Archive</a
+            <div class="nav-section-label">Activity Logs</div>
+            <Link
+                :href="route('logs.dash')"
+                class="nav-link"
+                :class="{ active: isActive('logs.*') }"
+                ><i class="fa-solid fa-book"></i> Activity Log</Link
             >
             <div class="nav-section-label">Settings</div>
             <Link

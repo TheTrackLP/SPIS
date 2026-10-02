@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RecordsController;
 use App\Http\Controllers\ReportsController;
@@ -66,6 +67,10 @@ Route::middleware('auth')->group(function(){
         Route::get('/admin/settings/users', 'UsersDashboard')->name('users.dash');
         Route::post('/admin/settings/users/store', 'UsersStore')->name('users.store');
         Route::post('/admin/settings/users/update/{id}', 'UsersEditAcct')->name('users.update');
+    });
+
+    Route::controller(ActivityLogsController::class)->group(function() {
+        Route::get('/admin/activity-logs', 'LogsDashboard')->name('logs.dash');
     });
 });
 
