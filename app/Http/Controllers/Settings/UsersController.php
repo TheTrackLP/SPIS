@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Authors;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -57,6 +58,40 @@ class UsersController extends Controller
 
         return redirect()->route('users.dash')->with(
             'success', 'Authentication Added',
+        );
+    }
+
+    public function UsersEditAcct(Request $request){
+        $user = User::findorfail($request->id);
+    
+        $valid = Validator::make($request->all(), [
+            'email' => 'required',
+            'role' => 'required',
+        ]);
+
+        if($valid->fails()){
+            return redirect()->route('users.dash')->with(
+                'error', 'Error, Try Again!',
+            );
+        }
+
+        $data = [
+            'username' => $request->username,
+            'name'     => $request->name,
+            'authorid' => $request->authorid,
+            'email'    => $request->email,
+            'role'     => $request->role,
+            'status'   => $request->status,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = $request->password;
+        }
+
+        $user->update($data);
+
+        return redirect()->route('users.dash')->with(
+            'success', 'Authentication Updated',
         );
     }
 }

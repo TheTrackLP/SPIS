@@ -1,5 +1,9 @@
 <script setup>
+import { usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
 import { ref } from "vue";
+
+const user = computed(() => usePage().props.auth.user);
 
 const emit = defineEmits(["toggleSidebar"]);
 const dropdownProfile = ref(false);
@@ -42,12 +46,7 @@ const dropdownProfile = ref(false);
                         style="line-height: 1.1"
                     >
                         <div style="font-size: 0.8rem; font-weight: 600">
-                            Echo Cruz
-                        </div>
-                        <div
-                            style="font-size: 0.68rem; color: var(--ink-muted)"
-                        >
-                            SP Records Officer
+                            {{ user.username }}
                         </div>
                     </div>
                 </button>
@@ -56,7 +55,7 @@ const dropdownProfile = ref(false);
                     :class="{ show: dropdownProfile }"
                 >
                     <li>
-                        <a class="dropdown-item" href="#"
+                        <a class="dropdown-item" :href="route('admin.logout')"
                             ><i class="bi bi-box-arrow-right me-2"></i>Sign
                             out</a
                         >

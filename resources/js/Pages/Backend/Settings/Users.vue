@@ -12,6 +12,10 @@ const modalUserForm = () => {
     });
 };
 
+const closeModal = () => {
+    modalInstanceForm?.hide();
+};
+
 const userFormMode = ref("craete");
 const userForm = useForm({
     username: "",
@@ -21,13 +25,26 @@ const userForm = useForm({
     password: "",
     confirmPass: "",
     role: "",
+    status: "",
 });
 
 const submitUserForm = () => {
     if (userFormMode.value === "create") {
         userFormMode.value = "create";
-        userForm.post(route("users.store"));
+        userForm.post(route("users.store"), {
+            onSuccess: () => {
+                userForm.reset();
+                closeModal();
+            },
+        });
     } else {
+        userFormMode.value = "edit";
+        userForm.post(route("users.update", userForm.id), {
+            onSuccess: () => {
+                userForm.reset();
+                closeModal();
+            },
+        });
     }
 };
 
@@ -37,10 +54,14 @@ const openModalUserForm = () => {
     userForm.reset();
 };
 
+const showStatus = ref(false);
+
 const fetctUserDate = (user) => {
     userFormMode.value = "edit";
+    showStatus.value = true;
     modalUserForm();
 
+    userForm.id = user.id;
     userForm.username = user.username;
     userForm.name = user.name;
     userForm.email = user.email;
@@ -110,8 +131,8 @@ export default {
                                     {{ user.fullname }}
                                 </span>
                             </td>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.email }}</td>
+                            <td class="text-center">{{ user.username }}</td>
+                            <td class="text-center">{{ user.email }}</td>
                             <td class="text-center">
                                 {{ user.role }}
                             </td>
@@ -172,9 +193,10 @@ export default {
                         <button
                             type="button"
                             class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
+                            @click="closeModal"
                         ></button>
                     </div>
+                    <input type="hidden" v-model="userForm.id" />
                     <div class="modal-body">
                         <div class="form-group mb-3" v-if="checkBoxShow">
                             <label for="">Author</label>
@@ -225,15 +247,34 @@ export default {
                             />
                         </div>
                         <div class="form-group mb-3">
-                            <label for="">Role</label>
-                            <select
-                                class="form-control"
-                                v-model="userForm.role"
-                            >
-                                <option value="" selected>Select Role</option>
-                                <option value="admin">Admin</option>
-                                <option value="user">User</option>
-                            </select>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="">Role</label>
+                                    <select
+                                        class="form-control"
+                                        v-model="userForm.role"
+                                    >
+                                        <option value="" selected>
+                                            Select Role
+                                        </option>
+                                        <option value="admin">Admin</option>
+                                        <option value="user">User</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" v-if="showStatus">
+                                    <label for="">Status</label>
+                                    <select
+                                        class="form-control"
+                                        v-model="userForm.status"
+                                    >
+                                        <option value="" selected>
+                                            Select Status
+                                        </option>
+                                        <option value="1">Active</option>
+                                        <option value="0">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-6 form-group mb-3">

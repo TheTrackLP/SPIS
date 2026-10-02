@@ -19,6 +19,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function(){
     Route::controller(AdminController::class)->group(function(){
         Route::get('/admin/dashboard', 'AdminDashboard')->name('admin.dash');
+        Route::get('/admin/logout', 'AuthLogout')->name('admin.logout');
     });
 
     Route::controller(RecordsController::class)->group(function(){
@@ -64,6 +65,7 @@ Route::middleware('auth')->group(function(){
     Route::controller(UsersController::class)->group(function(){
         Route::get('/admin/settings/users', 'UsersDashboard')->name('users.dash');
         Route::post('/admin/settings/users/store', 'UsersStore')->name('users.store');
+        Route::post('/admin/settings/users/update/{id}', 'UsersEditAcct')->name('users.update');
     });
 });
 

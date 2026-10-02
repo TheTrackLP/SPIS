@@ -7,6 +7,7 @@ use App\Models\Records;
 use App\Models\Sector;
 use App\Models\Terms;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -102,5 +103,16 @@ class AdminController extends Controller
             'latestRecords' => Records::orderby('resono', 'desc')->limit(20)->get(),
             'terms'=>Terms::all(),
         ]);
+    }
+
+    public function AuthLogout(Request $request)
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }

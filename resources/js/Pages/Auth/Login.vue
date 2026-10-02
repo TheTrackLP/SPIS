@@ -1,7 +1,7 @@
 <script setup>
 import { Head, useForm, Link } from "@inertiajs/vue3";
 const form = useForm({
-    email: "",
+    login: "",
     password: "",
     remember: false,
 });
@@ -48,19 +48,21 @@ const submit = () => {
                 <form @submit.prevent="submit" novalidate>
                     <!-- Email -->
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
+                        <label for="email" class="form-label"
+                            >Username or Email</label
+                        >
                         <input
                             id="email"
-                            type="email"
-                            v-model="form.email"
+                            type="text"
+                            v-model="form.login"
                             class="form-control"
-                            :class="{ 'is-invalid': form.errors.email }"
+                            :class="{ 'is-invalid': form.errors.login }"
                             autocomplete="username"
                             autofocus
                             required
                         />
-                        <div v-if="form.errors.email" class="invalid-feedback">
-                            {{ form.errors.email }}
+                        <div v-if="form.errors.login" class="invalid-feedback">
+                            {{ form.errors.login }}
                         </div>
                     </div>
 
