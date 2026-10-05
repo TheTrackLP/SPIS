@@ -11,7 +11,9 @@ use App\Models\SubClassifications;
 use App\Models\Terms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class RecordsController extends Controller
 {
@@ -49,6 +51,7 @@ class RecordsController extends Controller
             'mainclassname' => 'required',
             'sectorid' => 'required',
             'sectorname' => 'required',
+            'filepath' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:20480'],
         ]);
 
         if($valid->fails()){
@@ -56,6 +59,13 @@ class RecordsController extends Controller
                 'error', 'Error, Try Again!',
             );
         }
+
+        $year = date('Y', strtotime($request->session_date));
+        $file = $request->file('filepath');
+
+        $filename = Str::slug($year.' '.$request->resono).'.'.$file->getClientOriginalExtension();
+
+        $path = $file->storeAs('scanned', $filename, 'documents');
 
         Records::create([
             'sptermid' => $request->sptermid,
@@ -78,6 +88,7 @@ class RecordsController extends Controller
             'subclassname' => $request->subclassname,
             'sectorid' => $request->sectorid,
             'sectorname' => $request->sectorname,
+            'filepath' => $path,
         ]);
 
         return redirect()->route('rec.dash')->with(
@@ -127,10 +138,19 @@ class RecordsController extends Controller
             'subclassname' => $request->subclassname,
             'sectorid' => $request->sectorid,
             'sectorname' => $request->sectorname,
+            'filepath' => $request->filepath,
         ]);
 
         return redirect()->route('rec.dash')->with(
             'success', 'Success, Record Updated',
         );
+    }
+
+    public function previewRecordFile(Records $record){
+        $disk = Storage::disk('documents');
+
+        abort_unless($disk->exists($record->filepath), 404);
+
+        return $disk->response($record->filepath);
     }
 }

@@ -208,7 +208,7 @@ export default {
                             <input
                                 type="text"
                                 class="form-control"
-                                placeholder="Search loan type..."
+                                placeholder="Search Name..."
                                 v-model="searchAuthorName"
                             />
                         </div>

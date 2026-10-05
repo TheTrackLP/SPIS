@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <link rel="icon" type="image/png" href="/img/capiz-logo.png" />
+        <link rel="icon" href="{{ asset('favicon.ico') }}">
 
         <title inertia>{{ config('app.name', 'SPIS') }}</title>
 

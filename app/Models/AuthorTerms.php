@@ -18,4 +18,14 @@ class AuthorTerms extends Model
     public function eventTypes() {
         return [];
     }
+
+    public function loggableFields() {
+        return [
+            'authorid' => '',
+            'authortermid' => '',
+            'authortermno' => '',
+            'authorposition' => '',
+            'remarks' => '',
+        ];
+    }
 }

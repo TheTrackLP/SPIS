@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('field_name')->nullable();
             $table->mediumText('old_value')->nullable();
             $table->mediumText('new_value')->nullable();
+            $table->longText('create_value')->nullable();
             $table->timestamps();
 
             $table->index(['module', 'event_type']);

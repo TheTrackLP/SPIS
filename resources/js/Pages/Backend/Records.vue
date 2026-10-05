@@ -34,7 +34,14 @@ const recordForm = useForm({
     subclassname: [],
     sectorid: [],
     sectorname: [],
+    filepath: null,
 });
+
+const onFileChange = (e) => {
+    recordForm.filepath = e.target.files[0] ?? null;
+};
+
+const fileInput = ref(null);
 
 const modalRef = ref(null);
 let modalInstance = null;
@@ -152,6 +159,7 @@ const submitRecord = async () => {
                 selectedMainClassID.value = [];
                 selectedSponsorAuthorID.value = [];
                 selectedCoSponsorAuthorID.value = [];
+                if (fileInput.value) fileInput.value.value = "";
             },
         });
     } else {
@@ -434,7 +442,7 @@ export default {
                     <td class="text-center" style="white-space: nowrap">
                         <a
                             class="btn btn-sm btn-light border"
-                            href="https://facebook.com"
+                            :href="route('rec.preview', record.id)"
                             target="_blank"
                             ><i class="fa-solid fa-file-pdf"></i
                         ></a>
@@ -631,14 +639,6 @@ export default {
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-sm btn-outline-success">
-                        <i class="fa-solid fa-print me-1"></i>Print
-                    </button>
-                    <button class="btn btn-sm btn-outline-primary">
-                        <i class="fa-solid fa-download me-1"></i>Download
-                    </button>
                 </div>
             </div>
         </div>
@@ -842,7 +842,13 @@ export default {
                         <div class="row g-3 mb-4">
                             <div class="col-md-4">
                                 <label class="form-label">File Upload</label>
-                                <input type="file" class="form-control" />
+                                <input
+                                    ref="fileInput"
+                                    type="file"
+                                    class="form-control"
+                                    accept=".pdf,.doc,.docx"
+                                    @change="onFileChange"
+                                />
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label"

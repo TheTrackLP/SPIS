@@ -34,3 +34,11 @@ export const formatDateTime = (FullDateTimeString) => {
 
     return new Intl.DateTimeFormat("en-US", options).format(dateObj);
 };
+
+export const strHeadline = (str) => {
+    return str
+        .replace(/[-_]+/g, " ")
+        .replace(/([a-z])([A-Z])/g, "$1 $2")
+        .toLowerCase()
+        .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
+};

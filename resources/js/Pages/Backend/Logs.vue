@@ -1,6 +1,11 @@
 <script setup>
 import { Head } from "@inertiajs/vue3";
-import { formatDate, formatDateTime, formatTime } from "@/resuables";
+import {
+    formatDate,
+    formatDateTime,
+    formatTime,
+    strHeadline,
+} from "@/resuables";
 import { nextTick, ref } from "vue";
 import { Modal } from "bootstrap";
 
@@ -21,6 +26,8 @@ const getEvent = ref("");
 const getFieldName = ref("");
 const getOldValue = ref("");
 const getNewValue = ref("");
+const getAction = ref("");
+const getCreatValue = ref(null);
 
 const fetchActivityLog = (log) => {
     opemViewModal();
@@ -32,6 +39,8 @@ const fetchActivityLog = (log) => {
     getFieldName.value = log.field_name;
     getOldValue.value = log.old_value;
     getNewValue.value = log.new_value;
+    getAction.value = log.action;
+    getCreatValue.value = JSON.parse(log.create_value);
 };
 
 const props = defineProps({
@@ -103,14 +112,20 @@ export default {
                             </div>
                         </td>
                         <td>
-                            {{ log.event_type }}
+                            {{ strHeadline(log.event_type) }}
                         </td>
-                        <td>{{ log.module }}</td>
+                        <td>{{ strHeadline(log.module) }}</td>
                         <td>{{ log.subject_label }}</td>
-                        <td class="small">
+                        <td class="small" v-if="log.action === 'updated'">
                             <span class="diff-old">{{ log.old_value }}</span>
                             <i class="fa-solid fa-arrow-right"></i>
                             <span class="diff-new">{{ log.new_value }}</span>
+                        </td>
+                        <td v-else-if="log.action === 'created'">
+                            <h6>
+                                Click button to view full records created
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </h6>
                         </td>
                         <td class="text-end">
                             <button
@@ -161,30 +176,58 @@ export default {
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="detail-label">Module</div>
-                            <div class="detail-value">{{ getModule }}</div>
+                            <div class="detail-value">
+                                {{ strHeadline(getModule) }}
+                            </div>
                         </div>
                         <div class="col-6 col-md-4">
                             <div class="detail-label">Event</div>
-                            <div class="detail-value">{{ getEvent }}</div>
+                            <div class="detail-value">
+                                {{ strHeadline(getEvent) }}
+                            </div>
                         </div>
                     </div>
                     <hr />
-                    <h6 class="fs-5 fw-semibold mb-3">
-                        What changed: {{ getFieldName }}
-                    </h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <div class="change-card before">
-                                <div class="card-title">Before</div>
-                                <span>{{ getOldValue }}</span>
+                    <div class="updatesLogs" v-if="getAction === 'updated'">
+                        <h6 class="fs-5 fw-semibold mb-3">
+                            What changed: {{ strHeadline(getFieldName) }}
+                        </h6>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <div class="change-card before">
+                                    <div class="card-title">Before</div>
+                                    <span>{{ getOldValue }}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="change-card after">
+                                    <div class="card-title">After</div>
+                                    <span>{{ getNewValue }}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="change-card after">
-                                <div class="card-title">After</div>
-                                <span>{{ getNewValue }}</span>
-                            </div>
+                    </div>
+                    <div
+                        class="createRLogs"
+                        v-else-if="getAction === 'created'"
+                    >
+                        <div class="created-banner mb-3">
+                            <span class="sign plus">+</span>New record created
+                            with the details below
                         </div>
+                        <table class="table table-bordered table-hover">
+                            <tbody>
+                                <tr
+                                    v-for="(value, key) in getCreatValue"
+                                    :key="key"
+                                >
+                                    <td>
+                                        <strong>{{ strHeadline(key) }}</strong>
+                                    </td>
+                                    <td>{{ value }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 

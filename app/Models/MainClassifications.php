@@ -18,4 +18,9 @@ class MainClassifications extends Model
     public function eventTypes(){
         return [];
     }
+    public function loggableFields(){
+        return [
+            'mainname' => 'Main Class',
+        ];
+    }
 }

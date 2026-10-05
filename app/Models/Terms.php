@@ -20,4 +20,12 @@ class Terms extends Model
             'termto' => 'termto_modified',
         ];
     }
+
+    public function loggableFields(){
+       return [
+            'sptermno' => 'SP Term No.',
+            'termfrom' => 'Term From',
+            'termto' => 'Term To',
+        ];
+    }
 }

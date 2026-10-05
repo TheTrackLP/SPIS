@@ -18,4 +18,11 @@ class SubClassifications extends Model
     public function eventTypes(){
         return [];
     }
+
+    public function loggableFields(){
+        return [
+            'subname' => 'Sub Class',
+            'desc' => 'Description',
+        ];
+    }
 }

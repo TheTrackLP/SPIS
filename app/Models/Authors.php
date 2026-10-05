@@ -12,10 +12,19 @@ class Authors extends Model
     use ActivityLog;
 
     public function logLabel(){
-        return $this->fullname;
+        return trim($this->authorlastname . ', ' . $this->authorfirstname . ' ' . $this->authormiddlename);
     }
 
     public function eventTypes(){
         return [];
+    }
+
+    public function loggableFields(){
+        return [
+            'authorfirstname' => 'First Name',
+            'authormiddlename' => 'Middle Name',
+            'authorlastname' => 'Last Name',
+            'authorbirtdate' => 'Birth Date',
+        ];
     }
 }

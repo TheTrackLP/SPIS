@@ -38,6 +38,16 @@ class User extends Authenticatable
     public function eventTypes() {
         return [];
     }
+    
+    public function loggableFields(){
+        return [
+            'username' => 'Username',
+            'name' => 'Name',
+            'email' => 'Email',
+            'role' => 'Role',
+            'status' => 'Status',
+        ];
+    }
 
     /**
      * Get the attributes that should be cast.

@@ -60,6 +60,13 @@ return [
             'report' => false,
         ],
 
+        'documents' => [
+            'driver'     => 'local',
+            'root'       => env('DOCUMENTS_PATH', storage_path('app/documents')),
+            'visibility' => 'private',
+            'throw'      => true,
+        ],
+
     ],
 
     /*
