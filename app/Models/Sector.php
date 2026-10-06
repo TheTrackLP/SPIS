@@ -21,6 +21,9 @@ class Sector extends Model
     }
 
     public function loggableFields(){
-        return [];
+        return [
+            'name' => 'Sector Name',
+            'desc' => 'Sector Description',
+        ];
     }
 }

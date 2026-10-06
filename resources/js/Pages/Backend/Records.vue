@@ -350,6 +350,16 @@ export default {
     top: 0;
     z-index: 2;
 }
+.table-responsive {
+    max-height: 610px;
+    overflow-y: auto;
+}
+.table-responsive th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #ffffff;
+}
 </style>
 <template>
     <Head title="Records" />

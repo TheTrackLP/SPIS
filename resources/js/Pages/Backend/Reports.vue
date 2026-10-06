@@ -124,9 +124,24 @@ export default {
             </div>
         </div>
         <div class="d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary">
-                <i class="fa-solid fa-print me-1"></i>Print
-            </button>
+            <v-select
+                :options="terms"
+                style="min-width: 300px"
+                :reduce="(term) => term.id"
+                label="sptermno"
+                placeholder="Select SP Term"
+            >
+                <template #option="term">
+                    {{ term.sptermno }} | {{ formatDate(term.termfrom) }}-{{
+                        formatDate(term.termto)
+                    }}
+                </template>
+                <template #selected-option="term">
+                    {{ term.sptermno }} | {{ formatDate(term.termfrom) }}-{{
+                        formatDate(term.termto)
+                    }}
+                </template></v-select
+            >
             <!-- <button class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
             </button>

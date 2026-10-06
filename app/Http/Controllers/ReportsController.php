@@ -16,6 +16,8 @@ class ReportsController extends Controller
     public function ReportsDashboard(){
         $recordsCount = Records::select('authorid', 'coauthorid', 'sptermid')->get(); //Get every authorid string from the table
 
+        $recordsByTerm = $recordsCount->groupBy('sptermid');
+
         $authorIds = $recordsCount
             ->flatMap(fn ($recordsCount) => explode('/', $recordsCount->authorid)) //Break every string into individual IDs, and merge them all into one big list
             ->map(fn ($id) => (int) trim($id)) // Convert every ID from string to integer
