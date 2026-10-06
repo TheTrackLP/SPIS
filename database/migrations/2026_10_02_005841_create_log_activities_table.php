@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('module');
             $table->string('subject_type')->nullable();
             $table->unsignedBigInteger('subject_id')->nullable();
-            $table->string('subject_label')->nullable();
+            $table->longText('subject_label')->nullable();
             $table->string('field_name')->nullable();
             $table->mediumText('old_value')->nullable();
             $table->mediumText('new_value')->nullable();

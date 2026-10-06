@@ -42,6 +42,7 @@ const onFileChange = (e) => {
 };
 
 const fileInput = ref(null);
+const currentFile = ref(null);
 
 const modalRef = ref(null);
 let modalInstance = null;
@@ -122,6 +123,10 @@ const fetchModalRecord = (record) => {
     recordForm.resono = record.resono;
     recordForm.session_date = record.session_date;
     recordForm.status = record.status;
+    recordForm.filepath = null;
+    if (fileInput.value) fileInput.value.value = "";
+    currentFile.value = record.filepath ?? null;
+
     selectedAuthorID.value = record.authorid
         ? record.authorid.split("/").map(Number)
         : [];
@@ -176,6 +181,7 @@ const submitRecord = async () => {
                 selectedMainClassID.value = [];
                 selectedSponsorAuthorID.value = [];
                 selectedCoSponsorAuthorID.value = [];
+                if (fileInput.value) fileInput.value.value = "";
             },
         });
     }

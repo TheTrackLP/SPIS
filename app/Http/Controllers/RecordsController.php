@@ -34,7 +34,7 @@ class RecordsController extends Controller
                 'terms.sptermno'
                 )
                 ->leftjoin('terms', 'terms.id', '=', 'records.sptermid')
-                ->orderby('resono')->get(),
+                ->latest()->get(),
         ]);
     }
 
@@ -117,7 +117,9 @@ class RecordsController extends Controller
             );
         }
 
-        Records::findorfail($request->id)->update([
+        $record = Records::findorfail($request->id);
+
+        $data = [
             'sptermid' => $request->sptermid,
             'type' => $request->type,
             'resono' => $request->resono,
@@ -138,9 +140,21 @@ class RecordsController extends Controller
             'subclassname' => $request->subclassname,
             'sectorid' => $request->sectorid,
             'sectorname' => $request->sectorname,
-            'filepath' => $request->filepath,
-        ]);
+        ];
 
+        if ($request->hasFile('filepath')) {
+            $file = $request->file('filepath');
+            $year = date('Y', strtotime($request->session_date));
+            $filename = Str::slug($year.' '.$request->resono).'.'.$file->getClientOriginalExtension();
+
+            if ($record->filepath) {
+                Storage::disk('documents')->delete($record->filepath);
+            }
+
+            $data['filepath'] = $file->storeAs('scanned', $filename, 'documents');
+        }
+        
+        $record->update($data);
         return redirect()->route('rec.dash')->with(
             'success', 'Success, Record Updated',
         );

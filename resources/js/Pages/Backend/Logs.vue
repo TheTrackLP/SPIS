@@ -43,17 +43,17 @@ const fetchActivityLog = (log) => {
     getCreatValue.value = JSON.parse(log.create_value);
 };
 
-const isDate = (val) => {
-    let dateStamp = Date.parse(val);
+// const isDate = (val) => {
+//     let dateStamp = Date.parse(val);
 
-    if (val instanceof Date && !isNaN(val)) {
-        return val;
-    } else if (typeof val === "string" && !isNaN(dateStamp) && isNaN(val)) {
-        return formatDate(val);
-    }
+//     if (val instanceof Date && !isNaN(val)) {
+//         return val;
+//     } else if (typeof val === "string" && !isNaN(dateStamp) && isNaN(val)) {
+//         return formatDate(val);
+//     }
 
-    return val;
-};
+//     return val;
+// };
 
 const props = defineProps({
     logs: Array,
@@ -140,13 +140,9 @@ export default {
                         <td>{{ strHeadline(log.module) }}</td>
                         <td>{{ log.subject_label }}</td>
                         <td class="small" v-if="log.action === 'updated'">
-                            <span class="diff-old">{{
-                                isDate(log.old_value)
-                            }}</span>
+                            <span class="diff-old">{{ log.old_value }}</span>
                             <i class="fa-solid fa-arrow-right"></i>
-                            <span class="diff-new">{{
-                                isDate(log.new_value)
-                            }}</span>
+                            <span class="diff-new">{{ log.new_value }}</span>
                         </td>
                         <td v-else-if="log.action === 'created'">
                             <h6>
@@ -229,13 +225,13 @@ export default {
                             <div class="col-md-6">
                                 <div class="change-card before">
                                     <div class="card-title">Before</div>
-                                    <span>{{ isDate(getOldValue) }}</span>
+                                    <span>{{ getOldValue }}</span>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="change-card after">
                                     <div class="card-title">After</div>
-                                    <span>{{ isDate(getNewValue) }}</span>
+                                    <span>{{ getNewValue }}</span>
                                 </div>
                             </div>
                         </div>
@@ -257,7 +253,7 @@ export default {
                                     <td>
                                         <strong>{{ strHeadline(key) }}</strong>
                                     </td>
-                                    <td>{{ isDate(value) }}</td>
+                                    <td>{{ value }}</td>
                                 </tr>
                             </tbody>
                         </table>
