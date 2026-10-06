@@ -62,6 +62,7 @@ Route::middleware('auth')->group(function(){
     Route::controller(TermsController::class)->group(function(){
         Route::get('/admin/settings/terms', 'TermsDashboard')->name('term.dash');
         Route::post('/admin/settings/terms/Store', 'StoreTermPeriod')->name('term.store');
+        Route::post('/admin/settings/terms/update/{id}', 'UpdateTermPeriod')->name('term.update');
     });
 
     Route::controller(UsersController::class)->group(function(){

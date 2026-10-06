@@ -37,4 +37,28 @@ class TermsController extends Controller
             'success', "Success, SP Term Period Added!",
         );
     }
+
+    public function UpdateTermPeriod(Request $request){
+        $valid = Validator::make($request->all(), [
+            'sptermno' => 'required',
+            'termfrom' => 'required',
+            'termto' => 'required',
+        ]);
+
+        if($valid->fails()){
+            return redirect()->route('term.dash')->with(
+                'error', "Error, Try Again!",
+            );
+        }
+
+        Terms::findorfail($request->id)->update([
+            'sptermno' => 'SP-'.$request->sptermno,
+            'termfrom' => $request->termfrom,
+            'termto' => $request->termto,
+        ]);
+
+        return redirect()->route('term.dash')->with(
+            'success', "Success, SP Term Period Updated!",
+        );
+    }
 }

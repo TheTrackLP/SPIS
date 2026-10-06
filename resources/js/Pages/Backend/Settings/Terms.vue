@@ -20,6 +20,11 @@ const TermModalForm = () => {
     termForm.reset();
 };
 
+const closeModal = () => {
+    modalInstance?.hide();
+    termForm.reset();
+};
+
 const termFormMode = ref("create");
 const termForm = useForm({
     sptermno: "",
@@ -30,24 +35,27 @@ const termForm = useForm({
 const fetchPeriod = (term) => {
     termFormMode.value = "edit";
     openModal();
-    termForm.sptermno = term.sptermno;
+    termForm.id = term.id;
+    termForm.sptermno = parseInt(term.sptermno.replace(/\D/g, ""), 10);
     termForm.termfrom = term.termfrom;
     termForm.termto = term.termto;
 };
 
 const submitTermForm = () => {
-    if ((termFormMode.value = "create")) {
+    if (termFormMode.value === "create") {
         termFormMode.value = "create";
         termForm.post(route("term.store"), {
             onSuccess: () => {
                 termForm.reset();
+                closeModal();
             },
         });
     } else {
         termFormMode.value = "edit";
-        termForm.post(route("term.store"), {
+        termForm.post(route("term.update", termForm.id), {
             onSuccess: () => {
                 termForm.reset();
+                closeModal();
             },
         });
     }
@@ -143,10 +151,11 @@ export default {
                         <button
                             type="button"
                             class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
+                            @click="closeModal"
                         ></button>
                     </div>
                     <div class="modal-body">
+                        <input type="hidden" v-model="termForm.id" />
                         <div class="form-group mb-3">
                             <label for="">SP Term No.</label>
                             <div class="input-group mb-3">
