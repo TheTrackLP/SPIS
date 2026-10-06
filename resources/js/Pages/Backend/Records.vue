@@ -341,7 +341,7 @@ export default {
 <style>
 .filter {
     position: sticky;
-    top: 70px;
+    top: 0;
     z-index: 2;
 }
 </style>
@@ -435,6 +435,7 @@ export default {
                     <th>Author/s</th>
                     <th>Co-Author/s</th>
                     <th>Sector</th>
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
@@ -451,12 +452,6 @@ export default {
                             @click="openModaViewRecord(record)"
                         >
                             <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button
-                            class="btn btn-sm btn-light border"
-                            @click="fetchModalRecord(record)"
-                        >
-                            <i class="fa-solid fa-pen"></i>
                         </button>
                     </td>
                     <td>{{ record.sptermno }}</td>
@@ -485,6 +480,14 @@ export default {
                             v-for="sec in record.sectorname.split('/')"
                             >{{ sec }}</span
                         >
+                    </td>
+                    <td>
+                        <button
+                            class="btn btn-sm btn-light border"
+                            @click="fetchModalRecord(record)"
+                        >
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
                     </td>
                 </tr>
             </tbody>

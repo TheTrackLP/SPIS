@@ -14,6 +14,7 @@ class ActivityLogsController extends Controller
                 'users.username',
             )
             ->leftJoin('users', 'users.id', '=', 'log_activities.user_id')
+            ->orderBy('log_activities.created_at', 'desc')
             ->get(),
         ]);
     }

@@ -29,6 +29,8 @@ class Records extends Model
             'status' => 'Status',
             'authorname' => 'Author Name/s',
             'coauthorname' => 'Co Author/s',
+            'sponsorname' => 'Sponsor Name/s',
+            'cosponsorname' => 'Co Sponsor/s',
             'mainclassname' => 'Main Classifications',
             'subclassname' => 'Sub Classifications',
             'sectorname' => 'Sector Name',

@@ -69,6 +69,17 @@ export default {
     padding: 1px 6px;
     border-radius: 4px;
 }
+
+.table-responsive {
+    max-height: 710px;
+    overflow-y: auto;
+}
+.table-responsive th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #ffffff;
+}
 </style>
 <template>
     <Head title="Activity Logs" />
