@@ -1,5 +1,8 @@
 <script setup>
 import { formatDate } from "@/resuables";
+import { ref, computed } from "vue";
+import { Head, Link } from "@inertiajs/vue3";
+
 const props = defineProps({
     latestRecords: Array,
     terms: Array,
@@ -10,8 +13,47 @@ const props = defineProps({
     activeAuthors: Object,
 });
 
+const filterByTerms = ref("");
+
+const filterMainAuthByTermsCount = computed(() => {
+    const termQuery = filterByTerms.value;
+
+    return props.mainAuthorCount.filter((term) => {
+        const matchTerm = !termQuery || term.spterm === termQuery;
+        return matchTerm;
+    });
+});
+
+const filterCoAuthByTermsCount = computed(() => {
+    const termQuery = filterByTerms.value;
+
+    return props.coAuthorCount.filter((term) => {
+        const matchTerm = !termQuery || term.spterm === termQuery;
+        return matchTerm;
+    });
+});
+
+const filterSectorByTermsCount = computed(() => {
+    const termQuery = filterByTerms.value;
+
+    return props.sectorCount.filter((term) => {
+        const matchesTerm = !termQuery || term.spterm === termQuery;
+        return matchesTerm;
+    });
+});
+
+const filterRecordsByterm = computed(() => {
+    const termQuery = filterByTerms.value;
+
+    return props.latestRecords.filter((term) => {
+        const matchesTerm = !termQuery || term.sptermid === termQuery;
+        return matchesTerm;
+    });
+});
+</script>
+
+<script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import { Head, Link } from "@inertiajs/vue3";
 </script>
 
 <template>
@@ -19,7 +61,9 @@ import { Head, Link } from "@inertiajs/vue3";
     <AdminLayout>
         <section class="view active">
             <div class="container-fluid py-4 px-4">
-                <div class="">
+                <div
+                    class="d-flex justify-content-between align-items-center mb-3"
+                >
                     <div>
                         <h1 class="h3 fw-bold mb-0">Dashboard</h1>
                         <div class="text-muted small">
@@ -27,25 +71,29 @@ import { Head, Link } from "@inertiajs/vue3";
                             today.
                         </div>
                     </div>
-                    <v-select
-                        :options="terms"
-                        :reduce="(term) => term.id"
-                        label="sptermno"
-                        placeholder="Select SP Term"
-                    >
-                        <template #option="term">
-                            {{ term.sptermno }} |
-                            {{ formatDate(term.termfrom) }}-{{
-                                formatDate(term.termto)
-                            }}
-                        </template>
-                        <template #selected-option="term">
-                            {{ term.sptermno }} |
-                            {{ formatDate(term.termfrom) }}-{{
-                                formatDate(term.termto)
-                            }}
-                        </template></v-select
-                    >
+                    <div class="d-flex gap-2">
+                        <v-select
+                            :options="terms"
+                            style="min-width: 300px"
+                            :reduce="(term) => term.id"
+                            label="sptermno"
+                            placeholder="Select SP Term"
+                            v-model="filterByTerms"
+                        >
+                            <template #option="term">
+                                {{ term.sptermno }} |
+                                {{ formatDate(term.termfrom) }}-{{
+                                    formatDate(term.termto)
+                                }}
+                            </template>
+                            <template #selected-option="term">
+                                {{ term.sptermno }} |
+                                {{ formatDate(term.termfrom) }}-{{
+                                    formatDate(term.termto)
+                                }}
+                            </template></v-select
+                        >
+                    </div>
                 </div>
                 <div class="row g-3 mb-4">
                     <div class="col-6 col-lg-2">
@@ -151,7 +199,7 @@ import { Head, Link } from "@inertiajs/vue3";
                                                 class="align-middle"
                                                 v-for="(
                                                     rec, index
-                                                ) in latestRecords"
+                                                ) in filterRecordsByterm"
                                                 :key="index"
                                             >
                                                 <td class="text-center">
@@ -191,12 +239,15 @@ import { Head, Link } from "@inertiajs/vue3";
                                 <div class="fw-semibold mb-3">
                                     Records by Author
                                 </div>
-                                <ul class="list-group list-group-flush">
+                                <ul
+                                    class="list-group list-group-flush"
+                                    v-if="filterMainAuthByTermsCount.length > 0"
+                                >
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-0"
                                         v-for="(
                                             count, index
-                                        ) in mainAuthorCount"
+                                        ) in filterMainAuthByTermsCount"
                                         :key="index"
                                     >
                                         <span>{{ count.fullname }}</span>
@@ -205,6 +256,9 @@ import { Head, Link } from "@inertiajs/vue3";
                                             >{{ count.count }}</span
                                         >
                                     </li>
+                                </ul>
+                                <ul v-else>
+                                    <h6>No Data as of Yet</h6>
                                 </ul>
                             </div>
                         </div>
@@ -215,13 +269,13 @@ import { Head, Link } from "@inertiajs/vue3";
                                 </div>
                                 <ul
                                     class="list-group list-group-flush"
-                                    id="coAuthorBreakdownList"
+                                    v-if="filterCoAuthByTermsCount.length > 0"
                                 >
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center px-0"
                                         v-for="(
                                             coAuthor, index
-                                        ) in coAuthorCount"
+                                        ) in filterCoAuthByTermsCount"
                                         :key="index"
                                     >
                                         <span>{{ coAuthor.fullname }}</span>
@@ -231,6 +285,9 @@ import { Head, Link } from "@inertiajs/vue3";
                                         >
                                     </li>
                                 </ul>
+                                <ul v-else>
+                                    <h6>No Data as of Yet</h6>
+                                </ul>
                             </div>
                         </div>
                         <div class="card shadow-sm border-0">
@@ -239,12 +296,17 @@ import { Head, Link } from "@inertiajs/vue3";
                                     Records by Sector
                                 </div>
                                 <div id="sectorBreakdownList">
-                                    <ul class="list-group list-group-flush">
+                                    <ul
+                                        class="list-group list-group-flush"
+                                        v-if="
+                                            filterSectorByTermsCount.length > 0
+                                        "
+                                    >
                                         <li
                                             class="list-group-item d-flex justify-content-between align-items-center px-0"
                                             v-for="(
                                                 sector, index
-                                            ) in sectorCount"
+                                            ) in filterSectorByTermsCount"
                                             :key="index"
                                         >
                                             <span>{{ sector.name }}</span>
@@ -253,6 +315,9 @@ import { Head, Link } from "@inertiajs/vue3";
                                                 >{{ sector.count }}</span
                                             >
                                         </li>
+                                    </ul>
+                                    <ul v-else>
+                                        <h6>No Data as of Yet</h6>
                                     </ul>
                                 </div>
                             </div>

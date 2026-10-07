@@ -18,61 +18,64 @@ class ReportsController extends Controller
 
         $recordsByTerm = $recordsCount->groupBy('sptermid');
 
-        $authorIds = $recordsCount
-            ->flatMap(fn ($recordsCount) => explode('/', $recordsCount->authorid)) //Break every string into individual IDs, and merge them all into one big list
+        //Make an empty array to push and display later on
+        $authorCounts = [];
+        $coAuthorCounts = [];
+
+        //Loop through each unique author, and count their records
+        foreach ($recordsByTerm as $spTermId => $termsRecords) {
+            $authorIds = $termsRecords
+            ->flatMap(fn ($records) => explode('/', $records->authorid)) //Break every string into individual IDs, and merge them all into one big list
             ->map(fn ($id) => (int) trim($id)) // Convert every ID from string to integer
             ->filter(fn ($id) => $id > 0) // drop 0s and negatives — invalid IDs
             ->unique() // This Remove duplicates
             ->values(); // Reset Index
 
-        $coAuthorIds = $recordsCount
-            ->flatMap(fn ($recordsCount) => explode('/', $recordsCount->coauthorid))
-            ->map(fn ($id) => (int) trim($id)) // trim whitespace just in case
-            ->filter(fn ($id) => $id > 0) // drop 0s and negatives — invalid IDs
-            ->unique() 
-            ->values(); 
 
-        //Make an empty array to push and display later on
-        $authorCounts = [];
+            foreach ($authorIds as $id) {
+                $count = $termsRecords->filter(function ($record) use ($id) {
+                    return in_array((string) $id, explode('/', $record->authorid));
+                })->count();
 
-        //Loop through each unique author, and count their records
-        foreach ($authorIds as $id) {
-            $count = Records::whereRaw(
-                "CONCAT('/', authorid, '/') LIKE ?",
-                ["%/{$id}/%"]
-            )->count();
+                $author = Authors::select(
+                    DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+                )->find($id);
+                
+                //Push Data into an empty Array
+                $authorCounts[] = [
+                    'id' => $id,
+                    'fullname' => $author->fullname ?? 'Unknown',
+                    'count' => $count,
+                    'spterm' => $spTermId,
+                    ];
+            }
 
-        $author = Authors::select(
-            DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
-        )->
-        find($id);
-        
-        //Push Data into an empty Array
-        $authorCounts[] = [
-            'id' => $id,
-            'fullname' => $author->fullname ?? 'Unknown',
-            'count' => $count,
-            ];
+            $coAuthorIds = $termsRecords
+                ->flatMap(fn ($records) => explode('/', $records->coauthorid))
+                ->map(fn ($id) => (int) trim($id)) // trim whitespace just in case
+                ->filter(fn ($id) => $id > 0) // drop 0s and negatives — invalid IDs
+                ->unique() 
+                ->values(); 
+
+            foreach ($coAuthorIds as $id) {
+                $count = $termsRecords->filter(function ($record) use ($id) {
+                    return in_array((string) $id, explode('/', $record->coauthorid));
+                    })->count();
+
+                $coauthor = Authors::select(
+                    DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+                )->find($id);
+            
+                $coAuthorCounts[] = [
+                    'id' => $id,
+                    'fullname' => $coauthor->fullname ?? 'Unknown',
+                    'count' => $count,
+                    'spterm' => $spTermId,
+                    ];
+            }
         }
-        $coAuthorCounts = [];
 
-        foreach ($coAuthorIds as $id) {
-            $count = Records::whereRaw(
-                "CONCAT('/', coauthorid, '/') LIKE ?",
-                ["%/{$id}/%"]
-            )->count();
 
-        $coauthor = Authors::select(
-            DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
-        )
-        ->find($id);
-        
-        $coAuthorCounts[] = [
-            'id' => $id,
-            'fullname' => $coauthor->fullname ?? 'Unknown',
-            'count' => $count,
-            ];
-        }
         return inertia('Backend/Reports', [
             'mainAuthRecCount'=>$authorCounts,
             'CoAuthRecCount'=>$coAuthorCounts,

@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { formatDate } from "@/resuables";
 
 const props = defineProps({
@@ -102,11 +102,27 @@ const submitFilterRecords = async () => {
 };
 
 const collapseFilters = ref(false);
+
+const filterByTerms = ref("");
+
+const filterMainAuthCountsByTerms = computed(() => {
+    const termQuery = filterByTerms.value;
+    return props.mainAuthRecCount.filter((term) => {
+        const matchTerm = !termQuery || term.spterm === termQuery;
+        return matchTerm;
+    });
+});
+const filterCoAuthCountsByTerms = computed(() => {
+    const termQuery = filterByTerms.value;
+    return props.CoAuthRecCount.filter((term) => {
+        const matchTerm = !termQuery || term.spterm === termQuery;
+        return matchTerm;
+    });
+});
 </script>
 
 <script>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
-import { computed } from "vue";
 
 export default {
     layout: AdminLayout,
@@ -130,6 +146,7 @@ export default {
                 :reduce="(term) => term.id"
                 label="sptermno"
                 placeholder="Select SP Term"
+                v-model="filterByTerms"
             >
                 <template #option="term">
                     {{ term.sptermno }} | {{ formatDate(term.termfrom) }}-{{
@@ -326,13 +343,25 @@ export default {
                                 <th>Records</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="filterMainAuthCountsByTerms.length > 0">
                             <tr
-                                v-for="(count, index) in mainAuthRecCount"
+                                v-for="(
+                                    count, index
+                                ) in filterMainAuthCountsByTerms"
                                 :key="index"
                             >
                                 <td>{{ count.fullname }}</td>
                                 <td>{{ count.count }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else>
+                            <tr>
+                                <td
+                                    colspan="7"
+                                    class="text-center align-middle"
+                                >
+                                    <h6>No Data as of Yet</h6>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -350,13 +379,25 @@ export default {
                                 <th>Records</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody v-if="filterCoAuthCountsByTerms.length > 0">
                             <tr
-                                v-for="(count, index) in CoAuthRecCount"
+                                v-for="(
+                                    count, index
+                                ) in filterCoAuthCountsByTerms"
                                 :key="index"
                             >
                                 <td>{{ count.fullname }}</td>
                                 <td>{{ count.count }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else>
+                            <tr>
+                                <td
+                                    colspan="7"
+                                    class="text-center align-middle"
+                                >
+                                    <h6>No Data as of Yet</h6>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
