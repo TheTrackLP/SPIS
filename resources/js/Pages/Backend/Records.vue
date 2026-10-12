@@ -10,12 +10,13 @@ const props = defineProps({
     subClass: Array,
     records: Array,
     terms: Array,
+    types: Array,
 });
 
 const recordFormMode = ref("create");
 const recordForm = useForm({
     sptermid: "",
-    type: "",
+    type_id: "",
     resono: "",
     session_date: "",
     title: "",
@@ -101,7 +102,7 @@ const openModaViewRecord = (record) => {
 
     getRecordTitle.value = record.title;
     getRecordTerm.value = record.sptermno;
-    getRecordType.value = record.type;
+    getRecordType.value = record.type_name;
     getRecordResoNo.value = record.resono;
     getRecordSessionDate.value = record.session_date;
     getRecordSector.value = record.sectorname;
@@ -119,7 +120,7 @@ const fetchModalRecord = (record) => {
     recordForm.id = record.id;
     recordForm.title = record.title;
     recordForm.sptermid = record.sptermid;
-    recordForm.type = record.type;
+    recordForm.type_id = record.type_id;
     recordForm.resono = record.resono;
     recordForm.session_date = record.session_date;
     recordForm.status = record.status;
@@ -322,8 +323,8 @@ const filteredRecords = computed(() => {
             rec.title.toLowerCase().includes(textQuery) ||
             String(rec.resono).includes(textQuery);
 
-        const matchesTerm = !termQuery || rec.sptermid === termQuery;
-        const matchesType = !typeQuery || rec.type === typeQuery;
+        const matchesTerm = !termQuery || rec.sptermno === termQuery;
+        const matchesType = !typeQuery || rec.type_id === typeQuery;
         const matchesStatus = !statusQuery || rec.status === statusQuery;
 
         return matchesText && matchesTerm && matchesType && matchesStatus;
@@ -400,12 +401,14 @@ export default {
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">Type</label>
-                    <select v-model="filterType" class="form-select">
-                        <option value="">All Types</option>
-                        <option value="A-ORD">A-ORB</option>
-                        <option value="ORD">ORD</option>
-                        <option value="RES">RES</option>
-                    </select>
+                    <v-select
+                        :options="types"
+                        :reduce="(type) => type.id"
+                        label="type_name"
+                        placeholder="Select Type"
+                        v-model="filterType"
+                    >
+                    </v-select>
                 </div>
                 <div class="col-6 col-md-2">
                     <label for="">Status</label>
@@ -473,7 +476,7 @@ export default {
                     <td>{{ record.sptermno }}</td>
                     <td>
                         <span class="badge text-bg-secondary">{{
-                            record.type
+                            record.type_name
                         }}</span>
                     </td>
                     <td>{{ record.resono }}</td>
@@ -719,18 +722,14 @@ export default {
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Type</label>
-                                <select
-                                    class="form-select"
-                                    required
-                                    v-model="recordForm.type"
+                                <v-select
+                                    :options="types"
+                                    :reduce="(type) => type.id"
+                                    label="type_name"
+                                    placeholder="Select Type"
+                                    v-model="recordForm.type_id"
                                 >
-                                    <option value="" disabled selected>
-                                        Select type
-                                    </option>
-                                    <option value="A-ORD">A-ORD</option>
-                                    <option value="ORD">ORD</option>
-                                    <option value="RES">RES</option>
-                                </select>
+                                </v-select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">No.</label>

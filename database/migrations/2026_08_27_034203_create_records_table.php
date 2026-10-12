@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('records', function (Blueprint $table) {
             $table->id();
             $table->integer('sptermid')->nullable();
-            $table->enum('type', ['A-ORD', 'ORD', 'RES']);
+            $table->integer('type_id')->nullable();
             $table->bigInteger('resono')->nullable();
             $table->date('session_date')->nullable();
             $table->string('title')->nullable();

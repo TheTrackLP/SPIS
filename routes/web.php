@@ -9,6 +9,7 @@ use App\Http\Controllers\Settings\ClassController;
 use App\Http\Controllers\Settings\SectorController;
 use App\Http\Controllers\Settings\UsersController;
 use App\Http\Controllers\TermsController;
+use App\Http\Controllers\TypesController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -73,6 +74,12 @@ Route::middleware('auth')->group(function(){
 
     Route::controller(ActivityLogsController::class)->group(function() {
         Route::get('/admin/activity-logs', 'LogsDashboard')->name('logs.dash');
+    });
+
+    Route::controller(TypesController::class)->group(function(){
+        Route::get('/admin/settings/types', 'TypesDashboard')->name('types.dash');
+        Route::post('/admin/settings/store', 'TypesStore')->name('types.store');
+        Route::post('/admin/settings/update/{id}', 'TypesUpdate')->name('types.update');
     });
 });
 

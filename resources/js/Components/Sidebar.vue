@@ -70,6 +70,12 @@ const isActive = (routeName) => {
                 ><i class="fa-solid fa-layer-group"></i> Sector</Link
             >
             <Link
+                :href="route('types.dash')"
+                class="nav-link"
+                :class="{ active: isActive('types.*') }"
+                ><i class="fa-solid fa-boxes-stacked"></i> Types</Link
+            >
+            <Link
                 :href="route('class.dash')"
                 class="nav-link"
                 :class="{ active: isActive('class.*') }"

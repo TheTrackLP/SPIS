@@ -9,6 +9,7 @@ use App\Models\Records;
 use App\Models\Sector;
 use App\Models\SubClassifications;
 use App\Models\Terms;
+use App\Models\Types;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -20,6 +21,7 @@ class RecordsController extends Controller
     public function RecordDashboard(){
         return inertia('Backend/Records',[
             'sectors'=>Sector::all(),
+            'types'=>Types::all(),
             'authors'=>Authors::select(
                 '*',
                 DB::raw("CONCAT(authorlastname, ', ', authorfirstname, ' ', authormiddlename) as fullname"),
@@ -31,9 +33,11 @@ class RecordsController extends Controller
             'terms'=>Terms::all(),
             'records'=>Records::select(
                 'records.*',
-                'terms.sptermno'
+                'terms.sptermno',
+                'types.type_name'
                 )
                 ->leftjoin('terms', 'terms.id', '=', 'records.sptermid')
+                ->leftjoin('types', 'types.id', '=', 'records.type_id')
                 ->latest()->get(),
         ]);
     }
@@ -41,7 +45,7 @@ class RecordsController extends Controller
     public function RecordAdd(Request $request){
         $valid = Validator::make($request->all(), [
             'sptermid' => 'required',
-            'type' => 'required',
+            'type_id' => 'required',
             'resono' => 'required',
             'session_date' => 'required',
             'title' => 'required',
@@ -69,7 +73,7 @@ class RecordsController extends Controller
 
         Records::create([
             'sptermid' => $request->sptermid,
-            'type' => $request->type,
+            'type_id' => $request->type_id,
             'resono' => $request->resono,
             'session_date' => $request->session_date,
             'title' => $request->title,
@@ -99,7 +103,7 @@ class RecordsController extends Controller
     public function RecordEdit(Request $request){
         $valid = Validator::make($request->all(), [
             'sptermid' => 'required',
-            'type' => 'required',
+            'type_id' => 'required',
             'resono' => 'required',
             'session_date' => 'required',
             'title' => 'required',
@@ -121,7 +125,7 @@ class RecordsController extends Controller
 
         $data = [
             'sptermid' => $request->sptermid,
-            'type' => $request->type,
+            'type_id' => $request->type_id,
             'resono' => $request->resono,
             'session_date' => $request->session_date,
             'title' => $request->title,

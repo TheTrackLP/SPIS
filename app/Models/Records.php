@@ -22,7 +22,7 @@ class Records extends Model
     public function loggableFields() {
         return [
             'sptermid' => 'SP Term',
-            'type' => 'Type',
+            'type_id' => 'Type',
             'resono' => 'No.',
             'session_date' => 'Session Date',
             'title' => 'Title',
