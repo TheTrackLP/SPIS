@@ -8,19 +8,24 @@ use App\Models\Records;
 use App\Models\Sector;
 use App\Models\SubClassifications;
 use App\Models\Terms;
+use App\Models\Types;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ReportsController extends Controller
 {
     public function ReportsDashboard(){
-        $recordsCount = Records::select('authorid', 'coauthorid', 'sptermid')->get(); //Get every authorid string from the table
+        $recordsCount = Records::select('authorid', 'coauthorid', 'sponsorid', 'cosponsorid', 'sptermid')->get(); //Get every authorid string from the table
+
+        $terms = Terms::all()->keyBy('id');
 
         $recordsByTerm = $recordsCount->groupBy('sptermid');
 
         //Make an empty array to push and display later on
         $authorCounts = [];
         $coAuthorCounts = [];
+        $SponsorCounts = [];
+        $coSponsorCounts = [];
 
         //Loop through each unique author, and count their records
         foreach ($recordsByTerm as $spTermId => $termsRecords) {
@@ -46,8 +51,9 @@ class ReportsController extends Controller
                     'id' => $id,
                     'fullname' => $author->fullname ?? 'Unknown',
                     'count' => $count,
-                    'spterm' => $spTermId,
-                    ];
+                    'spterm' => $terms[$spTermId]->sptermno ?? 'Unknown',
+                    'sptermid' => $spTermId,
+                ];
             }
 
             $coAuthorIds = $termsRecords
@@ -70,8 +76,59 @@ class ReportsController extends Controller
                     'id' => $id,
                     'fullname' => $coauthor->fullname ?? 'Unknown',
                     'count' => $count,
-                    'spterm' => $spTermId,
-                    ];
+                    'spterm' => $terms[$spTermId]->sptermno ?? 'Unknown',
+                    'sptermid' => $spTermId,
+                ];
+            }
+
+            $sponsorIds = $termsRecords
+                ->flatMap(fn ($records) => explode('/', $records->sponsorid))
+                ->map(fn ($id) => (int) trim($id))
+                ->filter(fn ($id) => $id > 0)
+                ->unique()
+                ->values();
+            
+            foreach ($sponsorIds as $id) {
+                $count = $termsRecords->filter(function ($record) use ($id) {
+                    return in_array((string) $id, explode('/', $record->sponsorid));
+                })->count();
+
+                $sponsor = Authors::select(
+                            DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+                    )->find($id);
+
+                $SponsorCounts[] = [
+                    'id' => $id,
+                    'fullname' => $sponsor->fullname ?? 'Unknown',
+                    'count' => $count,
+                    'spterm' => $terms[$spTermId]->sptermno ?? 'Unknown',
+                    'sptermid' => $spTermId,
+                ];
+            }
+
+            $coSponsorIds = $termsRecords
+                ->flatMap(fn ($records) => explode('/', $records->cosponsorid))
+                ->map(fn ($id) => (int) trim($id))
+                ->filter(fn ($id) => $id > 0)
+                ->unique()
+                ->values();
+            
+            foreach ($coSponsorIds as $id) {
+                $count = $termsRecords->filter(function ($record) use ($id) {
+                    return in_array((string) $id, explode('/', $record->cosponsorid));
+                })->count();
+
+                $coSponsor = Authors::select(
+                    DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+                )->find($id);
+
+                $coSponsorCounts[] = [
+                    'id' => $id,
+                    'fullname' => $sponsor->fullname ?? 'Unknown',
+                    'count' => $count,
+                    'spterm' => $terms[$spTermId]->sptermno ?? 'Unknown',
+                    'sptermid' => $spTermId,
+                ];
             }
         }
 
@@ -79,6 +136,8 @@ class ReportsController extends Controller
         return inertia('Backend/Reports', [
             'mainAuthRecCount'=>$authorCounts,
             'CoAuthRecCount'=>$coAuthorCounts,
+            'sponsorRecCounts'=>$SponsorCounts,
+            'coSponsorRecCounts'=>$coSponsorCounts,
             'authors'=>Authors::select(
                 '*',
                 DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
@@ -87,20 +146,22 @@ class ReportsController extends Controller
             'subClass'=>SubClassifications::all(),
             'sectors'=>Sector::all(),
             'terms'=>Terms::all(),
+            'types'=>Types::all(),
         ]);
     }
 
     public function FilterReport(Request $request) {
         
         $query = Records::query()
-        ->leftJoin('terms', 'terms.id', '=', 'records.sptermid');
+        ->leftJoin('terms', 'terms.id', '=', 'records.sptermid')
+        ->leftJoin('types', 'types.id', '=', 'records.type_id');
 
         if($request->filled('sptermid')){
             $query->where('sptermid', $request->sptermid);
         }
 
-        if($request->filled('type')){
-            $query->where('type', $request->type);
+        if($request->filled('type_id')){
+            $query->where('type_id', $request->type_id);
         }
 
         if($request->filled('status')){
@@ -126,6 +187,20 @@ class ReportsController extends Controller
             $query->whereRaw(
                 "CONCAT('/', coauthorid, '/') LIKE ?",
                 ["%/{$request->coauthorid}/%"]
+            );        
+        }
+
+        if($request->filled('sponsorid')){
+            $query->whereRaw(
+                "CONCAT('/', sponsorid, '/') LIKE ?",
+                ["%/{$request->sponsorid}/%"]
+            );        
+        }
+
+        if($request->filled('cosponsorid')){
+            $query->whereRaw(
+                "CONCAT('/', cosponsorid, '/') LIKE ?",
+                ["%/{$request->cosponsorid}/%"]
             );        
         }
 
@@ -155,7 +230,7 @@ class ReportsController extends Controller
         return inertia('Backend/Filters', [
             'records' => $filteredRecords,
             'filters' => $request->only([
-                'authorid', 'coauthorid', 'term', 'status', 'sector',
+                'authorid', 'coauthorid', 'sponsorid', 'cosponsorid', 'term', 'status', 'sector',
                 'mainclassid', 'subclassid', 'sessionfrom', 'sessionto'
             ]),
         ]);

@@ -358,7 +358,7 @@ export default {
 .table-responsive th {
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: 1;
     background-color: #ffffff;
 }
 </style>
@@ -582,12 +582,15 @@ export default {
 
                     <hr />
                     <div class="detail-label mb-1">Author/s</div>
-                    <div>
+                    <div v-if="getRecordAuthors">
                         <span
                             class="chip mb-2"
                             v-for="auth in getRecordAuthors.split('/')"
                             >{{ auth }}</span
                         >
+                    </div>
+                    <div v-else>
+                        <span class="chip mb-2">No Author/s</span>
                     </div>
 
                     <label class="detail-label mb-1">Co-Author/s</label>
@@ -638,11 +641,13 @@ export default {
                             >
                                 Main Classifications
                             </div>
-                            <span
-                                class="chip"
-                                v-for="class1 in getRecordClass1.split('/')"
-                                >{{ class1 }}</span
-                            >
+                            <div v-if="getRecordClass1 !== null">
+                                <span
+                                    class="chip"
+                                    v-for="class1 in getRecordClass1.split('/')"
+                                    >{{ class1 }}</span
+                                >
+                            </div>
                         </div>
                         <div class="col-6">
                             <div
@@ -728,6 +733,7 @@ export default {
                                     label="type_name"
                                     placeholder="Select Type"
                                     v-model="recordForm.type_id"
+                                    required
                                 >
                                 </v-select>
                             </div>

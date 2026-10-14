@@ -30,7 +30,7 @@ body {
 .print-sheet {
     background: #fff;
     max-width: 1700px;
-    margin: 24px auto;
+    margin: 12px auto;
     padding: 30px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -79,12 +79,6 @@ table.report-table td.text-center {
     white-space: nowrap;
 }
 
-.badge-type {
-    background: #cfe2ff;
-    color: #084298;
-    font-weight: 600;
-}
-
 .link-col a {
     text-decoration: underline;
 }
@@ -101,21 +95,26 @@ table.report-table td.text-center {
         box-shadow: none;
         margin: 0;
         padding: 0;
-        max-width: 100%;
+        max-width: none;
     }
 
     table.report-table {
-        font-size: 10px;
+        font-size: 9px;
     }
-
+    table.report-table tr {
+        break-inside: avoid;
+    }
+    table.report-table thead {
+        display: table-header-group;
+    }
     table.report-table th {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
 
     @page {
-        size: landscape;
-        margin: 10mm;
+        size: 13in 8.5in;
+        margin: 5mm;
     }
 }
 </style>
@@ -133,9 +132,6 @@ table.report-table td.text-center {
             >
         </div>
         <div class="d-flex gap-2">
-            <button class="btn btn-outline-secondary" onclick="window.close()">
-                <i class="fa-solid fa-xmark me-1"></i>Close
-            </button>
             <button class="btn btn-primary" onclick="window.print()">
                 <i class="fa-solid fa-print me-1"></i>Print
             </button>
@@ -143,7 +139,7 @@ table.report-table td.text-center {
     </div>
     <div class="print-sheet">
         <div class="report-header">
-            <div>12TH SANGGUNIANG PANLALAWIGAN INFORMATION SYSTEM</div>
+            <div>SANGGUNIANG PANLALAWIGAN INFORMATION SYSTEM</div>
         </div>
         <div class="table-responsive">
             <table class="report-table">
@@ -157,18 +153,17 @@ table.report-table td.text-center {
                         <th class="status-header">STATUS</th>
                         <th>AUTHOR/S</th>
                         <th>CO-AUTHOR/S</th>
+                        <th>SPONSOR/S</th>
+                        <th>CO-SPONSOR/S</th>
                         <th>SECTOR</th>
                         <th>CLASS</th>
                     </tr>
                 </thead>
-                <tbody id="reportBody">
-                    <!-- Row example (repeat per record) -->
+                <tbody>
                     <tr v-for="(value, index) in records" :key="index">
                         <td class="text-center">{{ value.sptermno }}</td>
                         <td class="text-center">
-                            <span class="badge-type badge">{{
-                                value.type
-                            }}</span>
+                            <span class="">{{ value.type_name }}</span>
                         </td>
                         <td class="text-center fw-semibold">
                             {{ value.resono }}
@@ -182,6 +177,8 @@ table.report-table td.text-center {
                         <td class="text-center"></td>
                         <td>{{ value.authorname }}</td>
                         <td>{{ value.coauthorname }}</td>
+                        <td>{{ value.sponsorname }}</td>
+                        <td>{{ value.cosponsorname }}</td>
                         <td>{{ value.sectorname }}</td>
                         <td>{{ value.mainclassname }}</td>
                     </tr>

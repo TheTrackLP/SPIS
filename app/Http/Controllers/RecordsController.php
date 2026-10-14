@@ -58,11 +58,11 @@ class RecordsController extends Controller
             'filepath' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:20480'],
         ]);
 
-        // if($valid->fails()){
-        //     return redirect()->route('rec.dash')->with(
-        //         'error', 'Error, Try Again!',
-        //     );
-        // }
+        if($valid->fails()){
+            return redirect()->route('rec.dash')->with(
+                'error', 'Error, Try Again!',
+            );
+        }
 
         $term = Terms::selectRaw("sptermno, CONCAT(sptermno, ' ',DATE_FORMAT(termfrom, '%Y'), '-', DATE_FORMAT(termto, '%Y')) as full_term")->where('id',$request->sptermid)->first();
         $type = Types::select("*")->where('id',$request->type_id)->first();
@@ -70,9 +70,9 @@ class RecordsController extends Controller
         $year = date('Y', strtotime($request->session_date));
         $file = $request->file('filepath');
 
-        $filepath = 'scanned/'.$term->full_term;
+        $filepath = 'SCANNED/'.$term->type_name.'/'.$term->full_term.'/'.$term->sptermno.'-'.$year.' '.$type->type_desc;
         
-        $filename = Str::slug($term->sptermno.'-'.$year.' '.$type->type_name.'-'.$request->resono).'.'.$file->getClientOriginalExtension();
+        $filename = $term->sptermno.'-'.$year.' '.$type->type_name.' '.$request->resono.'.'.$file->getClientOriginalExtension();
 
         $path = $file->storeAs($filepath, $filename, 'documents');
 

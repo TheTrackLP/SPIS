@@ -11,25 +11,36 @@ const props = defineProps({
     terms: Array,
     mainAuthRecCount: Array,
     CoAuthRecCount: Array,
+    sponsorRecCounts: Array,
+    coSponsorRecCounts: Array,
+    types: Array,
 });
 
 const filterRecordsForm = useForm({
     sptermid: "",
-    type: "",
+    type_id: "",
     sessionfrom: "",
     sessionto: "",
     status: "",
     authorid: [],
-    authorname: [],
     coauthorid: [],
-    coauthorname: [],
+    sponsorid: [],
+    cosponsorid: [],
     mainclassid: [],
-    mainclassname: [],
     subclassid: [],
-    subclassname: [],
     sectorid: [],
-    sectorname: [],
 });
+
+const clearFilters = () => {
+    filterRecordsForm.reset();
+    selectedAuthorID.value = "";
+    selectedCoAuthorID.value = "";
+    selectedSectorID.value = "";
+    selectedSubClassID.value = "";
+    selectedMainClassID.value = "";
+    selectedSponsorAuthorID.value = "";
+    selectedCoSponsorAuthorID.value = "";
+};
 
 const selectedAuthorID = ref([]);
 
@@ -58,6 +69,40 @@ watch(selectedCoAuthors, (newCoAuthors) => {
             .join("/");
     } else {
         filterRecordsForm.coauthorid = null;
+    }
+});
+
+const selectedSponsorAuthorID = ref([]);
+
+const selectedSponsorAuthors = computed(() => {
+    return props.authors.filter((sponsor) =>
+        selectedSponsorAuthorID.value.includes(sponsor.id),
+    );
+});
+watch(selectedSponsorAuthors, (newSponsorAuthors) => {
+    if (newSponsorAuthors.length > 0) {
+        filterRecordsForm.sponsorid = newSponsorAuthors
+            .map((sponsor) => sponsor.id)
+            .join("/");
+    } else {
+        filterRecordsForm.sponsorid = null;
+    }
+});
+
+const selectedCoSponsorAuthorID = ref([]);
+
+const selectedCoSponsorAuthors = computed(() => {
+    return props.authors.filter((cosponsorauthor) =>
+        selectedCoSponsorAuthorID.value.includes(cosponsorauthor.id),
+    );
+});
+watch(selectedCoSponsorAuthors, (newCoSponsorAuthors) => {
+    if (newCoSponsorAuthors.length > 0) {
+        filterRecordsForm.cosponsorid = newCoSponsorAuthors
+            .map((cosponsorauthor) => cosponsorauthor.id)
+            .join("/");
+    } else {
+        filterRecordsForm.cosponsorid = null;
     }
 });
 
@@ -108,14 +153,30 @@ const filterByTerms = ref("");
 const filterMainAuthCountsByTerms = computed(() => {
     const termQuery = filterByTerms.value;
     return props.mainAuthRecCount.filter((term) => {
-        const matchTerm = !termQuery || term.spterm === termQuery;
+        const matchTerm = !termQuery || term.sptermid === termQuery;
         return matchTerm;
     });
 });
 const filterCoAuthCountsByTerms = computed(() => {
     const termQuery = filterByTerms.value;
     return props.CoAuthRecCount.filter((term) => {
-        const matchTerm = !termQuery || term.spterm === termQuery;
+        const matchTerm = !termQuery || term.sptermid === termQuery;
+        return matchTerm;
+    });
+});
+
+const filterSponsorsCountByTerms = computed(() => {
+    const termQuery = filterByTerms.value;
+    return props.sponsorRecCounts.filter((term) => {
+        const matchTerm = !termQuery || term.sptermid === termQuery;
+        return matchTerm;
+    });
+});
+
+const filterCoSponsorsCountByTerms = computed(() => {
+    const termQuery = filterByTerms.value;
+    return props.coSponsorRecCounts.filter((term) => {
+        const matchTerm = !termQuery || term.sptermid === termQuery;
         return matchTerm;
     });
 });
@@ -187,6 +248,7 @@ export default {
             <div class="card-body">
                 <form @submit.prevent="submitFilterRecords" target="_blank">
                     <div class="row g-3">
+                        <!-- Row 1 -->
                         <div class="col-md-4">
                             <label class="form-label">SP Term</label>
                             <v-select
@@ -207,8 +269,8 @@ export default {
                                     {{ formatDate(term.termfrom) }}-{{
                                         formatDate(term.termto)
                                     }}
-                                </template></v-select
-                            >
+                                </template>
+                            </v-select>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label"
@@ -234,8 +296,10 @@ export default {
                                 multiple
                             ></v-select>
                         </div>
+
+                        <!-- Row 2: Authors & Sponsors -->
                         <div class="col-md-3">
-                            <label class="form-label">Author</label>
+                            <label class="form-label">Author/s</label>
                             <v-select
                                 v-model="selectedAuthorID"
                                 :options="authors"
@@ -246,29 +310,51 @@ export default {
                             ></v-select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Co-Author</label>
+                            <label class="form-label">Co-Author/s</label>
                             <v-select
                                 v-model="selectedCoAuthorID"
                                 :options="authors"
                                 :reduce="(auth) => auth.id"
                                 label="fullname"
-                                placeholder="Select Co Author/s"
+                                placeholder="Select Co-Author/s"
                                 multiple
                             ></v-select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label">Type</label>
-                            <select
-                                class="form-select"
-                                v-model="filterRecordsForm.type"
-                            >
-                                <option value="">All Types</option>
-                                <option value="A-ORD">A-ORB</option>
-                                <option value="ORD">ORD</option>
-                                <option value="RES">RES</option>
-                            </select>
+                            <label class="form-label">Sponsor/s</label>
+                            <v-select
+                                v-model="selectedSponsorAuthorID"
+                                :options="authors"
+                                :reduce="(auth) => auth.id"
+                                label="fullname"
+                                placeholder="Select Sponsor/s"
+                                multiple
+                            ></v-select>
                         </div>
                         <div class="col-md-3">
+                            <label class="form-label">Co-Sponsor/s</label>
+                            <v-select
+                                v-model="selectedCoSponsorAuthorID"
+                                :options="authors"
+                                :reduce="(auth) => auth.id"
+                                label="fullname"
+                                placeholder="Select Co-Sponsor/s"
+                                multiple
+                            ></v-select>
+                        </div>
+
+                        <!-- Row 3 -->
+                        <div class="col-md-4">
+                            <label class="form-label">Type</label>
+                            <v-select
+                                :options="types"
+                                :reduce="(type) => type.id"
+                                label="type_name"
+                                placeholder="Select Type"
+                                v-model="filterRecordsForm.type_id"
+                            ></v-select>
+                        </div>
+                        <div class="col-md-4">
                             <label class="form-label">Sector</label>
                             <v-select
                                 v-model="selectedSectorID"
@@ -297,7 +383,9 @@ export default {
                                 <option value="SUSPENSIVE">SUSPENSIVE</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
+
+                        <!-- Row 4 -->
+                        <div class="col-md-6">
                             <label class="form-label">Date From</label>
                             <input
                                 type="date"
@@ -305,7 +393,7 @@ export default {
                                 v-model="filterRecordsForm.sessionfrom"
                             />
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-label">Date To</label>
                             <input
                                 type="date"
@@ -314,15 +402,16 @@ export default {
                             />
                         </div>
                     </div>
+
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="button" class="btn btn-outline-secondary">
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            @click="clearFilters"
+                        >
                             <i class="fa-solid fa-rotate-left me-1"></i>Reset
                         </button>
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                            target="_blank"
-                        >
+                        <button type="submit" class="btn btn-primary">
                             <i class="fa-solid fa-magnifying-glass me-1"></i
                             >Apply Filters
                         </button>
@@ -334,13 +423,14 @@ export default {
     <div class="row g-3">
         <div class="col-lg-6">
             <div class="sp-card p-3 h-100">
-                <div class="section-title mb-3">Records by Author</div>
+                <div class="section-title mb-3">Records by Author/s</div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-dark">
                             <tr>
                                 <th>Author</th>
                                 <th>Records</th>
+                                <th>SP Term</th>
                             </tr>
                         </thead>
                         <tbody v-if="filterMainAuthCountsByTerms.length > 0">
@@ -352,6 +442,7 @@ export default {
                             >
                                 <td>{{ count.fullname }}</td>
                                 <td>{{ count.count }}</td>
+                                <td>{{ count.spterm }}</td>
                             </tr>
                         </tbody>
                         <tbody v-else>
@@ -370,13 +461,14 @@ export default {
         </div>
         <div class="col-lg-6">
             <div class="sp-card p-3 h-100">
-                <div class="section-title mb-3">Records by Co-Author</div>
+                <div class="section-title mb-3">Records by Co-Author/s</div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-dark">
                             <tr>
                                 <th>Author</th>
                                 <th>Records</th>
+                                <th>SP Term</th>
                             </tr>
                         </thead>
                         <tbody v-if="filterCoAuthCountsByTerms.length > 0">
@@ -388,6 +480,7 @@ export default {
                             >
                                 <td>{{ count.fullname }}</td>
                                 <td>{{ count.count }}</td>
+                                <td>{{ count.spterm }}</td>
                             </tr>
                         </tbody>
                         <tbody v-else>
@@ -404,31 +497,38 @@ export default {
                 </div>
             </div>
         </div>
-        <!-- <div class="col-lg-6">
+        <div class="col-lg-6">
             <div class="sp-card p-3 h-100">
-                <div class="section-title mb-3">
-                    Records by Classification 1
-                </div>
+                <div class="section-title mb-3">Records by Sponsor/s</div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-dark">
                             <tr>
-                                <th>Classification</th>
+                                <th>Author</th>
                                 <th>Records</th>
+                                <th>SP Term</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Finance</td>
-                                <td>18</td>
+                        <tbody v-if="filterSponsorsCountByTerms.length > 0">
+                            <tr
+                                v-for="(
+                                    count, index
+                                ) in filterSponsorsCountByTerms"
+                                :key="index"
+                            >
+                                <td>{{ count.fullname }}</td>
+                                <td>{{ count.count }}</td>
+                                <td>{{ count.spterm }}</td>
                             </tr>
+                        </tbody>
+                        <tbody v-else>
                             <tr>
-                                <td>Education</td>
-                                <td>14</td>
-                            </tr>
-                            <tr>
-                                <td>Agriculture</td>
-                                <td>11</td>
+                                <td
+                                    colspan="7"
+                                    class="text-center align-middle"
+                                >
+                                    <h6>No Data as of Yet</h6>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -437,34 +537,41 @@ export default {
         </div>
         <div class="col-lg-6">
             <div class="sp-card p-3 h-100">
-                <div class="section-title mb-3">
-                    Records by Classification 2
-                </div>
+                <div class="section-title mb-3">Records by Co-Sponsor/s</div>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="table-dark">
                             <tr>
-                                <th>Sub Classification</th>
+                                <th>Author</th>
                                 <th>Records</th>
+                                <th>SP Term</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Budget Allocation</td>
-                                <td>10</td>
+                        <tbody v-if="filterCoSponsorsCountByTerms.length > 0">
+                            <tr
+                                v-for="(
+                                    count, index
+                                ) in filterCoSponsorsCountByTerms"
+                                :key="index"
+                            >
+                                <td>{{ count.fullname }}</td>
+                                <td>{{ count.count }}</td>
+                                <td>{{ count.spterm }}</td>
                             </tr>
+                        </tbody>
+                        <tbody v-else>
                             <tr>
-                                <td>Scholarship</td>
-                                <td>8</td>
-                            </tr>
-                            <tr>
-                                <td>Land Use</td>
-                                <td>6</td>
+                                <td
+                                    colspan="7"
+                                    class="text-center align-middle"
+                                >
+                                    <h6>No Data as of Yet</h6>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div> -->
+        </div>
     </div>
 </template>

@@ -19,6 +19,10 @@ export default defineConfig({
         }),
     ],
     // server: {
+    //     host: "spis.local",
+    //     hmr: { host: "spis.local" },
+    // },
+    // server: {
     //     host: true,
     //     port: 5173,
     //     hmr: {
