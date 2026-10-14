@@ -44,10 +44,12 @@ const openTermModalForm = () => {
         modalInstanceTerm.show();
     });
 };
+
+const authorTermFormMode = ref("create");
 const addAuthorTermForm = (auth) => {
     openTermModalForm();
-    authorTermForm.id = auth.id;
-    authorTermForm.reset();
+    authorTermFormMode.value = "create";
+    authorTermForm.authorid = auth.id;
     if (!auth?.id) return;
     fetchAuthorTerms(auth.id);
 };
@@ -71,6 +73,7 @@ const closeModal = () => {
 };
 
 const authorTermForm = useForm({
+    authorid: "",
     authortermid: "",
     authortermno: "",
     authorposition: "",
@@ -80,13 +83,25 @@ const authorTermForm = useForm({
 });
 
 const addAuthorTerm = () => {
-    authorTermForm.post(route("add.term", authorTermForm.id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            authorTermForm.reset();
-            closeModal();
-        },
-    });
+    if (authorTermFormMode.value === "create") {
+        authorTermFormMode.value = "create";
+        authorTermForm.post(route("add.term", authorTermForm.authorid), {
+            preserveScroll: true,
+            onSuccess: () => {
+                authorTermForm.reset();
+                closeModal();
+            },
+        });
+    } else {
+        authorTermFormMode.value = "edit";
+        authorTermForm.post(route("update.term", authorTermForm.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                authorTermForm.reset();
+                closeModal();
+            },
+        });
+    }
 };
 
 const authorFormMode = ref("create");
@@ -113,6 +128,15 @@ const fetchAuthorData = (auth) => {
 const fetchAuthorTermData = (authterm) => {
     closeModal();
     openTermModalForm();
+    authorTermFormMode.value = "edit";
+    authorTermForm.id = authterm.id;
+    authorTermForm.authorid = authterm.authorid;
+    authorTermForm.authortermid = authterm.authortermid;
+    authorTermForm.authortermno = authterm.authortermno;
+    authorTermForm.authorposition = authterm.authorposition;
+    authorTermForm.remarks = authterm.remarks;
+    authorTermForm.date_start = authterm.date_start;
+    authorTermForm.date_end = authterm.date_end;
 };
 
 const submitAuhtorForm = () => {
@@ -569,7 +593,14 @@ export default {
                         class="modal-header"
                         style="background: var(--navy); color: #fff"
                     >
-                        <h5>Add Author Term</h5>
+                        <h5>
+                            {{
+                                authorTermFormMode === "create"
+                                    ? "Add"
+                                    : "Update"
+                            }}
+                            Author Term
+                        </h5>
                         <button
                             type="button"
                             class="btn-close btn-close-white"
@@ -577,7 +608,13 @@ export default {
                         ></button>
                     </div>
                     <div class="modal-body">
+                        <!-- For Term ID -->
                         <input type="hidden" v-model="authorTermForm.id" />
+                        <!-- For Author ID -->
+                        <input
+                            type="hidden"
+                            v-model="authorTermForm.authorid"
+                        />
                         <div class="col-md-12 mb-3">
                             <label for="termId" class="form-label">Term</label>
                             <v-select

@@ -85,6 +85,7 @@ class AuthorController extends Controller
         $authorTerms = AuthorTerms::select(
             'author_terms.id',
             'author_terms.authorid',
+            'author_terms.authortermid',
             'author_terms.authorposition',
             'author_terms.authortermno',
             'author_terms.remarks',
@@ -116,14 +117,14 @@ class AuthorController extends Controller
             );
         }
 
-        $currTerm = Authors::findorfail($request->id);
+        $currTerm = Authors::findorfail($request->authorid);
 
         $currTerm->update([
             'authorcurrentterm' => $request->authortermid
         ]);
 
         AuthorTerms::create([
-            'authorid' => $request->id,
+            'authorid' => $request->authorid,
             'authortermid' => $request->authortermid,
             'authortermno' => $request->authortermno,
             'authorposition' => $request->authorposition,
@@ -133,6 +134,33 @@ class AuthorController extends Controller
         ]);
         return redirect()->route('gear.author')->with(
             'success', 'Success, SP Term Added!',
+        );
+    }
+
+    public function UpdateAuthorTerms(Request $request){
+        $valid = validator::make($request->all(),[
+            'authortermid' => "required",
+            'authortermno' => "required",
+            'authorposition' => "required",
+        ]);
+
+        if($valid->fails()){
+            return redirect()->route('gear.author')->with(
+                'error', 'Error, Try Again!',
+            );
+        }
+
+        AuthorTerms::findorfail($request->id)->update([
+            'authorid' => $request->authorid,
+            'authortermid' => $request->authortermid,
+            'authortermno' => $request->authortermno,
+            'authorposition' => $request->authorposition,
+            'remarks' => $request->remarks,
+            'date_start' => $request->date_start,
+            'date_end' => $request->date_end,
+        ]);
+        return redirect()->route('gear.author')->with(
+            'success', 'Success, SP Term Updated!',
         );
     }
 }

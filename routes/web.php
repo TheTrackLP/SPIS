@@ -57,7 +57,7 @@ Route::middleware('auth')->group(function(){
         Route::post('/admin/settings/authors/edit/{id}', 'EditAuthor')->name('author.edit');
         Route::get('/admin/settings/authors/terms/{id}', 'AuthorTerms');
         Route::post('/admin/settings/authors/terms/addterm/{id}', 'AddAuthorTerms')->name('add.term');
-        Route::get('/admin/settings/authors/current-term/{id}', 'AuthorCurrentTerm');
+        Route::post('/admin/settings/authors/terms/updateterm/{id}', 'UpdateAuthorTerms')->name('update.term');
     });
 
     Route::controller(TermsController::class)->group(function(){

@@ -21,11 +21,10 @@ class AuthorTerms extends Model
 
     public function loggableFields() {
         return [
-            'authorid' => '',
-            'authortermid' => '',
-            'authortermno' => '',
-            'authorposition' => '',
-            'remarks' => '',
+            'authortermid' => 'Author SP Term',
+            'authortermno' => 'Author Term No.',
+            'authorposition' => 'Author Position',
+            'remarks' => 'Remarks',
         ];
     }
 }
