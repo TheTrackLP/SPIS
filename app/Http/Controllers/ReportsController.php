@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 class ReportsController extends Controller
 {
     public function ReportsDashboard(){
+        //Here is the second method. The first part is on the Admin Controller Dashboard.
+        
         $recordsCount = Records::select('authorid', 'coauthorid', 'sponsorid', 'cosponsorid', 'sptermid')->get(); //Get every authorid string from the table
 
         $terms = Terms::all()->keyBy('id');
@@ -124,7 +126,7 @@ class ReportsController extends Controller
 
                 $coSponsorCounts[] = [
                     'id' => $id,
-                    'fullname' => $sponsor->fullname ?? 'Unknown',
+                    'fullname' => $coSponsor->fullname ?? 'Unknown',
                     'count' => $count,
                     'spterm' => $terms[$spTermId]->sptermno ?? 'Unknown',
                     'sptermid' => $spTermId,

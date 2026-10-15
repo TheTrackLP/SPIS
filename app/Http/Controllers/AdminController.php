@@ -15,88 +15,96 @@ class AdminController extends Controller
     public function AdminDashboard(){
         $recordsCount = Records::select('authorid', 'coauthorid', 'sptermid', 'sectorid')->get(); //Get every authorid string from the table
 
-        $recordsByTerm = $recordsCount->groupBy('sptermid');
-
+        //There's two ways of these One is which is they method count the OVERALL the records by Author/s, Sectors, Sponsor/s IDs
+        //the second method is in the Reports Module where it based in the User's selected SP Term and it filters all the data records counts by SP Terms
+        
         //Make an empty array to push and display later on
         $authorCounts = [];
         $sectorsCounts = [];
         $coAuthorCounts = [];
 
-        foreach ($recordsByTerm as $spTermId => $termRecords) {
-            $authorIds = $termRecords
-                ->flatMap(fn ($records) => explode('/', $records->authorid)) //Break every string into individual IDs, and merge them all into one big list
-                ->map(fn ($id) => (int) trim($id)) // Convert every ID from string to integer
-                ->filter(fn ($id) => $id > 0) // drop 0s and negatives — invalid IDs
-                ->unique() // This Remove duplicates
-                ->values(); // Reset Index
+        $authorIds = $recordsCount
+            ->flatMap(fn ($recordsCount) => explode('/', $recordsCount->authorid)) //Break every string into individual IDs, and merge them all into one big list
+            ->map(fn ($id) => (int) trim($id)) // Convert every ID from string to integer
+            ->filter(fn ($id) => $id > 0) // drop 0s and negatives — invalid IDs
+            ->unique() // This Remove duplicates
+            ->values(); // Reset Index
 
-            foreach ($authorIds as $id) {
-                $count = $termRecords->filter(function ($record) use ($id){
-                    return in_array((string) $id, explode('/', $record->authorid));
-                })->count();
-                
-                $author = Authors::select(
-                    DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
-                )->
-                find($id);
+        foreach ($authorIds as $id) {
+            $count = Records::whereRaw(
+                "CONCAT('/', authorid, '/') LIKE ?",
+                ["%{$id}%"]
+            )->count();
             
-                //Push Data into an empty Array
-                $authorCounts[] = [
-                    'id' => $id,
-                    'fullname' => $author->fullname ?? 'Unknown',
-                    'count' => $count,
-                    'spterm' => $spTermId,
-                    ];
-            }
-
-            $coAuthorsIds = $termRecords
-                ->flatmap(fn ($records) => explode('/', $records->coauthorid))
-                ->map(fn ($id) => (int) trim($id))
-                ->filter(fn ($id) => $id > 0)
-                ->unique()
-                ->values();
-            foreach ($coAuthorsIds as $id) {
-                $count = $termRecords->filter(function ($record) use ($id) {
-                    return in_array((string) $id, explode('/', $record->coauthorid));
-                })->count();
-
-                $coAuthor = Authors::select(
-                    DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
-                )->find($id);
-                
-                //Push Data into an empty Array
-                $coAuthorCounts[] = [
-                    'id' => $id,
-                    'fullname' => $coAuthor->fullname ?? 'Unknown',
-                    'count' => $count,
-                    'spterm' => $spTermId,
-                    ];
-            }
-
-            $sectorIds = $recordsCount
-                ->flatmap(fn ($recordsCount) => explode('/', $recordsCount->sectorid))
-                ->map(fn ($id) => (int) trim($id))
-                ->filter(fn ($id) => $id > 0)
-                ->unique()
-                ->values();
-
-            foreach ($sectorIds as $id) {
-                $count = $termRecords->filter(function($record) use ($id) {
-                    return in_array((string) $id, explode('/', $record->sectorid));
-                })->count();
-
-                $sector = Sector::find($id);
-                
-                $sectorsCounts[] = [
-                    'id' => $id,
-                    'name' => $sector->name ?? 'Unknown',
-                    'count' => $count,
-                    'spterm' => $spTermId,
-                    ];
-            }
+            $author = Authors::select(
+                DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+            )->
+            find($id);
+        
+            //Push Data into an empty Array
+            $authorCounts[] = [
+                'id' => $id,
+                'fullname' => $author->fullname ?? 'Unknown',
+                'count' => $count,
+                ];
         }
 
-        
+        $coAuthorsIds = $recordsCount
+                    ->flatmap(fn ($recordsCount) => explode('/', $recordsCount->coauthorid))
+                    ->map(fn ($id) => (int) trim($id))
+                    ->filter(fn ($id) => $id > 0)
+                    ->unique()
+                    ->values();
+
+        foreach ($coAuthorsIds as $id) {
+            $count = Records::whereRaw(
+                "CONCAT('/', coauthorid, '/') LIKE ?",
+                ["%{$id}%"]
+            )->count();
+
+            $coAuthor = Authors::select(
+                DB::raw('CONCAT(authorlastname, ", ", authorfirstname, " ", authormiddlename) as fullname')
+            )->find($id);
+            
+            //Push Data into an empty Array
+            $coAuthorCounts[] = [
+                'id' => $id,
+                'fullname' => $coAuthor->fullname ?? 'Unknown',
+                'count' => $count,
+                ];
+        }
+
+        $sectorIds = $recordsCount
+                    ->flatMap(fn ($recordsCount) => explode('/', $recordsCount->sectorid))
+                    ->map(fn ($id) => (int) $id)
+                    ->filter(fn ($id) => $id > 0)
+                    ->unique()
+                    ->values();
+
+        foreach ($sectorIds as $id) {
+            $count = Records::whereRaw(
+                "CONCAT('/', sectorid, '/') LIKE ?",
+                ["%{$id}%"]
+            )->count();
+
+            $sector = Sector::find($id);
+
+            $sectorsCounts[] = [
+                'id' => $id,
+                'name' => $sector->name ?? 'unknown',
+                'count' => $count,
+            ];
+        }
+
+        // $overallSectors = collect($sectorsCounts)
+        //     ->groupBy('id')
+        //     ->map(fn ($rows, $id) => [
+        //         'id' => $id,
+        //         'name' => $rows->first()['name'],
+        //         'count' => $rows->sum('count'),
+        //     ])
+        //     ->sortByDesc('count')
+        //     ->values(); 
         
         return inertia('Admin/Dashboard', [
             'mainAuthorCount'=>$authorCounts,

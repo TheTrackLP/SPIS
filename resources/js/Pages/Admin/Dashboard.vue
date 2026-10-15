@@ -95,76 +95,67 @@ import AdminLayout from "@/Layouts/AdminLayout.vue";
                         >
                     </div>
                 </div>
-                <div class="row g-3">
-                    <div class="col-lg-7">
-                        <div class="card shadow-sm border-0 mb-3">
-                            <div class="card-body">
-                                <div
-                                    class="d-flex justify-content-between align-items-center mb-3"
-                                >
-                                    <div class="fw-semibold">
-                                        Recent Legislative Records
-                                    </div>
-                                    <Link
-                                        :href="route('rec.dash')"
-                                        class="btn btn-sm btn-outline-secondary"
-                                    >
-                                        View All
-                                        <i class="fa-solid fa-arrow-right"></i>
-                                    </Link>
-                                </div>
-                                <div class="table-responsive">
-                                    <table
-                                        class="table table-hover align-middle mb-0 small"
-                                    >
-                                        <thead>
-                                            <tr class="text-center">
-                                                <th>Res. No.</th>
-                                                <th>Type</th>
-                                                <th>Title</th>
-                                                <th>Session Date</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr
-                                                class="align-middle"
-                                                v-for="(
-                                                    rec, index
-                                                ) in filterRecordsByterm"
-                                                :key="index"
-                                            >
-                                                <td class="text-center">
-                                                    {{ rec.resono }}
-                                                </td>
-                                                <td class="text-center">
-                                                    <span
-                                                        class="badge text-bg-secondary"
-                                                        >{{ rec.type }}</span
-                                                    >
-                                                </td>
-                                                <td>
-                                                    <div
-                                                        class="text-truncate"
-                                                        style="max-width: 260px"
-                                                    >
-                                                        {{ rec.title }}
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    {{
-                                                        formatDate(
-                                                            rec.session_date,
-                                                        )
-                                                    }}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                <div class="card shadow-sm border-0 mb-3">
+                    <div class="card-body">
+                        <div
+                            class="d-flex justify-content-between align-items-center mb-3"
+                        >
+                            <div class="fw-semibold">
+                                Recent Legislative Records
                             </div>
+                            <Link
+                                :href="route('rec.dash')"
+                                class="btn btn-sm btn-outline-secondary"
+                            >
+                                View All
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </Link>
+                        </div>
+                        <div class="table-responsive">
+                            <table
+                                class="table table-hover align-middle mb-0 small"
+                            >
+                                <thead>
+                                    <tr class="text-center">
+                                        <th>Res. No.</th>
+                                        <th>Type</th>
+                                        <th>Title</th>
+                                        <th>Session Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        class="align-middle"
+                                        v-for="(
+                                            rec, index
+                                        ) in filterRecordsByterm"
+                                        :key="index"
+                                    >
+                                        <td class="text-center">
+                                            {{ rec.resono }}
+                                        </td>
+                                        <td class="text-center">
+                                            <span
+                                                class="badge text-bg-secondary"
+                                                >{{ rec.type }}</span
+                                            >
+                                        </td>
+                                        <td class="title-cell">
+                                            <div class="t-truncate">
+                                                {{ rec.title }}
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            {{ formatDate(rec.session_date) }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="col-lg-5">
+                </div>
+                <div class="row g-3">
+                    <div class="col-lg-4">
                         <div class="card shadow-sm border-0 mb-3">
                             <div class="card-body">
                                 <div class="fw-semibold mb-3">
@@ -193,6 +184,8 @@ import AdminLayout from "@/Layouts/AdminLayout.vue";
                                 </ul>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-lg-4">
                         <div class="card shadow-sm border-0 mb-3">
                             <div class="card-body">
                                 <div class="fw-semibold mb-3">
@@ -221,6 +214,8 @@ import AdminLayout from "@/Layouts/AdminLayout.vue";
                                 </ul>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-lg-4">
                         <div class="card shadow-sm border-0">
                             <div class="card-body">
                                 <div class="fw-semibold mb-3">
