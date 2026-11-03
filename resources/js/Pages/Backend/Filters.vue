@@ -29,9 +29,9 @@ body {
 
 .print-sheet {
     background: #fff;
-    max-width: 1700px;
+    width: 100%;
     margin: 12px auto;
-    padding: 30px;
+    padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -98,6 +98,11 @@ table.report-table td.text-center {
         max-width: none;
     }
 
+    .table-responsive {
+        overflow: visible !important;
+        width: 100% !important;
+    }
+
     table.report-table {
         font-size: 9px;
     }
@@ -145,18 +150,27 @@ table.report-table td.text-center {
             <table class="report-table">
                 <thead>
                     <tr>
-                        <th>SP TERM</th>
-                        <th>TYPE</th>
-                        <th>NO.</th>
-                        <th>SESSION<br />DATE</th>
-                        <th style="min-width: 320px">TITLE</th>
-                        <th class="status-header">STATUS</th>
-                        <th>AUTHOR/S</th>
-                        <th>CO-AUTHOR/S</th>
-                        <th>SPONSOR/S</th>
-                        <th>CO-SPONSOR/S</th>
-                        <th>SECTOR</th>
-                        <th>CLASS</th>
+                        <th rowspan="2">SP TERM</th>
+                        <th rowspan="2">TYPE</th>
+                        <th rowspan="2">NO.</th>
+                        <th rowspan="2">SESSION<br />DATE</th>
+                        <th rowspan="2" style="min-width: 320px">TITLE</th>
+                        <th rowspan="2" class="status-header">STATUS</th>
+                        <th rowspan="2">AUTHOR/S</th>
+                        <th rowspan="2">CO-AUTHOR/S</th>
+                        <th rowspan="2">SPONSOR/S</th>
+                        <th rowspan="2">CO-SPONSOR/S</th>
+                        <th colspan="2">POSTING DATE</th>
+                        <th colspan="3">PUBLICATION</th>
+                        <th rowspan="2">SECTOR</th>
+                        <th rowspan="2">CLASS</th>
+                    </tr>
+                    <tr class="text-center align-middle">
+                        <th>FROM</th>
+                        <th>DATE</th>
+                        <th>NEWSPAPER</th>
+                        <th>FROM</th>
+                        <th>TO</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -179,6 +193,11 @@ table.report-table td.text-center {
                         <td>{{ value.coauthorname }}</td>
                         <td>{{ value.sponsorname }}</td>
                         <td>{{ value.cosponsorname }}</td>
+                        <td>From</td>
+                        <td>To</td>
+                        <td>NEWSPAPER</td>
+                        <td>From</td>
+                        <td>To</td>
                         <td>{{ value.sectorname }}</td>
                         <td>{{ value.mainclassname }}</td>
                     </tr>
