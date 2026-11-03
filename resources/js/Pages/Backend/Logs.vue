@@ -5,18 +5,11 @@ import {
     formatDateTime,
     formatTime,
     strHeadline,
+    openModal,
 } from "@/resuables";
-import { nextTick, ref } from "vue";
-import { Modal } from "bootstrap";
+import { ref } from "vue";
 
-const modalRef = ref(null);
-let modalInstanceView = null;
-const opemViewModal = () => {
-    nextTick(() => {
-        modalInstanceView = new Modal(modalRef.value);
-        modalInstanceView.show();
-    });
-};
+const modalLogsRef = ref(null);
 
 const getSubject = ref("");
 const getUserChanged = ref("");
@@ -30,7 +23,7 @@ const getAction = ref("");
 const getCreatValue = ref(null);
 
 const fetchActivityLog = (log) => {
-    opemViewModal();
+    openModal(modalLogsRef);
     getSubject.value = log.subject_label;
     getUserChanged.value = log.username;
     getDateTime.value = log.created_at;
@@ -166,7 +159,7 @@ export default {
     <!-- View Full Detail of Activity Log -->
     <div
         class="modal fade"
-        ref="modalRef"
+        ref="modalLogsRef"
         tabindex="-1"
         data-bs-backdrop="static"
         data-bs-keyboard="false"

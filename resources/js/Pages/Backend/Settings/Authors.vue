@@ -2,27 +2,31 @@
 import { nextTick, computed, ref } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
 import { Modal } from "bootstrap";
-import { formatDate } from "@/resuables";
+import { formatDate, openModal, closeModal } from "@/resuables";
 import axios from "axios";
 
 //Modal Form when Adding New Author/s
-const modalRef = ref(null);
-let modalInstance = null;
-const openModal = () => {
-    nextTick(() => {
-        modalInstance = new Modal(modalRef.value);
-        modalInstance.show();
-    });
+const modalAuthorFormRef = ref(null);
+const openAuthorFormModal = () => {
+    openModal(modalAuthorFormRef);
+    authorFormMode.value = "create";
+    authorTermForm.reset();
+};
+const fetchAuthorData = (auth) => {
+    authorFormMode.value = "edit";
+    authorForm.id = auth.id;
+    authorForm.authorfirstname = auth.authorfirstname;
+    authorForm.authormiddlename = auth.authormiddlename;
+    authorForm.authorlastname = auth.authorlastname;
+    authorForm.authorbirtdate = auth.authorbirtdate;
+    authorForm.authorstatus = auth.authorstatus;
+    openModal(modalAuthorFormRef);
 };
 
 //Modal for when viewing History
-const modalView = ref(null);
-let modalInstanceView = null;
+const modalAuthorView = ref(null);
 const openModalView = () => {
-    nextTick(() => {
-        modalInstanceView = new Modal(modalView.value);
-        modalInstanceView.show();
-    });
+    openModal(modalAuthorView);
 };
 const authorTermsList = ref([]);
 const getFullname = ref("");
@@ -36,13 +40,9 @@ const openAuhtorTermModal = (auth) => {
 };
 
 //Modal when Add SP term for Author
-const modalTerm = ref(null);
-let modalInstanceTerm = null;
+const modalAuthorTermForm = ref(null);
 const openTermModalForm = () => {
-    nextTick(() => {
-        modalInstanceTerm = new Modal(modalTerm.value);
-        modalInstanceTerm.show();
-    });
+    openModal(modalAuthorTermForm);
 };
 
 const authorTermFormMode = ref("create");
@@ -59,15 +59,9 @@ const fetchAuthorTerms = (authorId) => {
         authorTermsList.value = res.data;
     });
 };
-const openAuthorModal = () => {
-    authorFormMode.value = "create";
-    authorForm.reset();
-    openModal();
-};
-const closeModal = () => {
-    modalInstance?.hide();
-    modalInstanceTerm?.hide();
-    modalInstanceView?.hide();
+const closeAllModals = () => {
+    closeModal(modalAuthorFormRef);
+    closeModal(modalAuthorTermForm);
     authorForm.reset();
     authorTermForm.reset();
 };
@@ -89,7 +83,7 @@ const addAuthorTerm = () => {
             preserveScroll: true,
             onSuccess: () => {
                 authorTermForm.reset();
-                closeModal();
+                closeAllModals();
             },
         });
     } else {
@@ -98,7 +92,7 @@ const addAuthorTerm = () => {
             preserveScroll: true,
             onSuccess: () => {
                 authorTermForm.reset();
-                closeModal();
+                closeAllModals();
             },
         });
     }
@@ -114,20 +108,9 @@ const authorForm = useForm({
     authorstatus: "",
 });
 
-const fetchAuthorData = (auth) => {
-    authorFormMode.value = "edit";
-    authorForm.id = auth.id;
-    authorForm.authorfirstname = auth.authorfirstname;
-    authorForm.authormiddlename = auth.authormiddlename;
-    authorForm.authorlastname = auth.authorlastname;
-    authorForm.authorbirtdate = auth.authorbirtdate;
-    authorForm.authorstatus = auth.authorstatus;
-    openModal();
-};
-
 const fetchAuthorTermData = (authterm) => {
-    closeModal();
-    openTermModalForm();
+    closeAllModals();
+    openModal(modalAuthorTermForm);
     authorTermFormMode.value = "edit";
     authorTermForm.id = authterm.id;
     authorTermForm.authorid = authterm.authorid;
@@ -144,14 +127,14 @@ const submitAuhtorForm = () => {
         authorForm.post(route("author.add"), {
             onSuccess: () => {
                 authorForm.reset();
-                closeModal();
+                closeAllModals();
             },
         });
     } else {
         authorForm.post(route("author.edit", authorForm.id), {
             onSuccess: () => {
                 authorForm.reset();
-                closeModal();
+                closeAllModals();
             },
         });
     }
@@ -215,7 +198,7 @@ export default {
                     Board members authoring legislative records.
                 </div>
             </div>
-            <button class="btn btn-primary btn-sm" @click="openAuthorModal">
+            <button class="btn btn-primary btn-sm" @click="openAuthorFormModal">
                 <i class="fa-solid fa-plus me-1"></i>Add Author
             </button>
         </div>
@@ -346,7 +329,7 @@ export default {
     <!-- Add/Edit a Author/s Info -->
     <div
         class="modal fade"
-        ref="modalRef"
+        ref="modalAuthorFormRef"
         tabindex="-1"
         data-bs-keyboard="false"
         data-bs-backdrop="static"
@@ -369,44 +352,42 @@ export default {
                         <button
                             type="button"
                             class="btn-close btn-close-white"
-                            @click="closeModal"
+                            @click="closeAllModals"
                         ></button>
                     </div>
                     <div class="modal-body">
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="lastName" class="form-label"
-                                    >Last Name</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="e.g. Cruz-Am"
-                                    v-model="authorForm.authorlastname"
-                                />
-                            </div>
-                            <div class="col-md-4">
-                                <label for="firstName" class="form-label"
-                                    >First Name</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="e.g. Aldwin"
-                                    v-model="authorForm.authorfirstname"
-                                />
-                            </div>
-                            <div class="col-md-4">
-                                <label for="middleName" class="form-label"
-                                    >Middle Name</label
-                                >
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="e.g. Amane"
-                                    v-model="authorForm.authormiddlename"
-                                />
-                            </div>
+                        <div class="form-group mb-3">
+                            <label for="lastName" class="form-label"
+                                >Last Name</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="e.g. Cruz-Am"
+                                v-model="authorForm.authorlastname"
+                            />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="firstName" class="form-label"
+                                >First Name</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="e.g. Aldwin"
+                                v-model="authorForm.authorfirstname"
+                            />
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="middleName" class="form-label"
+                                >Middle Name</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                placeholder="e.g. Amane"
+                                v-model="authorForm.authormiddlename"
+                            />
                         </div>
 
                         <div class="row mb-4">
@@ -438,7 +419,7 @@ export default {
                         <button
                             type="button"
                             class="btn btn-outline-secondary"
-                            @click="closeModal"
+                            @click="closeAllModals"
                         >
                             Cancel
                         </button>
@@ -461,7 +442,7 @@ export default {
     <div
         class="modal fade"
         tabindex="-1"
-        ref="modalView"
+        ref="modalAuthorView"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
     >
@@ -477,7 +458,7 @@ export default {
                     <button
                         type="button"
                         class="btn-close btn-close-white"
-                        @click="closeModal"
+                        @click="closeAllModals"
                     ></button>
                 </div>
                 <div class="modal-body">
@@ -570,7 +551,7 @@ export default {
                     <button
                         type="button"
                         class="btn btn-outline-secondary"
-                        @click="closeModal"
+                        @click="closeAllModals"
                     >
                         Close
                     </button>
@@ -582,7 +563,7 @@ export default {
     <div
         class="modal fade"
         tabindex="-1"
-        ref="modalTerm"
+        ref="modalAuthorTermForm"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
     >
@@ -604,7 +585,7 @@ export default {
                         <button
                             type="button"
                             class="btn-close btn-close-white"
-                            @click="closeModal"
+                            @click="closeAllModals"
                         ></button>
                     </div>
                     <div class="modal-body">

@@ -1,7 +1,7 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
 import { ref, nextTick, computed, watch } from "vue";
-import { Modal } from "bootstrap";
+import { closeModal, openModal } from "@/resuables";
 
 const props = defineProps({
     authors: Array,
@@ -45,18 +45,10 @@ const onFileChange = (e) => {
 const fileInput = ref(null);
 const currentFile = ref(null);
 
-const modalRef = ref(null);
-let modalInstance = null;
+const modalRecordsRef = ref(null);
 
-const openModal = () => {
-    nextTick(() => {
-        modalInstance = new Modal(modalRef.value);
-        modalInstance.show();
-    });
-};
-
-const opemModalRecordForm = () => {
-    openModal();
+const openModalRecordForm = () => {
+    openModal(modalRecordsRef);
     recordFormMode.value = "create";
     recordForm.reset();
 
@@ -69,19 +61,10 @@ const opemModalRecordForm = () => {
     selectedCoSponsorAuthorID.value = "";
 };
 
-const closeModal = () => {
-    modalInstance?.hide();
+const closeAllModals = () => {
+    closeModal(modalRecordsRef);
+    recordFormMode.value = "create";
     recordForm.reset();
-};
-
-const modalRefView = ref(null);
-let modalInstanceView = null;
-
-const openViewModal = () => {
-    nextTick(() => {
-        modalInstanceView = new Modal(modalRefView.value);
-        modalInstanceView.show();
-    });
 };
 
 const getRecordTerm = ref("");
@@ -97,8 +80,10 @@ const getRecordCoSponsors = ref("");
 const getRecordClass1 = ref("");
 const getRecordClass2 = ref("");
 
+const modalRefRecordsView = ref(null);
+
 const openModaViewRecord = (record) => {
-    openViewModal();
+    openModal(modalRefRecordsView);
 
     getRecordTitle.value = record.title;
     getRecordTerm.value = record.sptermno;
@@ -116,7 +101,7 @@ const openModaViewRecord = (record) => {
 
 const fetchModalRecord = (record) => {
     recordFormMode.value = "edit";
-    openModal();
+    openModal(modalRecordsRef);
     recordForm.id = record.id;
     recordForm.title = record.title;
     recordForm.sptermid = record.sptermid;
@@ -156,7 +141,7 @@ const submitRecord = async () => {
         recordForm.post(route("rec.add"), {
             onSuccess: () => {
                 recordForm.reset();
-                closeModal();
+                closeAllModals();
                 selectedAuthorID.value = [];
                 selectedSectorID.value = [];
                 selectedCoAuthorID.value = [];
@@ -173,7 +158,7 @@ const submitRecord = async () => {
         recordForm.post(route("rec.edit", recordForm.id), {
             onSuccess: () => {
                 recordForm.reset();
-                closeModal();
+                closeAllModals();
                 selectedAuthorID.value = [];
                 selectedSectorID.value = [];
                 selectedCoAuthorID.value = [];
@@ -373,7 +358,7 @@ export default {
                 Resolutions, ordinances, and other legislative documents.
             </div>
         </div>
-        <button class="btn btn-primary btn-sm" @click="opemModalRecordForm">
+        <button class="btn btn-primary btn-sm" @click="openModalRecordForm">
             <i class="fa-solid fa-plus"></i> New Record
         </button>
     </div>
@@ -515,7 +500,7 @@ export default {
     <!-- Displaying the Record Data -->
     <div
         class="modal fade"
-        ref="modalRefView"
+        ref="modalRefRecordsView"
         tabindex="-1"
         data-bs-backdrop="static"
         data-bs-keydrop="false"
@@ -673,7 +658,7 @@ export default {
     <!-- Adding New Records Modal Form -->
     <div
         class="modal fade"
-        ref="modalRef"
+        ref="modalRecordsRef"
         tabindex="-1"
         data-bs-keydrop="false"
         data-bs-backdrop="static"

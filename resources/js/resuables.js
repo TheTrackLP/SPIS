@@ -1,3 +1,6 @@
+import { Modal } from "bootstrap";
+import { nextTick } from "vue";
+
 export const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" };
     return new Date(dateString).toLocaleDateString("en-US", options);
@@ -41,4 +44,20 @@ export const strHeadline = (str) => {
         .replace(/([a-z])([A-Z])/g, "$1 $2")
         .toLowerCase()
         .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
+};
+
+let modalInstance = null;
+export const openModal = (modalRef) => {
+    nextTick(() => {
+        if (!modalRef) return;
+        modalInstance = new Modal(modalRef.value);
+        modalInstance.show();
+    });
+};
+
+export const closeModal = (modalRef) => {
+    nextTick(() => {
+        if (!modalRef) return;
+        modalInstance?.hide();
+    });
 };

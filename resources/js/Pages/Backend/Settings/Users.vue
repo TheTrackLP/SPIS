@@ -1,22 +1,21 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
-import { nextTick, ref, computed } from "vue";
-import { Modal } from "bootstrap";
+import { ref } from "vue";
+import { openModal, closeModal } from "@/resuables";
 
-const modalRef = ref(null);
-let modalInstanceForm = null;
-const modalUserForm = () => {
-    nextTick(() => {
-        modalInstanceForm = new Modal(modalRef.value);
-        modalInstanceForm.show();
-    });
+const modalFormRef = ref(null);
+
+const openUserFormModal = () => {
+    openModal(modalFormRef);
+    userForm.value = "create";
+    userForm.reset();
+};
+const closeFormModal = () => {
+    closeModal(modalFormRef);
+    userForm.reset();
 };
 
-const closeModal = () => {
-    modalInstanceForm?.hide();
-};
-
-const userFormMode = ref("craete");
+const userFormMode = ref("create");
 const userForm = useForm({
     username: "",
     name: "",
@@ -34,7 +33,7 @@ const submitUserForm = () => {
         userForm.post(route("users.store"), {
             onSuccess: () => {
                 userForm.reset();
-                closeModal();
+                closeFormModal();
             },
         });
     } else {
@@ -42,16 +41,10 @@ const submitUserForm = () => {
         userForm.post(route("users.update", userForm.id), {
             onSuccess: () => {
                 userForm.reset();
-                closeModal();
+                closeFormModal();
             },
         });
     }
-};
-
-const openModalUserForm = () => {
-    modalUserForm();
-    userFormMode.value = "create";
-    userForm.reset();
 };
 
 const showStatus = ref(false);
@@ -59,7 +52,8 @@ const showStatus = ref(false);
 const fetctUserDate = (user) => {
     userFormMode.value = "edit";
     showStatus.value = true;
-    modalUserForm();
+
+    openModal(modalFormRef);
 
     userForm.id = user.id;
     userForm.username = user.username;
@@ -97,7 +91,7 @@ export default {
             </div>
             <button
                 class="btn btn-primary px-3 btn-sm"
-                @click="openModalUserForm"
+                @click="openUserFormModal"
             >
                 <i class="fa-solid fa-plus me-1"></i>Add User
             </button>
@@ -172,7 +166,7 @@ export default {
 
     <div
         class="modal fade"
-        ref="modalRef"
+        ref="modalFormRef"
         tabindex="-1"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
@@ -193,7 +187,7 @@ export default {
                         <button
                             type="button"
                             class="btn-close btn-close-white"
-                            @click="closeModal"
+                            @click="closeFormModal"
                         ></button>
                     </div>
                     <input type="hidden" v-model="userForm.id" />

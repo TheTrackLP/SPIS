@@ -1,28 +1,20 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
-import { nextTick, ref } from "vue";
-import { Modal } from "bootstrap";
-import { formatDate } from "@/resuables";
+import { ref } from "vue";
+import { formatDate, openModal, closeModal } from "@/resuables";
 
-const modalRef = ref(null);
-let modalInstance = null;
+const modalTermsRef = ref(null);
 
-const openModal = () => {
-    nextTick(() => {
-        modalInstance = new Modal(modalRef.value);
-        modalInstance.show();
-    });
-};
-
-const TermModalForm = () => {
-    openModal();
+const openTermsFormModal = () => {
+    openModal(modalTermsRef);
+    termForm.reset();
     termFormMode.value = "create";
-    termForm.reset();
 };
 
-const closeModal = () => {
-    modalInstance?.hide();
+const closeTermsFormModal = () => {
+    closeModal(modalTermsRef);
     termForm.reset();
+    termFormMode.value = "create";
 };
 
 const termFormMode = ref("create");
@@ -34,7 +26,7 @@ const termForm = useForm({
 
 const fetchPeriod = (term) => {
     termFormMode.value = "edit";
-    openModal();
+    openModal(modalTermsRef);
     termForm.id = term.id;
     termForm.sptermno = parseInt(term.sptermno.replace(/\D/g, ""), 10);
     termForm.termfrom = term.termfrom;
@@ -47,7 +39,7 @@ const submitTermForm = () => {
         termForm.post(route("term.store"), {
             onSuccess: () => {
                 termForm.reset();
-                closeModal();
+                closeTermsFormModal();
             },
         });
     } else {
@@ -55,7 +47,7 @@ const submitTermForm = () => {
         termForm.post(route("term.update", termForm.id), {
             onSuccess: () => {
                 termForm.reset();
-                closeModal();
+                closeTermsFormModal();
             },
         });
     }
@@ -84,7 +76,7 @@ export default {
                 </h1>
                 <small class="text-muted"> Manage Sp Terms periods </small>
             </div>
-            <button class="btn btn-primary px-3" @click="TermModalForm">
+            <button class="btn btn-primary px-3" @click="openTermsFormModal">
                 <i class="fa-solid fa-plus me-1"></i>Add SP Term
             </button>
         </div>
@@ -135,7 +127,7 @@ export default {
     </div>
     <div
         class="modal fade"
-        ref="modalRef"
+        ref="modalTermsRef"
         tabindex="-1"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
@@ -151,7 +143,7 @@ export default {
                         <button
                             type="button"
                             class="btn-close btn-close-white"
-                            @click="closeModal"
+                            @click="closeTermsFormModal"
                         ></button>
                     </div>
                     <div class="modal-body">

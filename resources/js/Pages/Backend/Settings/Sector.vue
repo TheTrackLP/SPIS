@@ -1,40 +1,33 @@
 <script setup>
-import { nextTick, ref } from "vue";
+import { ref } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
-import { Modal } from "bootstrap";
+import { closeModal, openModal } from "@/resuables";
 
-const modalRef = ref(null);
-let modalInstance = null;
-
-const openModal = () => {
-    nextTick(() => {
-        modalInstance = new Modal(modalRef.value);
-        modalInstance.show();
-    });
-};
 const sectorFormMode = ref("create");
 const sectorForm = useForm({
     name: "",
     desc: "",
 });
 
+const modalSectorRef = ref(null);
+
 const openSectorFormModal = () => {
-    openModal();
+    openModal(modalSectorRef);
     sectorFormMode.value = "create";
     sectorForm.reset();
     sectorDesc.value = false;
 };
 
-const closeModal = () => {
-    modalInstance?.hide();
-    classForm.reset();
+const closeSectorFormModal = () => {
+    closeModal(modalSectorRef);
+    sectorForm.reset();
 };
 
 const sectorDesc = ref(false);
 
 const fetchSector = (sector) => {
     sectorFormMode.value = "edit";
-    openModal();
+    openModal(modalSectorRef);
     sectorForm.id = sector.id;
     sectorForm.name = sector.name;
     sectorForm.desc = sector.desc;
@@ -45,14 +38,14 @@ const submitSectorForm = () => {
     if (sectorFormMode.value === "create") {
         sectorForm.post(route("sector.add"), {
             onSuccess: () => {
-                closeModal();
+                closeSectorFormModal();
                 sectorForm.reset();
             },
         });
     } else {
         sectorForm.post(route("sector.edit", sectorForm.id), {
             onSuccess: () => {
-                closeModal();
+                closeSectorFormModal();
                 sectorForm.reset();
             },
         });
@@ -141,7 +134,7 @@ export default {
     </div>
     <div
         class="modal fade"
-        ref="modalRef"
+        ref="modalSectorRef"
         tabindex="-1"
         data-bs-keyboard="false"
         data-bs-backdrop="static"
@@ -205,7 +198,7 @@ export default {
                         <button
                             type="button"
                             class="btn btn-sm btn-outline-secondary"
-                            data-bs-dismiss="modal"
+                            @click="closeSectorFormModal"
                         >
                             Cancel
                         </button>

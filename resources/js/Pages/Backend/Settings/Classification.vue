@@ -1,36 +1,36 @@
 <script setup>
 import { Head, useForm } from "@inertiajs/vue3";
-import { computed, nextTick, ref } from "vue";
-import { Modal } from "bootstrap";
+import { ref } from "vue";
+import { closeModal, openModal } from "@/resuables";
 
-const modalRef = ref(null);
-let modalInstance = null;
+const modalMainClassRef = ref(null);
+const modalSubClassRef = ref(null);
 
-const openModal = () => {
-    nextTick(() => {
-        modalInstance = new Modal(modalRef.value);
-        modalInstance.show();
-    });
+const openMainClassFormModal = () => {
+    openModal(modalMainClassRef);
+    classFormMode.value = "create";
+    classForm.reset();
+};
+
+const openSubClassFormModal = () => {
+    openModal(modalSubClassRef);
+    subClassFormMode.value = "create";
+    subClassForm.reset();
+};
+
+const closeClassFormModal = () => {
+    closeModal(modalMainClassRef);
+    closeModal(modalSubClassRef);
+    classFormMode.value = "create";
+    classForm.reset();
+    subClassFormMode.value = "create";
+    subClassForm.reset();
 };
 
 const classFormMode = ref("create");
 const classForm = useForm({
     mainname: "",
 });
-
-const openClassModal = () => {
-    classFormMode.value = "create";
-    classForm.reset();
-    openModal();
-};
-
-const editModal = ref(null);
-const openEditModal = () => {
-    nextTick(() => {
-        modalInstance = new Modal(editModal.value);
-        modalInstance.show();
-    });
-};
 
 const getMainName = ref("");
 const subClassFormMode = ref("create");
@@ -43,20 +43,20 @@ const subClassForm = useForm({
 
 const openSubClassModal = (name, id) => {
     subClassFormMode.value = "create";
-    openEditModal();
+    openSubClassFormModal();
     getMainName.value = name;
     subClassForm.class_id = id;
 };
 
 const fetchClass = (value) => {
     classFormMode.value = "edit";
+    openModal(modalMainClassRef);
     classForm.id = value.id;
     classForm.mainname = value.mainname;
-    openModal();
 };
 
 const fetchSubClass = (sub, mainname) => {
-    openEditModal();
+    openModal(modalSubClassRef);
     subClassFormMode.value = "edit";
     subClassForm.subname = sub.subname;
     subClassForm.desc = sub.desc;
@@ -65,26 +65,20 @@ const fetchSubClass = (sub, mainname) => {
     getMainName.value = mainname;
 };
 
-const closeModal = () => {
-    modalInstance?.hide();
-    classForm.reset();
-    subClassForm.reset();
-};
-
 const submitClassForm = () => {
     if (classFormMode.value === "create") {
         classFormMode.value = "create";
         classForm.post(route("class.add"), {
             onSuccess: () => {
                 classForm.reset();
-                closeModal();
+                closeClassFormModal();
             },
         });
     } else {
         classForm.post(route("class.edit", classForm.id), {
             onSuccess: () => {
                 classForm.reset();
-                closeModal();
+                closeClassFormModal();
             },
         });
     }
@@ -96,15 +90,16 @@ const submitSubClassForm = () => {
         subClassForm.post(route("subclass.add"), {
             onSuccess: () => {
                 subClassForm.reset;
-                closeModal();
+                closeClassFormModal();
                 getMainName.value = "";
             },
         });
     } else {
+        subClassFormMode.value = "edit";
         subClassForm.post(route("subclass.edit", subClassForm.id), {
             onSuccess: () => {
                 subClassForm.reset;
-                closeModal();
+                closeClassFormModal();
                 getMainName.value = "";
             },
         });
@@ -254,7 +249,10 @@ export default {
                     records</small
                 >
             </div>
-            <button class="btn btn-primary btn-sm px-4" @click="openClassModal">
+            <button
+                class="btn btn-primary btn-sm px-4"
+                @click="openMainClassFormModal"
+            >
                 <i class="fa-solid fa-plus me-1"></i> Add Class
             </button>
         </div>
@@ -346,7 +344,7 @@ export default {
     </div>
     <div
         class="modal fade"
-        ref="modalRef"
+        ref="modalMainClassRef"
         tabindex="-1"
         data-bs-keyboard="false"
         data-bs-backdrop="static"
@@ -362,7 +360,7 @@ export default {
                         <button
                             type="button"
                             class="btn-close"
-                            data-bs-dismiss="modal"
+                            @click="closeClassFormModal"
                         ></button>
                     </div>
                     <div class="modal-body">
@@ -398,7 +396,7 @@ export default {
 
     <div
         class="modal fade"
-        ref="editModal"
+        ref="modalSubClassRef"
         tabindex="-1"
         data-bs-keyboard="false"
         data-bs-backdrop="static"
@@ -407,11 +405,16 @@ export default {
             <form @submit.prevent="submitSubClassForm">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Add Sub-Class</h5>
+                        <h5 class="modal-title">
+                            {{
+                                subClassFormMode === "create" ? "Add" : "Update"
+                            }}
+                            Sub-Class
+                        </h5>
                         <button
                             type="button"
                             class="btn-close"
-                            data-bs-dismiss="modal"
+                            @click="closeClassFormModal"
                         ></button>
                     </div>
                     <div class="modal-body">
@@ -457,7 +460,7 @@ export default {
                         <button
                             type="button"
                             class="btn btn-outline-secondary"
-                            @click="closeModal"
+                            @click="closeClassFormModal"
                         >
                             Cancel
                         </button>
