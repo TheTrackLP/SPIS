@@ -14,6 +14,7 @@ const openTermsFormModal = () => {
 const closeTermsFormModal = () => {
     closeModal(modalTermsRef);
     termForm.reset();
+    termForm.clearErrors();
     termFormMode.value = "create";
 };
 
@@ -155,9 +156,15 @@ export default {
                                 <input
                                     type="text"
                                     class="form-control"
+                                    :class="{
+                                        'is-invalid': termForm.errors.sptermno,
+                                    }"
                                     placeholder="e.g. 01"
                                     v-model="termForm.sptermno"
                                 />
+                                <div class="invalid-feedback">
+                                    {{ termForm.errors.sptermno }}
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -167,16 +174,28 @@ export default {
                                 <input
                                     type="date"
                                     class="form-control"
+                                    :class="{
+                                        'is-invalid': termForm.errors.termfrom,
+                                    }"
                                     v-model="termForm.termfrom"
                                 />
+                                <div class="invalid-feedback">
+                                    {{ termForm.errors.termfrom }}
+                                </div>
                             </div>
                             <div class="col-6 mb-3">
                                 <label>To</label>
                                 <input
                                     type="date"
                                     class="form-control"
+                                    :class="{
+                                        'is-invalid': termForm.errors.termto,
+                                    }"
                                     v-model="termForm.termto"
                                 />
+                                <div class="invalid-feedback">
+                                    {{ termForm.errors.termto }}
+                                </div>
                             </div>
                         </div>
                     </div>

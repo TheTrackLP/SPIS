@@ -18,40 +18,38 @@ class SectorController extends Controller
     public function SectorAdd(Request $request){
         $valid = Validator::make($request->all(), [
             'name' => 'required',
+        ],
+        [
+            'name' => 'Sector name is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('sector.dash')->with(
-                'error', 'Error, Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         Sector::create([
             'name' => $request->name,
             'desc' => $request->name,
         ]);
-        return redirect()->route('sector.dash')->with(
-            'success', 'Success, Sector Added',
-        );
+        return $this->StatusMessage(true, 'Success, Sector Added', 'sector.dash');
     }
 
     public function SectorEdit(Request $request){
         $valid = Validator::make($request->all(), [
             'name' => 'required',
+        ],
+        [
+            'name' => 'Sector name is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('sector.dash')->with(
-                'error', 'Error, Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         Sector::findorfail($request->id)->update([
             'name' => $request->name,
             'desc' => $request->desc,
         ]);
-        return redirect()->route('sector.dash')->with(
-            'success', 'Success, Sector Updated',
-        );
+        return $this->StatusMessage(true, 'Success, Sector Updated', 'sector.dash');
     }
 }

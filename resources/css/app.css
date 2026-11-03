@@ -285,3 +285,7 @@ td,
 p {
     margin: 0 !important;
 }
+
+.v-select.is-invalid .vs__dropdown-toggle {
+    border-color: red;
+}

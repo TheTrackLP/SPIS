@@ -25,21 +25,20 @@ class ClassController extends Controller
     public function ClassAdd(Request $request){
         $valid = Validator::make($request->all(), [
             'mainname' => 'required',
+        ],
+        [
+            'mainname' => 'Main Classification is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('class.dash')->with(
-                'error', 'Error, Try Again!'
-            );
+            return $this->failedValidation($valid);
         }
 
         MainClassifications::create([
             'mainname' => $request->mainname,
         ]);
 
-        return redirect()->route('class.dash')->with(
-            'success', 'Success, Main Classification Added!'
-        );
+        return $this->StatusMessage(true, 'Success, Main Classification Added!', 'class.dash');
     }
 
     public function ClassEdit(Request $request){
@@ -48,30 +47,27 @@ class ClassController extends Controller
         ]);
 
         if($valid->fails()){
-            return redirect()->route('class.dash')->with(
-                'error', 'Error, Try Again!'
-            );
+            return $this->failedValidation($valid);
         }
 
         MainClassifications::findorfail($request->id)->update([
             'mainname' => $request->mainname,
         ]);
 
-        return redirect()->route('class.dash')->with(
-            'success', 'Success, Main Classification Updated!'
-        );
+        return $this->StatusMessage(true, 'Success, Main Classification Updated!', 'class.dash');
     }
 
     public function SubClassificationAdd(Request $request) {
         $valid = Validator::make($request->all(),[
             'class_id' => 'required',
             'subname' => 'required',
+        ],
+        [
+            'subname' => 'Sub Classification is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('class.dash')->with(
-                'error', 'Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         SubClassifications::create([
@@ -80,21 +76,20 @@ class ClassController extends Controller
             'desc' => $request->desc,
         ]);
     
-        return redirect()->route('class.dash')->with(
-            'success', 'Success, Sub Classification Added!',
-        );
+        return $this->StatusMessage(true, 'Sub Classification Added!', 'class.dash');
     }
 
     public function SubClassificationEdit(Request $request) {
         $valid = Validator::make($request->all(),[
             'class_id' => 'required',
             'subname' => 'required',
+        ],
+        [
+            'subname' => 'Sub Classification is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('class.dash')->with(
-                'error', 'Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         SubClassifications::findorfail($request->id)->update([
@@ -103,8 +98,6 @@ class ClassController extends Controller
             'desc' => $request->desc,
         ]);
     
-        return redirect()->route('class.dash')->with(
-            'success', 'Success, Sub Classification Updated!',
-        );   
+        return $this->StatusMessage(true, 'Sub Classification Updated!', 'class.dash');
     }
 }

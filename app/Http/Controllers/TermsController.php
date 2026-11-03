@@ -19,12 +19,15 @@ class TermsController extends Controller
             'sptermno' => 'required',
             'termfrom' => 'required',
             'termto' => 'required',
+        ],
+        [
+            'sptermno' => 'SP Term is required',
+            'termfrom' => 'From date is required',
+            'termto' => 'To date is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('term.dash')->with(
-                'error', "Error, Try Again!",
-            );
+            return $this->failedValidation($valid);
         }
 
         Terms::create([
@@ -33,9 +36,7 @@ class TermsController extends Controller
             'termto' => $request->termto,
         ]);
 
-        return redirect()->route('term.dash')->with(
-            'success', "Success, SP Term Period Added!",
-        );
+        return $this->StatusMessage(true, 'Success, SP Term Period Added!', 'term.dash');
     }
 
     public function UpdateTermPeriod(Request $request){
@@ -43,12 +44,15 @@ class TermsController extends Controller
             'sptermno' => 'required',
             'termfrom' => 'required',
             'termto' => 'required',
+        ],
+        [
+            'sptermno' => 'SP Term is required',
+            'termfrom' => 'From date is required',
+            'termto' => 'To date is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('term.dash')->with(
-                'error', "Error, Try Again!",
-            );
+            return $this->failedValidation($valid);
         }
 
         Terms::findorfail($request->id)->update([
@@ -57,8 +61,6 @@ class TermsController extends Controller
             'termto' => $request->termto,
         ]);
 
-        return redirect()->route('term.dash')->with(
-            'success', "Success, SP Term Period Updated!",
-        );
+        return $this->StatusMessage(true, 'Success, SP Term Period Updated!', 'term.dash');
     }
 }

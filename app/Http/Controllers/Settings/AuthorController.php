@@ -36,12 +36,15 @@ class AuthorController extends Controller
             'authorfirstname' => "required",
             'authormiddlename' => "required",
             'authorlastname' => "required",
+        ],
+        [
+            'authorfirstname' => "First Name is required",
+            'authormiddlename' => "Middle Name is required",
+            'authorlastname' => "Last Name is required",
         ]);
 
         if($valid->fails()){
-            return redirect()->route('gear.author')->with(
-                'error', 'Error, Try Again!'
-            );
+           return $this->failedValidation($valid);
         }
 
         Authors::create([
@@ -51,21 +54,22 @@ class AuthorController extends Controller
             'authorbirtdate' => $request->authorbirtdate,
         ]);
 
-        return redirect()->route('gear.author')->with(
-            'success', 'Success, Author Added',
-        );
+        return $this->StatusMessage(true, 'Success, Author Added!', 'gear.author');
     }
     public function EditAuthor(Request $request){
         $valid = Validator::make($request->all(), [
             'authorfirstname' => "required",
             'authormiddlename' => "required",
             'authorlastname' => "required",
+        ],
+        [
+            'authorfirstname' => "First Name is required",
+            'authormiddlename' => "Middle Name is required",
+            'authorlastname' => "Last Name is required",
         ]);
 
         if($valid->fails()){
-            return redirect()->route('gear.author')->with(
-                'error', 'Error, Try Again!'
-            );
+           return $this->failedValidation($valid);
         }
 
         Authors::findorfail($request->id)->update([
@@ -76,9 +80,7 @@ class AuthorController extends Controller
             'authorstatus' => $request->authorstatus,
         ]);
 
-        return redirect()->route('gear.author')->with(
-            'success', 'Success, Author Updated',
-        );
+        return $this->StatusMessage(true, 'Success, Author Updated!', 'gear.author');
     }
 
     public function AuthorTerms($id){
@@ -109,12 +111,15 @@ class AuthorController extends Controller
             'authortermid' => "required",
             'authortermno' => "required",
             'authorposition' => "required",
+        ],
+        [
+            'authortermid' => "SP term is required",
+            'authortermno' => "Term No. is required",
+            'authorposition' => "Author position is required",
         ]);
 
         if($valid->fails()){
-            return redirect()->route('gear.author')->with(
-                'error', 'Error, Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         $currTerm = Authors::findorfail($request->authorid);
@@ -132,9 +137,7 @@ class AuthorController extends Controller
             'date_start' => $request->date_start,
             'date_end' => $request->date_end,
         ]);
-        return redirect()->route('gear.author')->with(
-            'success', 'Success, SP Term Added!',
-        );
+        return $this->StatusMessage(true, 'Success, SP Term Added!', 'gear.author');
     }
 
     public function UpdateAuthorTerms(Request $request){
@@ -142,12 +145,15 @@ class AuthorController extends Controller
             'authortermid' => "required",
             'authortermno' => "required",
             'authorposition' => "required",
+        ],
+        [
+            'authortermid' => "SP term is required",
+            'authortermno' => "Term No. is required",
+            'authorposition' => "Author position is required",
         ]);
 
         if($valid->fails()){
-            return redirect()->route('gear.author')->with(
-                'error', 'Error, Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         AuthorTerms::findorfail($request->id)->update([
@@ -159,8 +165,6 @@ class AuthorController extends Controller
             'date_start' => $request->date_start,
             'date_end' => $request->date_end,
         ]);
-        return redirect()->route('gear.author')->with(
-            'success', 'Success, SP Term Updated!',
-        );
+        return $this->StatusMessage(true, 'Success, SP Term Updated!', 'gear.author');
     }
 }

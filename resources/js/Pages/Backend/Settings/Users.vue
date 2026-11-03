@@ -287,6 +287,9 @@ export default {
                                     v-model="userForm.confirmPass"
                                 />
                             </div>
+                            <div class="invalid-feedback">
+                                {{ userForm.errors }}
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">

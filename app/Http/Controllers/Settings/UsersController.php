@@ -31,22 +31,30 @@ class UsersController extends Controller
 
     public function UsersStore(Request $request){
         $valid = Validator::make($request->all(), [
+            'username' => 'required',
             'email' => 'required',
             'role' => 'required',
+        ],
+        [
+            'username' => 'Username is required',
+            'email' => 'Email is required',
+            'role' => 'Role is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('users.dash')->with(
-                'error', 'Error, Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
-        if($request->password != $request->confirmPass){
-            return redirect()->route('users.dash')->with(
-                'error', 'Error, Password Does not Match!',
-            );
-        }
+        $checkPassword = Validator::make($request->all(), [
+            'password' => ['required', 'string', 'same:confirmPass'],
+            'confirmPass' => ['required'],
+        ], [
+            'password.same' => 'Password does not match.',
+        ]);
 
+        if($checkPassword->fails()){
+             return $this->failedValidation($checkPassword);
+        }
         User::create([
             'username' => $request->username,
             'name' => $request->name,
@@ -56,15 +64,14 @@ class UsersController extends Controller
             'role' => $request->role,
         ]);
 
-        return redirect()->route('users.dash')->with(
-            'success', 'Authentication Added',
-        );
+        return $this->StatusMessage(true, 'Success, Authentication Added', 'users.dash');
     }
 
     public function UsersEditAcct(Request $request){
         $user = User::findorfail($request->id);
     
         $valid = Validator::make($request->all(), [
+            'username' => 'required',
             'email' => 'required',
             'role' => 'required',
         ]);

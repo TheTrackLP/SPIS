@@ -65,6 +65,7 @@ const closeAllModals = () => {
     closeModal(modalRecordsRef);
     recordFormMode.value = "create";
     recordForm.reset();
+    recordForm.clearErrors();
 };
 
 const getRecordTerm = ref("");
@@ -684,7 +685,7 @@ export default {
                         <button
                             type="button"
                             class="btn-close btn-close-white"
-                            data-bs-dismiss="modal"
+                            @click="closeAllModals"
                         ></button>
                     </div>
                     <div class="modal-body">
@@ -695,6 +696,10 @@ export default {
                                 <v-select
                                     :options="terms"
                                     :reduce="(term) => term.id"
+                                    :class="{
+                                        'is-invalid':
+                                            recordForm.errors.sptermid,
+                                    }"
                                     label="sptermno"
                                     placeholder="Select SP Term"
                                     v-model="recordForm.sptermid"
@@ -709,37 +714,56 @@ export default {
                                         {{ term.sptermno }}
                                     </template>
                                 </v-select>
+                                <div class="invalid-feedback">
+                                    {{ recordForm.errors.sptermid }}
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Type</label>
                                 <v-select
                                     :options="types"
                                     :reduce="(type) => type.id"
+                                    :class="{
+                                        'is-invalid': recordForm.errors.type_id,
+                                    }"
                                     label="type_name"
                                     placeholder="Select Type"
                                     v-model="recordForm.type_id"
-                                    required
                                 >
                                 </v-select>
+                                <div class="invalid-feedback">
+                                    {{ recordForm.errors.type_id }}
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">No.</label>
                                 <input
                                     type="number"
                                     class="form-control"
+                                    :class="{
+                                        'is-invalid': recordForm.errors.resono,
+                                    }"
                                     placeholder="e.g. 691"
-                                    required
                                     v-model="recordForm.resono"
                                 />
+                                <div class="invalid-feedback">
+                                    {{ recordForm.errors.resono }}
+                                </div>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Session Date</label>
                                 <input
                                     type="date"
                                     class="form-control"
-                                    required
+                                    :class="{
+                                        'is-invalid':
+                                            recordForm.errors.session_date,
+                                    }"
                                     v-model="recordForm.session_date"
                                 />
+                                <div class="invalid-feedback">
+                                    {{ recordForm.errors.session_date }}
+                                </div>
                             </div>
                         </div>
                         <div class="section-heading">Legislative Title</div>
@@ -747,11 +771,16 @@ export default {
                             <label class="form-label">Full Title</label>
                             <textarea
                                 class="form-control"
+                                :class="{
+                                    'is-invalid': recordForm.errors.title,
+                                }"
                                 rows="5"
                                 placeholder="Enter the complete legislative title..."
-                                required
                                 v-model="recordForm.title"
                             ></textarea>
+                            <div class="invalid-feedback">
+                                {{ recordForm.errors.title }}
+                            </div>
                         </div>
                         <div class="section-heading">Classification</div>
                         <div class="row g-3">
@@ -766,10 +795,17 @@ export default {
                                     v-model="selectedMainClassID"
                                     :options="mainClass"
                                     :reduce="(main) => main.id"
+                                    :class="{
+                                        'is-invalid':
+                                            recordForm.errors.mainclassid,
+                                    }"
                                     label="mainname"
                                     placeholder="Select Classification 1"
                                     multiple
                                 ></v-select>
+                                <div class="invalid-feedback">
+                                    {{ recordForm.errors.mainclassid }}
+                                </div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label"
@@ -796,10 +832,17 @@ export default {
                                     v-model="selectedAuthorID"
                                     :options="authors"
                                     :reduce="(author) => author.id"
+                                    :class="{
+                                        'is-invalid':
+                                            recordForm.errors.authorid,
+                                    }"
                                     label="fullname"
                                     placeholder="Select Author/s"
                                     multiple
                                 ></v-select>
+                                <div class="invalid-feedback">
+                                    {{ recordForm.errors.authorid }}
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label"
@@ -855,9 +898,16 @@ export default {
                                     ref="fileInput"
                                     type="file"
                                     class="form-control"
+                                    :class="{
+                                        'is-invalid':
+                                            recordForm.errors.filepath,
+                                    }"
                                     accept=".pdf,.doc,.docx"
                                     @change="onFileChange"
                                 />
+                                <div class="invalid-feedback">
+                                    {{ recordForm.errors.filepath }}
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label"
@@ -897,10 +947,17 @@ export default {
                                     v-model="selectedSectorID"
                                     :options="sectors"
                                     :reduce="(sector) => sector.id"
+                                    :class="{
+                                        'is-invalid':
+                                            recordForm.errors.sectorid,
+                                    }"
                                     label="name"
                                     placeholder="Select Sectors"
                                     multiple
                                 ></v-select>
+                                <div class="invalid-feedback">
+                                    {{ recordForm.errors.sectorid }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -908,7 +965,7 @@ export default {
                         <button
                             type="button"
                             class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal"
+                            @click="closeAllModals"
                         >
                             Cancel
                         </button>

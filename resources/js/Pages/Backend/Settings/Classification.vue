@@ -23,8 +23,10 @@ const closeClassFormModal = () => {
     closeModal(modalSubClassRef);
     classFormMode.value = "create";
     classForm.reset();
+    classForm.clearErrors();
     subClassFormMode.value = "create";
     subClassForm.reset();
+    subClassForm.clearErrors();
 };
 
 const classFormMode = ref("create");
@@ -372,16 +374,22 @@ export default {
                             <input
                                 type="text"
                                 class="form-control"
+                                :class="{
+                                    'is-invalid': classForm.errors.mainname,
+                                }"
                                 placeholder="e.g. Resolution"
                                 v-model="classForm.mainname"
                             />
+                            <div class="invalid-feedback">
+                                {{ classForm.errors.mainname }}
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button
                             type="button"
                             class="btn btn-outline-secondary"
-                            data-bs-dismiss="modal"
+                            @click="closeClassFormModal"
                         >
                             Cancel
                         </button>
@@ -437,9 +445,15 @@ export default {
                             <input
                                 type="text"
                                 class="form-control"
+                                :class="{
+                                    'is-invalid': subClassForm.errors.subname,
+                                }"
                                 placeholder="e.g. PBO"
                                 v-model="subClassForm.subname"
                             />
+                            <div class="invalid-feedback">
+                                {{ subClassForm.errors.subname }}
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label"

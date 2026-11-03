@@ -21,6 +21,7 @@ const openSectorFormModal = () => {
 const closeSectorFormModal = () => {
     closeModal(modalSectorRef);
     sectorForm.reset();
+    sectorForm.clearErrors();
 };
 
 const sectorDesc = ref(false);
@@ -96,7 +97,7 @@ export default {
                         <tr>
                             <th style="width: 40px">#</th>
                             <th>Name</th>
-                            <th class="text-center">In Use</th>
+                            <!-- <th class="text-center">In Use</th> -->
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -108,9 +109,9 @@ export default {
                         >
                             <td class="text-muted">{{ index + 1 }}</td>
                             <td style="font-weight: 500">{{ sector.name }}</td>
-                            <td class="text-center">
+                            <!-- <td class="text-center">
                                 <span class="chip">14 records</span>
-                            </td>
+                            </td> -->
                             <td class="text-end">
                                 <button
                                     class="btn btn-sm btn-warning border"
@@ -159,7 +160,7 @@ export default {
                     <button
                         type="button"
                         class="btn-close btn-close-white"
-                        data-bs-dismiss="modal"
+                        @click="closeSectorFormModal"
                     ></button>
                 </div>
                 <form @submit.prevent="submitSectorForm">
@@ -173,10 +174,15 @@ export default {
                             <input
                                 type="text"
                                 class="form-control"
+                                :class="{
+                                    'is-invalid': sectorForm.errors.name,
+                                }"
                                 placeholder="e.g. Institutional"
-                                required
                                 v-model="sectorForm.name"
                             />
+                            <div class="invalid-feedback">
+                                {{ sectorForm.errors.name }}
+                            </div>
                             <input type="hidden" v-model="sectorForm.id" />
                         </div>
                         <div v-if="sectorDesc" class="mb-3">

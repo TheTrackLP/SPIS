@@ -1,7 +1,6 @@
 <script setup>
-import { nextTick, computed, ref } from "vue";
+import { computed, ref } from "vue";
 import { Head, useForm } from "@inertiajs/vue3";
-import { Modal } from "bootstrap";
 import { formatDate, openModal, closeModal } from "@/resuables";
 import axios from "axios";
 
@@ -62,6 +61,8 @@ const fetchAuthorTerms = (authorId) => {
 const closeAllModals = () => {
     closeModal(modalAuthorFormRef);
     closeModal(modalAuthorTermForm);
+    authorForm.clearErrors();
+    authorTermForm.clearErrors();
     authorForm.reset();
     authorTermForm.reset();
 };
@@ -265,7 +266,9 @@ export default {
                                 </div>
                             </td>
                             <td class="text-center">
-                                {{ formatDate(auth.authorbirtdate) }}
+                                <template v-if="auth.authorbirtdate">
+                                    {{ formatDate(auth.authorbirtdate) }}
+                                </template>
                             </td>
                             <td>
                                 <p>Authored</p>
@@ -363,9 +366,16 @@ export default {
                             <input
                                 type="text"
                                 class="form-control"
+                                :class="{
+                                    'is-invalid':
+                                        authorForm.errors.authorlastname,
+                                }"
                                 placeholder="e.g. Cruz-Am"
                                 v-model="authorForm.authorlastname"
                             />
+                            <div class="invalid-feedback">
+                                {{ authorForm.errors.authorlastname }}
+                            </div>
                         </div>
                         <div class="form-group mb-3">
                             <label for="firstName" class="form-label"
@@ -374,9 +384,16 @@ export default {
                             <input
                                 type="text"
                                 class="form-control"
+                                :class="{
+                                    'is-invalid':
+                                        authorForm.errors.authorfirstname,
+                                }"
                                 placeholder="e.g. Aldwin"
                                 v-model="authorForm.authorfirstname"
                             />
+                            <div class="invalid-feedback">
+                                {{ authorForm.errors.authorfirstname }}
+                            </div>
                         </div>
                         <div class="form-group mb-3">
                             <label for="middleName" class="form-label"
@@ -385,11 +402,17 @@ export default {
                             <input
                                 type="text"
                                 class="form-control"
+                                :class="{
+                                    'is-invalid':
+                                        authorForm.errors.authormiddlename,
+                                }"
                                 placeholder="e.g. Amane"
                                 v-model="authorForm.authormiddlename"
                             />
                         </div>
-
+                        <div class="invalid-feedback">
+                            {{ authorForm.errors.authormiddlename }}
+                        </div>
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <label for="birthDate" class="form-label"
@@ -601,6 +624,10 @@ export default {
                             <v-select
                                 :options="terms"
                                 :reduce="(term) => term.id"
+                                :class="{
+                                    'is-invalid':
+                                        authorTermForm.errors.authortermid,
+                                }"
                                 label="sptermno"
                                 placeholder="Select SP Term"
                                 v-model="authorTermForm.authortermid"
@@ -618,14 +645,22 @@ export default {
                                     }}
                                 </template></v-select
                             >
+                            <div class="invalid-feedback">
+                                {{ authorTermForm.errors.authortermid }}
+                            </div>
                         </div>
-                        <div class="row">
+                        <div class="row mb-3">
                             <div class="col-md-6">
                                 <label for="position" class="form-label"
                                     >Position</label
                                 >
                                 <select
                                     class="form-select"
+                                    :class="{
+                                        'is-invalid':
+                                            authorTermForm.errors
+                                                .authorposition,
+                                    }"
                                     v-model="authorTermForm.authorposition"
                                 >
                                     <option selected disabled>
@@ -645,6 +680,9 @@ export default {
                                         SP Member (PCL)
                                     </option>
                                 </select>
+                                <div class="invalid-feedback">
+                                    {{ authorTermForm.errors.authorposition }}
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="spTermNo" class="form-label"
@@ -653,9 +691,16 @@ export default {
                                 <input
                                     type="text"
                                     class="form-control"
+                                    :class="{
+                                        'is-invalid':
+                                            authorTermForm.errors.authortermno,
+                                    }"
                                     placeholder="e.g. 4th"
                                     v-model="authorTermForm.authortermno"
                                 />
+                                <div class="invalid-feedback">
+                                    {{ authorTermForm.errors.authortermno }}
+                                </div>
                             </div>
                         </div>
 

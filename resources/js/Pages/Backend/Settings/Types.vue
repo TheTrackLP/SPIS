@@ -11,6 +11,7 @@ const typeForm = useForm({
 
 const clearForms = () => {
     typeForm.reset();
+    typeForm.clearErrors();
     typeFormMode.value = "create";
 };
 
@@ -88,10 +89,16 @@ export default {
                                     <input
                                         type="text"
                                         class="form-control"
+                                        :class="{
+                                            'is-invalid':
+                                                typeForm.errors.type_name,
+                                        }"
                                         placeholder="e.g. ORD"
-                                        required
                                         v-model="typeForm.type_name"
                                     />
+                                    <div class="invalid-feedback">
+                                        {{ typeForm.errors.type_name }}
+                                    </div>
                                 </div>
                                 <div class="mb-3">
                                     <label
@@ -105,10 +112,16 @@ export default {
                                     <input
                                         type="text"
                                         class="form-control"
+                                        :class="{
+                                            'is-invalid':
+                                                typeForm.errors.type_desc,
+                                        }"
                                         placeholder="e.g. Ordinance"
-                                        required
                                         v-model="typeForm.type_desc"
                                     />
+                                    <div class="invalid-feedback">
+                                        {{ typeForm.errors.type_desc }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="card-footer">

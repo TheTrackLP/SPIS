@@ -56,12 +56,20 @@ class RecordsController extends Controller
             'sectorid' => 'required',
             'sectorname' => 'required',
             'filepath' => ['required', 'file', 'mimes:pdf,doc,docx', 'max:20480'],
+        ], [
+            'sptermid' => 'SP Term is required',
+            'type_id' => 'Type is required',
+            'resono' => 'No. field is required',
+            'session_date' => 'Session date is required',
+            'title' => 'Title is required',
+            'authorid' => 'Author/s Name is required',
+            'mainclassid' => 'Main Classification is required',
+            'sectorid' => 'Sector is required',
+            'filepath' => 'File is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('rec.dash')->with(
-                'error', 'Error, Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         $term = Terms::selectRaw("sptermno, CONCAT(sptermno, ' ',DATE_FORMAT(termfrom, '%Y'), '-', DATE_FORMAT(termto, '%Y')) as full_term")->where('id',$request->sptermid)->first();

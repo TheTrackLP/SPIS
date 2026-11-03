@@ -18,12 +18,14 @@ class TypesController extends Controller
         $valid = Validator::make($request->all(), [
             'type_name' => 'required',
             'type_desc' => 'required',
+        ],
+        [
+            'type_name' => 'Type name is required',
+            'type_desc' => 'Type description is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('types.dash')->with(
-                'error', 'Error Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         Types::create([
@@ -31,21 +33,21 @@ class TypesController extends Controller
             'type_desc' => $request->type_desc,
         ]);
 
-        return redirect()->route('types.dash')->with(
-            'success', 'Success, Type Added!',
-        );
+        return $this->StatusMessage(true, 'Success, Type Added!', 'types.dash');
     }
 
     public function TypesUpdate(Request $request){
         $valid = Validator::make($request->all(), [
             'type_name' => 'required',
             'type_desc' => 'required',
+        ],
+        [
+            'type_name' => 'Type name is required',
+            'type_desc' => 'Type description is required',
         ]);
 
         if($valid->fails()){
-            return redirect()->route('types.dash')->with(
-                'error', 'Error Try Again!',
-            );
+            return $this->failedValidation($valid);
         }
 
         Types::findorfail($request->id)->update([
@@ -53,8 +55,6 @@ class TypesController extends Controller
             'type_desc' => $request->type_desc,
         ]);
 
-        return redirect()->route('types.dash')->with(
-            'success', 'Success, Type Updated!',
-        );
+        return $this->StatusMessage(true, 'Success, Type Updated', 'types.dash');
     }
 }
